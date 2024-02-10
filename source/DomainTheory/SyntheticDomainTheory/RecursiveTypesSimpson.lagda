@@ -189,24 +189,29 @@ X has an identity system. The goal is to show
 
   (P , P-is-dom , h) ＝ (P' , P'-is-dom , h')
 ≃ Σ (f , g) ꞉ (P holds → P' holds) × (P' holds → P holds)
-    , (x : P holds) (x' : P' holds) → h x ≅⟨ X ⟩ h' x'
+    , (x : P holds) (x' : P' holds) → h x ≃⟨ X ⟩ h' x'
      
-where ≅⟨ X ⟩ is the charcterization of identity on X. This definition is
+where ≃⟨ X ⟩ is the charcterization of identity on X. This definition is
 more symmetric but only works because P and P' are props. The equivalent,
 but more robust, h ∼ h' ∘ f (or h ∘ g ∼ h') would be easier to generalize
-but notice these homotopies still depend on ≅⟨ X ⟩.
+but notice these homotopies still depend on ≃⟨ X ⟩.
+
+As a warm up let's characterize the identity of dominant propositions
+which should correspond to our first components above...
 
 \begin{code}
 
   open sip
 
-  sns-data-𝕃 : SNS (is-dominant D) ?
-  sns-data-𝕃 = ({!!} , {!!} , {!!})
+  sns-data-dom-prop : SNS {!!} {!!}
+  sns-data-dom-prop = ({!!} , {!!} , {!!})
    where
-    ι : ?
-    ι = ?
+    ι : {!!}
+    ι = {!!}
 
 \end{code}
+
+Dominant-Propositions D
 
 We now want to show that this 'Functor', 𝕃, has monad structure.
 Notice 𝕃(𝕃(X)) doesn't make sense as defined so we will instead define a
