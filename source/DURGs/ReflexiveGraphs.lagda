@@ -29,7 +29,20 @@ edge-rel (_ , R , _) = R
 
 syntax edge-rel 𝓐 x y = x ≈⟨ 𝓐 ⟩ y
 
-𝓻 : (𝓐 : refl-graph 𝓤 𝓥) → {x : ⊰ 𝓐 ⊱} → x ≈⟨ 𝓐 ⟩ x
-𝓻 (_ , _ , r) {x} = r x
+𝓻 : (𝓐 : refl-graph 𝓤 𝓥) → (x : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ x
+𝓻 (_ , _ , r) x = r x
+
+\end{code}
+
+We define a homomorphism of reflexive graphs as follows.
+
+\begin{code}
+
+refl-graph-hom : (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤' 𝓥')
+               → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
+refl-graph-hom 𝓐 𝓐'
+ = Σ f ꞉ (⊰ 𝓐 ⊱ → ⊰ 𝓐' ⊱) ,
+    Σ f' ꞉ ((x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → f x ≈⟨ 𝓐' ⟩ f y) ,
+     ((x : ⊰ 𝓐 ⊱) → f' x x (𝓻 𝓐 x) ＝ 𝓻 𝓐' (f x))
 
 \end{code}
