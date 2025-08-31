@@ -3,6 +3,9 @@ Ian Ray. 28th August 2025.
 We provide some basic contructions on (displayed) reflexive graphs (see
 Sterling, Ulrik, etc.)
 
+TODO. Consider a nice syntax for these basic constructions in line with
+Sterling.
+
 \begin{code}
 
 {-# OPTIONS --safe --without-K #-}
@@ -12,6 +15,8 @@ module DURGs.BasicConstructionsonReflexiveGraphs where
 open import MLTT.Spartan
 open import DURGs.ReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
+open import UF.Powerset-MultiUniverse
+open import UF.UniverseEmbedding
 
 \end{code}
 
@@ -20,18 +25,19 @@ the total reflexive graph as follows.
 
 \begin{code}
 
-module _ (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐) where
+total-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+                 → refl-graph (𝓤 ⊔ 𝓣) (𝓥 ⊔ 𝓦)
+total-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 = ((Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x) , I , II)
+ where
+  I : Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x
+    → Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x
+    → 𝓥 ⊔ 𝓦 ̇
+  I (a , b) (a' , b') = Σ p ꞉ a ≈⟨ 𝓐 ⟩ a' , b ≈＜ 𝓑 , p ＞ b'
+  II : (t : Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x)
+     → I t t
+  II (a , b) = (𝓻 𝓐 a , 𝓻𝓭 𝓑 b)
 
- total-refl-graph : refl-graph (𝓤 ⊔ 𝓣) (𝓥 ⊔ 𝓦)
- total-refl-graph = ((Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x) , I , II)
-  where
-   I : Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x
-     → Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x
-     → 𝓥 ⊔ 𝓦 ̇
-   I (a , b) (a' , b') = Σ p ꞉ a ≈⟨ 𝓐 ⟩ a' , b ≈＜ 𝓑 , p ＞ b'
-   II : (t : Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x)
-      → I t t
-   II (a , b) = (𝓻 𝓐 a , 𝓻𝓭 𝓑 b)
+syntax total-refl-graph 𝓐 𝓑 = 𝓐 ﹐ 𝓑
 
 \end{code}
 
@@ -40,8 +46,9 @@ reflexive graph.
 
 \begin{code}
 
- proj-refl-graph : refl-graph-hom total-refl-graph 𝓐
- proj-refl-graph = (pr₁ , (λ t t' → pr₁) , ∼-refl)
+proj-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+                → refl-graph-hom (𝓐 ﹐ 𝓑) 𝓐
+proj-refl-graph 𝓐 𝓑 = (pr₁ , (λ t t' → pr₁) , ∼-refl)
 
 \end{code}
 
@@ -75,5 +82,128 @@ prod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
   I f f' = (x : A) → f x ≈⟨ 𝓑 x ⟩ f' x
   II : (f : (x : A) → ⊰ 𝓑 x ⊱) → I f f
   II f x = 𝓻 (𝓑 x) (f x)
+
+\end{code}
+
+We define the 'coproduct' of reflexive graphs in terms of sigma types.
+
+\begin{code}
+
+coprod-refl-graphs : (A : 𝓤' ̇) (𝓑 : (x : A) → refl-graph 𝓤 𝓥)
+                   → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
+coprod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
+ = ((Σ x ꞉ A , ⊰ 𝓑 x ⊱) , I , II)
+ where
+  I : Σ x ꞉ A , ⊰ 𝓑 x ⊱
+    → Σ x ꞉ A , ⊰ 𝓑 x ⊱
+    → 𝓤' ⊔ 𝓥 ̇
+  I (a , b) (a' , b')
+   = Σ p ꞉ a ＝ a' , transport (λ - → ⊰ 𝓑 - ⊱) p b ≈⟨ 𝓑 a' ⟩ b'
+  II : (t : Σ x ꞉ A , ⊰ 𝓑 x ⊱) → I t t
+  II (a , b) = (refl , 𝓻 (𝓑 a) b)
+
+\end{code}
+
+The tensor and cotensor of reflexive graphs can be defined in terms of product
+and coproduct.
+
+\begin{code}
+
+tensor-refl-graph : (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)
+                  → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
+tensor-refl-graph A 𝓑 = prod-refl-graphs A (λ - → 𝓑)
+
+cotensor-refl-graph : (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)
+                    → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
+cotensor-refl-graph A 𝓑 = coprod-refl-graphs A (λ - → 𝓑)
+
+\end{code}
+
+We have a canonical discrete reflexive graph given by the identity type.
+On the other end of the extreme we can define codiscrete reflexive graph.
+
+\begin{code}
+
+discrete-reflexive-graph : (A : 𝓤 ̇)
+                         → refl-graph 𝓤 𝓤
+discrete-reflexive-graph A = (A , _＝_ , ∼-refl)
+
+codiscrete-reflexive-graph : (A : 𝓤 ̇)
+                           → refl-graph 𝓤 𝓤
+codiscrete-reflexive-graph A = (A , (λ - → λ - → 𝟙) , λ - → ⋆)
+
+\end{code}
+
+We can give a reflexive-graph structure to subsets.
+
+\begin{code}
+
+sub-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (S : 𝓟 {𝓣} ⊰ 𝓐 ⊱)
+               → refl-graph (𝓤 ⊔ 𝓣) 𝓥
+sub-refl-graph {𝓤} {𝓥} {𝓣} 𝓐 S = (𝕋 S , I , II)
+ where
+  I : 𝕋 S → 𝕋 S → 𝓥 ̇
+  I (x , _) (y , _) = x ≈⟨ 𝓐 ⟩ y
+  II : (p : 𝕋 S) → I p p
+  II (x , _) = 𝓻 𝓐 x
+
+\end{code}
+
+We can give opposite constructions for (displayed) reflexive graphs.
+
+\begin{code}
+
+opposite-refl-graph : (refl-graph 𝓤 𝓥)
+                    → refl-graph 𝓤 𝓥
+opposite-refl-graph {𝓤} {𝓥} 𝓐 = (⊰ 𝓐 ⊱ , I , 𝓻 𝓐)
+ where
+  I : ⊰ 𝓐 ⊱ → ⊰ 𝓐 ⊱ → 𝓥 ̇
+  I x y = y ≈⟨ 𝓐 ⟩ x
+
+private
+ observeation1 : (𝓐 : refl-graph 𝓤 𝓥)
+               → opposite-refl-graph (opposite-refl-graph 𝓐) ＝ 𝓐
+ observeation1 𝓐 = refl
+
+opposite-displayed-refl-graph
+ : (𝓐 : refl-graph 𝓤 𝓥)
+ → displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐
+ → displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 (opposite-refl-graph 𝓐)
+opposite-displayed-refl-graph {_} {_} {_} {𝓦} 𝓐 𝓑 = ([ 𝓑 ] , I , 𝓻𝓭 𝓑)
+ where
+  I : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ opposite-refl-graph 𝓐 ⟩ y)
+    → [ 𝓑 ] x → [ 𝓑 ] y → 𝓦 ̇
+  I p u v = v ≈＜ 𝓑 , p ＞ u
+
+private
+ observeation2
+  : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+  → opposite-displayed-refl-graph
+     (opposite-refl-graph 𝓐)
+     (opposite-displayed-refl-graph 𝓐 𝓑)
+  ＝ 𝓑
+ observeation2 𝓐 𝓑 = refl
+
+\end{code}
+
+We can iterate displayed reflexive graphs.
+
+\begin{code}
+
+iterated-displayed-refl-graph
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+   (𝓒 : displayed-refl-graph (𝓤 ⊔ 𝓣) (𝓥 ⊔ 𝓦) 𝓣 𝓦 (𝓐 ﹐ 𝓑))
+ → (x : ⊰ 𝓐 ⊱)
+ → displayed-refl-graph 𝓣 𝓦 𝓣 𝓦 (⋖ 𝓑 ⋗ x)
+iterated-displayed-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 𝓒 x = (I , II , III)
+ where
+  I : [ 𝓑 ] x → 𝓣 ̇
+  I u = [ 𝓒 ] (x , u)
+  II : {u v : [ 𝓑 ] x} (p : u ≈＜ 𝓑 , 𝓻 𝓐 x ＞ v)
+     → [ 𝓒 ] (x , u) → [ 𝓒 ] (x , v) → 𝓦 ̇
+  II p c c' = c ≈＜ 𝓒 , (𝓻 𝓐 x , p) ＞ c'
+  III : {u : [ 𝓑 ] x} (c : I u)
+      → c ≈＜ 𝓒 , (𝓻 𝓐 x , 𝓻𝓭 𝓑 u) ＞ c
+  III c = 𝓻𝓭 𝓒 c
 
 \end{code}

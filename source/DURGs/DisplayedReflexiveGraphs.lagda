@@ -49,10 +49,12 @@ reflexive graph.
 
 \begin{code}
 
- component-of_is-refl-graph : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐
-                            → ⊰ 𝓐 ⊱
-                            → refl-graph 𝓣 𝓦
- component-of 𝓑 is-refl-graph x
+ component-is-refl-graph : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐
+                         → ⊰ 𝓐 ⊱
+                         → refl-graph 𝓣 𝓦
+ component-is-refl-graph 𝓑 x
   = ([ 𝓑 ] x , displayed-edge-rel 𝓑 (𝓻 𝓐 x) , 𝓻𝓭 𝓑)
+
+ syntax component-is-refl-graph 𝓑 x = ⋖ 𝓑 ⋗ x
 
 \end{code}
