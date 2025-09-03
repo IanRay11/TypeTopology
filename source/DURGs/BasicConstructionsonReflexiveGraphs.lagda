@@ -25,7 +25,8 @@ the total reflexive graph as follows.
 
 \begin{code}
 
-total-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+total-refl-graph : (𝓐 : refl-graph 𝓤 𝓥)
+                 → displayed-refl-graph 𝓣 𝓦 𝓐
                  → refl-graph (𝓤 ⊔ 𝓣) (𝓥 ⊔ 𝓦)
 total-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 = ((Σ x ꞉ ⊰ 𝓐 ⊱ , [ 𝓑 ] x) , I , II)
  where
@@ -46,7 +47,7 @@ reflexive graph.
 
 \begin{code}
 
-proj-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+proj-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
                 → refl-graph-hom (𝓐 ﹐ 𝓑) 𝓐
 proj-refl-graph 𝓐 𝓑 = (pr₁ , (λ t t' → pr₁) , ∼-refl)
 
@@ -56,7 +57,8 @@ We define the binary product of reflexive graphs as follows.
 
 \begin{code}
 
-binary-prod-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤' 𝓥')
+binary-prod-refl-graph : refl-graph 𝓤 𝓥
+                       → refl-graph 𝓤' 𝓥'
                        → refl-graph (𝓤 ⊔ 𝓤') (𝓥 ⊔ 𝓥')
 binary-prod-refl-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓐' = ((⊰ 𝓐 ⊱ × ⊰ 𝓐' ⊱) , I , II)
  where
@@ -71,7 +73,8 @@ Of course, we can generalize to products of reflexive graphs as follows.
 
 \begin{code}
 
-prod-refl-graphs : (A : 𝓤' ̇) (𝓑 : (x : A) → refl-graph 𝓤 𝓥)
+prod-refl-graphs : (A : 𝓤' ̇)
+                 → ((x : A) → refl-graph 𝓤 𝓥)
                  → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 prod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
  = (((x : A) → ⊰ 𝓑 x ⊱) , I , II)
@@ -89,7 +92,8 @@ We define the 'coproduct' of reflexive graphs in terms of sigma types.
 
 \begin{code}
 
-coprod-refl-graphs : (A : 𝓤' ̇) (𝓑 : (x : A) → refl-graph 𝓤 𝓥)
+coprod-refl-graphs : (A : 𝓤' ̇)
+                   → ((x : A) → refl-graph 𝓤 𝓥)
                    → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 coprod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
  = ((Σ x ꞉ A , ⊰ 𝓑 x ⊱) , I , II)
@@ -109,11 +113,13 @@ and coproduct.
 
 \begin{code}
 
-tensor-refl-graph : (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)
+tensor-refl-graph : 𝓤' ̇
+                  → refl-graph 𝓤 𝓥
                   → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 tensor-refl-graph A 𝓑 = prod-refl-graphs A (λ - → 𝓑)
 
-cotensor-refl-graph : (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)
+cotensor-refl-graph : 𝓤' ̇
+                    → refl-graph 𝓤 𝓥
                     → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 cotensor-refl-graph A 𝓑 = coprod-refl-graphs A (λ - → 𝓑)
 
@@ -124,13 +130,40 @@ On the other end of the extreme we can define codiscrete reflexive graph.
 
 \begin{code}
 
-discrete-reflexive-graph : (A : 𝓤 ̇)
+discrete-reflexive-graph : 𝓤 ̇
                          → refl-graph 𝓤 𝓤
 discrete-reflexive-graph A = (A , _＝_ , ∼-refl)
 
-codiscrete-reflexive-graph : (A : 𝓤 ̇)
+codiscrete-reflexive-graph : 𝓤 ̇
                            → refl-graph 𝓤 𝓤
 codiscrete-reflexive-graph A = (A , (λ - → λ - → 𝟙) , λ - → ⋆)
+
+\end{code}
+
+We can give the constant displayed reflexive graph.
+
+\begin{code}
+
+constant-displayed-reflexive-graph : (𝓐 : refl-graph 𝓤 𝓥)
+                                   → refl-graph 𝓤' 𝓥'
+                                   → displayed-refl-graph 𝓤' 𝓥' 𝓐
+constant-displayed-reflexive-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , II , 𝓻 𝓑)
+ where
+  I : ⊰ 𝓐 ⊱ → 𝓤' ̇
+  I x = ⊰ 𝓑 ⊱
+  II : {x y : ⊰ 𝓐 ⊱} → edge-rel 𝓐 x y → ⊰ 𝓑 ⊱ → ⊰ 𝓑 ⊱ → 𝓥' ̇
+  II _ u v = u ≈⟨ 𝓑 ⟩ v
+
+private
+ observation0 : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : refl-graph 𝓤' 𝓥')
+              → (x : ⊰ 𝓐 ⊱)
+              → ⋖ constant-displayed-reflexive-graph 𝓐 𝓑 ⋗ x ＝ 𝓑 
+ observation0 𝓐 𝓑 x = refl
+
+ observation1 : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : refl-graph 𝓤' 𝓥')
+              → 𝓐 ﹐ (constant-displayed-reflexive-graph 𝓐 𝓑)
+              ＝ binary-prod-refl-graph 𝓐 𝓑
+ observation1 𝓐 𝓑 = refl
 
 \end{code}
 
@@ -138,7 +171,8 @@ We can give a reflexive-graph structure to subsets.
 
 \begin{code}
 
-sub-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (S : 𝓟 {𝓣} ⊰ 𝓐 ⊱)
+sub-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) 
+               → 𝓟 {𝓣} ⊰ 𝓐 ⊱
                → refl-graph (𝓤 ⊔ 𝓣) 𝓥
 sub-refl-graph {𝓤} {𝓥} {𝓣} 𝓐 S = (𝕋 S , I , II)
  where
@@ -161,14 +195,14 @@ opposite-refl-graph {𝓤} {𝓥} 𝓐 = (⊰ 𝓐 ⊱ , I , 𝓻 𝓐)
   I x y = y ≈⟨ 𝓐 ⟩ x
 
 private
- observeation1 : (𝓐 : refl-graph 𝓤 𝓥)
-               → opposite-refl-graph (opposite-refl-graph 𝓐) ＝ 𝓐
- observeation1 𝓐 = refl
+ observation2 : (𝓐 : refl-graph 𝓤 𝓥)
+              → opposite-refl-graph (opposite-refl-graph 𝓐) ＝ 𝓐
+ observation2 𝓐 = refl
 
 opposite-displayed-refl-graph
  : (𝓐 : refl-graph 𝓤 𝓥)
- → displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐
- → displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 (opposite-refl-graph 𝓐)
+ → displayed-refl-graph 𝓣 𝓦 𝓐
+ → displayed-refl-graph 𝓣 𝓦 (opposite-refl-graph 𝓐)
 opposite-displayed-refl-graph {_} {_} {_} {𝓦} 𝓐 𝓑 = ([ 𝓑 ] , I , 𝓻𝓭 𝓑)
  where
   I : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ opposite-refl-graph 𝓐 ⟩ y)
@@ -176,13 +210,13 @@ opposite-displayed-refl-graph {_} {_} {_} {𝓦} 𝓐 𝓑 = ([ 𝓑 ] , I , �
   I p u v = v ≈＜ 𝓑 , p ＞ u
 
 private
- observeation2
-  : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
+ observation3
+  : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
   → opposite-displayed-refl-graph
      (opposite-refl-graph 𝓐)
      (opposite-displayed-refl-graph 𝓐 𝓑)
   ＝ 𝓑
- observeation2 𝓐 𝓑 = refl
+ observation3 𝓐 𝓑 = refl
 
 \end{code}
 
@@ -191,10 +225,10 @@ We can iterate displayed reflexive graphs.
 \begin{code}
 
 iterated-displayed-refl-graph
- : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓤 𝓥 𝓣 𝓦 𝓐)
-   (𝓒 : displayed-refl-graph (𝓤 ⊔ 𝓣) (𝓥 ⊔ 𝓦) 𝓣 𝓦 (𝓐 ﹐ 𝓑))
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
+ → displayed-refl-graph 𝓣 𝓦 (𝓐 ﹐ 𝓑)
  → (x : ⊰ 𝓐 ⊱)
- → displayed-refl-graph 𝓣 𝓦 𝓣 𝓦 (⋖ 𝓑 ⋗ x)
+ → displayed-refl-graph 𝓣 𝓦 (⋖ 𝓑 ⋗ x)
 iterated-displayed-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 𝓒 x = (I , II , III)
  where
   I : [ 𝓑 ] x → 𝓣 ̇
