@@ -14,8 +14,8 @@ open import MLTT.Spartan
 open import UF.Base
 open import UF.Equiv
 open import UF.Subsingletons
-open import DURGs.ReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
+open import DURGs.ReflexiveGraphs
 
 fan : (𝓐 : refl-graph 𝓤 𝓥)
     →  ⊰ 𝓐 ⊱
@@ -54,29 +54,28 @@ contr-cofan-lemma {_} {_} {𝓐} cofan-contr x y p = I ∙ II
 prop-fan-to-cofan : {𝓐 : refl-graph 𝓤 𝓥} 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-prop-fan-to-cofan {_} {_} {𝓐} fan-prop x (y , p) (y' , q)
- = to-Σ-＝ ((II ∙ V) , VII)
+prop-fan-to-cofan {_} {_} {𝓐} fan-prop x (y , s) (y' , t)
+ = I III VI IV VII
  where
+  I : (p : y ＝ x) (q : x ＝ y')
+      (α : transport (λ - → y ≈⟨ 𝓐 ⟩ -) p (𝓻 𝓐 y) ＝ s)
+      (β : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) q t ＝ 𝓻 𝓐 y')
+    → (y , s) ＝ (y' , t)
+  I refl refl refl refl = refl
   fan-contr : (x' : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x')
   fan-contr x' = pointed-props-are-singletons (x' , 𝓻 𝓐 x') (fan-prop x')
-  I : (y , 𝓻 𝓐 y) ＝ (x , p)
-  I = contr-fan-lemma {_} {_} {𝓐} fan-contr y x p
-  II : y ＝ x
-  II = pr₁ (from-Σ-＝ I)
-  III : transport (λ - → y ≈⟨ 𝓐 ⟩ -) II (𝓻 𝓐 y) ＝ p
-  III = pr₂ (from-Σ-＝ I)
-  IV : (x , q) ＝ (y' , 𝓻 𝓐 y')
-  IV = contr-fan-lemma {_} {_} {𝓐} fan-contr y' x q ⁻¹
-  V : x ＝ y'
-  V = pr₁ (from-Σ-＝ IV)
-  VI : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) V q ＝ 𝓻 𝓐 y'
-  VI = pr₂ (from-Σ-＝ IV)
-  fam = λ - → - ≈⟨ 𝓐 ⟩ x
-  VII : transport fam (II ∙ V) p ＝ q
-  VII = transport fam (II ∙ V) p              ＝⟨ {!!} ⟩ 
-        transport fam V (transport fam II p)  ＝⟨ {!!} ⟩
-        transport fam V (𝓻 𝓐 x)               ＝⟨ {!!} ⟩
-        q                                     ∎  
+  II : (y , 𝓻 𝓐 y) ＝ (x , s)
+  II = contr-fan-lemma {_} {_} {𝓐} fan-contr y x s
+  III : y ＝ x
+  III = pr₁ (from-Σ-＝ II)
+  IV : transport (λ - → y ≈⟨ 𝓐 ⟩ -) III (𝓻 𝓐 y) ＝ s
+  IV = pr₂ (from-Σ-＝ II)
+  V : (x , t) ＝ (y' , 𝓻 𝓐 y')
+  V = contr-fan-lemma {_} {_} {𝓐} fan-contr y' x t ⁻¹
+  VI : x ＝ y'
+  VI = pr₁ (from-Σ-＝ V)
+  VII : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) VI t ＝ 𝓻 𝓐 y'
+  VII = pr₂ (from-Σ-＝ V)
 
 prop-cofan-to-fan : {𝓐 : refl-graph 𝓤 𝓥} 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
@@ -84,13 +83,13 @@ prop-cofan-to-fan : {𝓐 : refl-graph 𝓤 𝓥}
 prop-cofan-to-fan {_} {_} {𝓐} cofan-prop x (y , s) (y' , t)
  = I III VI IV VII
  where
-  cofan-contr : (x' : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x')
-  cofan-contr x' = pointed-props-are-singletons (x' , 𝓻 𝓐 x') (cofan-prop x')
   I : (p : y ＝ x) (q : x ＝ y')
       (α : transport (λ - → - ≈⟨ 𝓐 ⟩ y) p (𝓻 𝓐 y) ＝ s)
       (β : transport (λ - → - ≈⟨ 𝓐 ⟩ y') q t ＝ 𝓻 𝓐 y')
     → (y , s) ＝ (y' , t)
   I refl refl refl refl = to-Σ-＝ (refl , refl)
+  cofan-contr : (x' : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x')
+  cofan-contr x' = pointed-props-are-singletons (x' , 𝓻 𝓐 x') (cofan-prop x')
   II : (y , 𝓻 𝓐 y) ＝ (x , s)
   II = contr-cofan-lemma {_} {_} {𝓐} cofan-contr y x s
   III : y ＝ x

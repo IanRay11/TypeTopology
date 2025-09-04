@@ -13,8 +13,8 @@ Sterling.
 module DURGs.BasicConstructionsonReflexiveGraphs where
 
 open import MLTT.Spartan
-open import DURGs.ReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
+open import DURGs.ReflexiveGraphs
 open import UF.Powerset-MultiUniverse
 open import UF.UniverseEmbedding
 

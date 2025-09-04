@@ -12,7 +12,7 @@ open import MLTT.Spartan
 
 module _ (𝓤 𝓥 : Universe) where
 
- refl-graph : (𝓤 ⊔ 𝓥) ⁺  ̇
+ refl-graph : (𝓤 ⊔ 𝓥)⁺ ̇
  refl-graph = Σ A ꞉ 𝓤 ̇ , Σ R ꞉ (A → A → 𝓥 ̇) , ((x : A) → R x x)
 
 \end{code}
@@ -41,8 +41,8 @@ We define a homomorphism of reflexive graphs as follows.
 refl-graph-hom : (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤' 𝓥')
                → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
 refl-graph-hom 𝓐 𝓐'
- = Σ f ꞉ (⊰ 𝓐 ⊱ → ⊰ 𝓐' ⊱) ,
-    Σ f' ꞉ ((x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → f x ≈⟨ 𝓐' ⟩ f y) ,
-     ((x : ⊰ 𝓐 ⊱) → f' x x (𝓻 𝓐 x) ＝ 𝓻 𝓐' (f x))
+ = Σ F ꞉ (⊰ 𝓐 ⊱ → ⊰ 𝓐' ⊱) ,
+    Σ F' ꞉ ((x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → F x ≈⟨ 𝓐' ⟩ F y) ,
+     ((x : ⊰ 𝓐 ⊱) → F' x x (𝓻 𝓐 x) ＝ 𝓻 𝓐' (F x))
 
 \end{code}
