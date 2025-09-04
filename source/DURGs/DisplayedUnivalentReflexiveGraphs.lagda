@@ -19,7 +19,7 @@ open import DURGs.UnivalentReflexiveGraphs
 
 \end{code}
 
-We define the notion of a displayed reflexive graph.
+We define the notion of a displayed univalent reflexive graph.
 
 \begin{code}
 
