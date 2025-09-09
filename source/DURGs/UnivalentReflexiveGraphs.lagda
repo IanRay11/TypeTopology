@@ -129,6 +129,11 @@ id-to-edge : (𝓐 : refl-graph 𝓤 𝓥) (x y : ⊰ 𝓐 ⊱)
            → x ≈⟨ 𝓐 ⟩ y
 id-to-edge 𝓐 x x refl = 𝓻 𝓐 x
 
+id-to-edge' : (𝓐 : refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱}
+            → x ＝ y
+            → x ≈⟨ 𝓐 ⟩ y
+id-to-edge' 𝓐 {x} {y} = id-to-edge 𝓐 x y
+
 \end{code}
 
 We now define univalent reflexive graphs.
@@ -142,5 +147,46 @@ is-univalent-refl-graph 𝓐 = (x y : ⊰ 𝓐 ⊱)
 univalent-refl-graph : (𝓤 𝓥 : Universe) → (𝓤 ⁺) ⊔ (𝓥 ⁺) ̇
 univalent-refl-graph 𝓤 𝓥 = Σ 𝓐 ꞉ (refl-graph 𝓤 𝓥) , is-univalent-refl-graph 𝓐
 
+\end{code}
+
+We will now record some boiler plate code for univalent reflexive graphs.
+
+\begin{code}
+
+⊰_⊱ᵤ : univalent-refl-graph 𝓤 𝓥 → 𝓤 ̇
+⊰ (𝓐 , _) ⊱ᵤ = ⊰ 𝓐 ⊱
+
+edge-relᵤ : (𝓐 : univalent-refl-graph 𝓤 𝓥) → ⊰ 𝓐 ⊱ᵤ → ⊰ 𝓐 ⊱ᵤ → 𝓥 ̇
+edge-relᵤ (𝓐 , _) = edge-rel 𝓐
+
+syntax edge-relᵤ 𝓐 x y = x ≈ᵤ⟨ 𝓐 ⟩ y
+
+𝓻ᵤ : (𝓐 : univalent-refl-graph 𝓤 𝓥) → (x : ⊰ 𝓐 ⊱ᵤ) → x ≈ᵤ⟨ 𝓐 ⟩ x
+𝓻ᵤ (𝓐 , _) x = 𝓻 𝓐 x
+
+underlying-refl-graph : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+                      → refl-graph 𝓤 𝓥
+underlying-refl-graph (𝓐 , _) = 𝓐
+
+is-univalent : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+              → is-univalent-refl-graph (underlying-refl-graph 𝓐)
+is-univalent (𝓐 , is-ua) = is-ua
+
+id-equiv-edge : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+              → (x y : ⊰ 𝓐 ⊱ᵤ)
+              → (x ＝ y) ≃ (x ≈ᵤ⟨ 𝓐 ⟩ y)
+id-equiv-edge 𝓐 x y
+ = (id-to-edge (underlying-refl-graph 𝓐) x y , is-univalent 𝓐 x y)
+
+edge-to-id : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+           → (x y : ⊰ 𝓐 ⊱ᵤ)
+           → x ≈ᵤ⟨ 𝓐 ⟩ y
+           → x ＝ y
+edge-to-id 𝓐 x y = ⌜ id-equiv-edge 𝓐 x y ⌝⁻¹
+
+edge-to-id' : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱ᵤ}
+            → x ≈ᵤ⟨ 𝓐 ⟩ y
+            → x ＝ y
+edge-to-id' 𝓐 {x} {y} = edge-to-id 𝓐 x y
 
 \end{code}
