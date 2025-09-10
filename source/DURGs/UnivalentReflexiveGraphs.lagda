@@ -16,6 +16,7 @@ open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.Retracts
 open import UF.Subsingletons
+open import UF.Subsingletons-Properties
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
 
@@ -153,22 +154,43 @@ If each fan is propositional then id-to-edge has a section.
 
 \begin{code}
 
-prop-fans-give-retraction : {𝓐 : refl-graph 𝓤 𝓥}
-                          → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-                          → (x y : ⊰ 𝓐 ⊱)
-                          → has-retraction (id-to-edge' 𝓐 {x} {y})
-prop-fans-give-retraction {_} {_} {𝓐} fan-prop x y = (II , IV)
+helper-edge-to-id : {𝓐 : refl-graph 𝓤 𝓥}
+                  → (x y : ⊰ 𝓐 ⊱)
+                  → (p : x ≈⟨ 𝓐 ⟩ y)
+                  → (x , 𝓻 𝓐 x) ＝ (y , p)
+                  → x ＝ y
+helper-edge-to-id {_} {_} {𝓐} x .x .(𝓻 𝓐 x) refl = refl
+
+prop-fans-edge-to-id : {𝓐 : refl-graph 𝓤 𝓥}
+                     → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                     → (x y : ⊰ 𝓐 ⊱)
+                     → x ≈⟨ 𝓐 ⟩ y
+                     → x ＝ y
+prop-fans-edge-to-id {_} {_} {𝓐} prop-fan x y p
+ = helper-edge-to-id {_} {_} {𝓐} x y p (prop-fan x (x , 𝓻 𝓐 x) (y , p))
+
+prop-fans-gives-retraction : {𝓐 : refl-graph 𝓤 𝓥}
+                           → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                           → (x y : ⊰ 𝓐 ⊱)
+                           → has-retraction (id-to-edge' 𝓐 {x} {y})
+prop-fans-gives-retraction {_} {_} {𝓐} fan-prop x y
+ = (prop-fans-edge-to-id fan-prop x y , IV x y)
  where
-  I : (x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
-    → x ＝ y
-  I x y p refl = refl
-  II : (p : x ≈⟨ 𝓐 ⟩ y) → x ＝ y
-  II p = I x y p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
-  III : I x x (𝓻 𝓐 x) (fan-prop x (x , 𝓻 𝓐 x) (x , id-to-edge' 𝓐 refl)) ＝ refl
-  III = {!!}
-  IV : (p : x ＝ y)
-     → II (id-to-edge' 𝓐 p) ＝ p
-  IV refl = III
+  III : (x : ⊰ 𝓐 ⊱) → refl ＝ fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x)
+  III x = props-are-sets (fan-prop x) refl (fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x))
+  IV : (x y : ⊰ 𝓐 ⊱) (p : x ＝ y)
+     → (prop-fans-edge-to-id {_} {_} {𝓐} fan-prop x y) (id-to-edge' 𝓐 p) ＝ p
+  IV x .x refl
+   = transport (λ - → helper-edge-to-id x x (𝓻 𝓐 x) - ＝ refl) (III x) refl
+
+paths-are-retracts-of-edges : {𝓐 : refl-graph 𝓤 𝓥}
+                            → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                            → (x y : ⊰ 𝓐 ⊱)
+                            → retract (x ＝ y) of (x ≈⟨ 𝓐 ⟩ y)
+paths-are-retracts-of-edges {_} {_} {𝓐} fan-prop x y
+ = (prop-fans-edge-to-id fan-prop x y , id-to-edge' 𝓐 ,
+    retraction-equation (id-to-edge' 𝓐)
+     (prop-fans-gives-retraction fan-prop x y))
 
 prop-fans-gives-section : {𝓐 : refl-graph 𝓤 𝓥}
                         → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
@@ -191,7 +213,7 @@ prop-fans-gives-section {_} {_} {𝓐} fan-prop x y = (II , IV)
 edges-are-retracts-of-paths : {𝓐 : refl-graph 𝓤 𝓥}
                             → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                             → (x y : ⊰ 𝓐 ⊱)
-                            → retract x ≈⟨ 𝓐 ⟩ y of (x ＝ y)
+                            → retract (x ≈⟨ 𝓐 ⟩ y) of (x ＝ y)
 edges-are-retracts-of-paths {_} {_} {𝓐} fan-prop x y
  = (id-to-edge' 𝓐 , prop-fans-gives-section fan-prop x y)
 
