@@ -150,7 +150,7 @@ id-to-edge' 𝓐 {x} {y} = id-to-edge 𝓐 x y
 
 \end{code}
 
-If each fan is propositional then id-to-edge has a section.
+If each fan is propositional then id-to-edge has a section and retraction.
 
 \begin{code}
 
@@ -174,14 +174,14 @@ prop-fans-gives-retraction : {𝓐 : refl-graph 𝓤 𝓥}
                            → (x y : ⊰ 𝓐 ⊱)
                            → has-retraction (id-to-edge' 𝓐 {x} {y})
 prop-fans-gives-retraction {_} {_} {𝓐} fan-prop x y
- = (prop-fans-edge-to-id fan-prop x y , IV x y)
+ = (prop-fans-edge-to-id fan-prop x y , II x y)
  where
-  III : (x : ⊰ 𝓐 ⊱) → refl ＝ fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x)
-  III x = props-are-sets (fan-prop x) refl (fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x))
-  IV : (x y : ⊰ 𝓐 ⊱) (p : x ＝ y)
+  I : (x : ⊰ 𝓐 ⊱) → refl ＝ fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x)
+  I x = props-are-sets (fan-prop x) refl (fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x))
+  II : (x y : ⊰ 𝓐 ⊱) (p : x ＝ y)
      → (prop-fans-edge-to-id {_} {_} {𝓐} fan-prop x y) (id-to-edge' 𝓐 p) ＝ p
-  IV x .x refl
-   = transport (λ - → helper-edge-to-id x x (𝓻 𝓐 x) - ＝ refl) (III x) refl
+  II x .x refl
+   = transport (λ - → helper-edge-to-id x x (𝓻 𝓐 x) - ＝ refl) (I x) refl
 
 paths-are-retracts-of-edges : {𝓐 : refl-graph 𝓤 𝓥}
                             → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
@@ -196,19 +196,15 @@ prop-fans-gives-section : {𝓐 : refl-graph 𝓤 𝓥}
                         → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                         → (x y : ⊰ 𝓐 ⊱)
                         → has-section (id-to-edge' 𝓐 {x} {y})
-prop-fans-gives-section {_} {_} {𝓐} fan-prop x y = (II , IV)
+prop-fans-gives-section {_} {_} {𝓐} fan-prop x y
+ = (prop-fans-edge-to-id {_} {_} {𝓐} fan-prop x y , II)
  where
   I : (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
-    → x ＝ y
+    → id-to-edge' 𝓐 (helper-edge-to-id {_} {_} {𝓐} x y p ϕ) ＝ p
   I p refl = refl
-  II : (p : x ≈⟨ 𝓐 ⟩ y) → x ＝ y
+  II : (p : x ≈⟨ 𝓐 ⟩ y)
+     → id-to-edge' 𝓐 (prop-fans-edge-to-id fan-prop x y p) ＝ p
   II p = I p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
-  III : (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
-      → id-to-edge' 𝓐 (I p ϕ) ＝ p
-  III p refl = refl
-  IV : (p : x ≈⟨ 𝓐 ⟩ y)
-     → id-to-edge' 𝓐 (II p) ＝ p
-  IV p = III p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
 
 edges-are-retracts-of-paths : {𝓐 : refl-graph 𝓤 𝓥}
                             → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
