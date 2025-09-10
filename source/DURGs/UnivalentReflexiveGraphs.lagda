@@ -13,6 +13,8 @@ module DURGs.UnivalentReflexiveGraphs where
 open import MLTT.Spartan
 open import UF.Base
 open import UF.Equiv
+open import UF.EquivalenceExamples
+open import UF.Retracts
 open import UF.Subsingletons
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
@@ -103,7 +105,18 @@ prop-cofan-to-fan {_} {_} {𝓐} cofan-prop x (y , s) (y' , t)
   VII : transport (λ - → - ≈⟨ 𝓐 ⟩ y') VI t ＝ 𝓻 𝓐 y'
   VII = pr₂ (from-Σ-＝ V)
 
-contr-fan-to-cofan : {𝓐 : refl-graph 𝓤 𝓥} {x : ⊰ 𝓐 ⊱}
+contr-fan-to-prop : {𝓐 : refl-graph 𝓤 𝓥}
+                  → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
+                  → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+contr-fan-to-prop fan-contr x = singletons-are-props (fan-contr x)
+
+prop-fan-to-contr : {𝓐 : refl-graph 𝓤 𝓥} 
+                  → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                  → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
+prop-fan-to-contr {_} {_} {𝓐} fan-prop x
+ = pointed-props-are-singletons (x , 𝓻 𝓐 x) (fan-prop x)
+
+contr-fan-to-cofan : {𝓐 : refl-graph 𝓤 𝓥} 
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
 contr-fan-to-cofan {_} {_} {𝓐} contr-fan x
@@ -133,6 +146,85 @@ id-to-edge' : (𝓐 : refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱}
             → x ＝ y
             → x ≈⟨ 𝓐 ⟩ y
 id-to-edge' 𝓐 {x} {y} = id-to-edge 𝓐 x y
+
+\end{code}
+
+If each fan is propositional then id-to-edge has a section.
+
+\begin{code}
+
+prop-fans-give-retraction : {𝓐 : refl-graph 𝓤 𝓥}
+                          → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                          → (x y : ⊰ 𝓐 ⊱)
+                          → has-retraction (id-to-edge' 𝓐 {x} {y})
+prop-fans-give-retraction {_} {_} {𝓐} fan-prop x y = (II , IV)
+ where
+  I : (x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
+    → x ＝ y
+  I x y p refl = refl
+  II : (p : x ≈⟨ 𝓐 ⟩ y) → x ＝ y
+  II p = I x y p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
+  III : I x x (𝓻 𝓐 x) (fan-prop x (x , 𝓻 𝓐 x) (x , id-to-edge' 𝓐 refl)) ＝ refl
+  III = {!!}
+  IV : (p : x ＝ y)
+     → II (id-to-edge' 𝓐 p) ＝ p
+  IV refl = III
+
+prop-fans-gives-section : {𝓐 : refl-graph 𝓤 𝓥}
+                        → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                        → (x y : ⊰ 𝓐 ⊱)
+                        → has-section (id-to-edge' 𝓐 {x} {y})
+prop-fans-gives-section {_} {_} {𝓐} fan-prop x y = (II , IV)
+ where
+  I : (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
+    → x ＝ y
+  I p refl = refl
+  II : (p : x ≈⟨ 𝓐 ⟩ y) → x ＝ y
+  II p = I p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
+  III : (p : x ≈⟨ 𝓐 ⟩ y) (ϕ : (x , 𝓻 𝓐 x) ＝ (y , p))
+      → id-to-edge' 𝓐 (I p ϕ) ＝ p
+  III p refl = refl
+  IV : (p : x ≈⟨ 𝓐 ⟩ y)
+     → id-to-edge' 𝓐 (II p) ＝ p
+  IV p = III p (fan-prop x (x , 𝓻 𝓐 x) (y , p))
+
+edges-are-retracts-of-paths : {𝓐 : refl-graph 𝓤 𝓥}
+                            → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                            → (x y : ⊰ 𝓐 ⊱)
+                            → retract x ≈⟨ 𝓐 ⟩ y of (x ＝ y)
+edges-are-retracts-of-paths {_} {_} {𝓐} fan-prop x y
+ = (id-to-edge' 𝓐 , prop-fans-gives-section fan-prop x y)
+
+\end{code}
+
+Now we show that id-to-edge is an equiv iff all fans are propositional.
+
+\begin{code}
+
+id-to-edge-equiv-implies-prop-fans : {𝓐 : refl-graph 𝓤 𝓥}
+                                   → ((x y : ⊰ 𝓐 ⊱) → is-equiv (id-to-edge' 𝓐))
+                                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+id-to-edge-equiv-implies-prop-fans {_} {_} {𝓐} e
+ = contr-fan-to-prop {_} {_} {𝓐} fan-is-contr
+ where
+  fan-is-contr : (x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x)
+  fan-is-contr x = equiv-to-singleton' (Σ-cong (λ y → id-to-edge' 𝓐 , e x y))
+                    (singleton-types-are-singletons x)
+
+prop-fans-implies-id-to-edge-equiv : {𝓐 : refl-graph 𝓤 𝓥}
+                                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                                   → ((x y : ⊰ 𝓐 ⊱) → is-equiv (id-to-edge' 𝓐))
+prop-fans-implies-id-to-edge-equiv {_} {_} {𝓐} prop-fans x y
+ = vv-equivs-are-equivs (id-to-edge' 𝓐) III
+ where
+  I : ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
+  I = prop-fan-to-contr {_} {_} {𝓐} prop-fans
+  II : {!!}
+  II = {!!}
+  III : is-vv-equiv (id-to-edge' 𝓐)
+  III = {!!}
+
+
 
 \end{code}
 
@@ -188,5 +280,29 @@ edge-to-id' : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱ᵤ}
             → x ≈ᵤ⟨ 𝓐 ⟩ y
             → x ＝ y
 edge-to-id' 𝓐 {x} {y} = edge-to-id 𝓐 x y
+
+\end{code}
+
+We consider the notion of edge induction and show univalence implies it.
+
+ToDo: show they are also equivalent.
+
+\begin{code}
+
+edge-induction : (𝓣 : Universe) (𝓐 : refl-graph 𝓤 𝓥) → 𝓤 ⊔ 𝓥 ⊔ (𝓣 ⁺) ̇ 
+edge-induction 𝓣 𝓐 = (P : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → 𝓣 ̇)
+                   → ((x : ⊰ 𝓐 ⊱) → P x x (𝓻 𝓐 x))
+                   → (x y : ⊰ 𝓐 ⊱)
+                   → (p : x ≈⟨ 𝓐 ⟩ y)
+                   → P x y p
+
+univalence-implies-edge-induction : {𝓐 : refl-graph 𝓤 𝓥}
+                                  → is-univalent-refl-graph 𝓐
+                                  → edge-induction 𝓣 𝓐
+univalence-implies-edge-induction {𝓤} {𝓥} {𝓣} {𝓐} ua P R x y p
+ = I (id-to-edge-equiv-implies-prop-fans ua x (x , 𝓻 𝓐 x) (y , p))
+ where
+  I : (x , 𝓻 𝓐 x) ＝ (y , p) → P x y p
+  I refl = R x  
 
 \end{code}
