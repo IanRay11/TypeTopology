@@ -176,12 +176,12 @@ prop-fans-gives-retraction : {𝓐 : refl-graph 𝓤 𝓥}
 prop-fans-gives-retraction {_} {_} {𝓐} fan-prop x y
  = (prop-fans-edge-to-id fan-prop x y , II x y)
  where
-  I : (x : ⊰ 𝓐 ⊱) → refl ＝ fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x)
-  I x = props-are-sets (fan-prop x) refl (fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x))
+  I : (x : ⊰ 𝓐 ⊱) → fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x) ＝ refl
+  I x = props-are-sets (fan-prop x) (fan-prop x (x , 𝓻 𝓐 x) (x , 𝓻 𝓐 x)) refl
   II : (x y : ⊰ 𝓐 ⊱) (p : x ＝ y)
-     → (prop-fans-edge-to-id {_} {_} {𝓐} fan-prop x y) (id-to-edge' 𝓐 p) ＝ p
-  II x .x refl
-   = transport (λ - → helper-edge-to-id x x (𝓻 𝓐 x) - ＝ refl) (I x) refl
+     → (prop-fans-edge-to-id {_} {_} {𝓐} fan-prop x y)
+        (id-to-edge 𝓐 x y p) ＝ p
+  II x .x refl = ap (helper-edge-to-id x x (𝓻 𝓐 x)) (I x)
 
 paths-are-retracts-of-edges : {𝓐 : refl-graph 𝓤 𝓥}
                             → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
@@ -229,20 +229,13 @@ id-to-edge-equiv-implies-prop-fans {_} {_} {𝓐} e
   fan-is-contr x = equiv-to-singleton' (Σ-cong (λ y → id-to-edge' 𝓐 , e x y))
                     (singleton-types-are-singletons x)
 
-prop-fans-implies-id-to-edge-equiv : {𝓐 : refl-graph 𝓤 𝓥}
-                                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-                                   → ((x y : ⊰ 𝓐 ⊱) → is-equiv (id-to-edge' 𝓐))
+prop-fans-implies-id-to-edge-equiv
+ : {𝓐 : refl-graph 𝓤 𝓥}
+ → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+ → ((x y : ⊰ 𝓐 ⊱) → is-equiv (id-to-edge' 𝓐 {x} {y}))
 prop-fans-implies-id-to-edge-equiv {_} {_} {𝓐} prop-fans x y
- = vv-equivs-are-equivs (id-to-edge' 𝓐) III
- where
-  I : ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
-  I = prop-fan-to-contr {_} {_} {𝓐} prop-fans
-  II : {!!}
-  II = {!!}
-  III : is-vv-equiv (id-to-edge' 𝓐)
-  III = {!!}
-
-
+ = (prop-fans-gives-section prop-fans x y ,
+     prop-fans-gives-retraction prop-fans x y) 
 
 \end{code}
 
