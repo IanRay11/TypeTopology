@@ -5,6 +5,7 @@
 module DURGs.PathAlgebraToolkit where
 
 open import MLTT.Spartan
+open import UF.Base
 open import UF.Equiv
 open import UF.Subsingletons
 open import UF.Subsingletons-Properties
@@ -24,54 +25,22 @@ We begin with concatenation and inverse of edges.
 
 \begin{code}
 
-concat-helper : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y z : ⊰ 𝓐 ⊱ᵤ}
-              → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
-              → y ≈ᵤ⟨ 𝓐 ⟩ z
-              → (x , 𝓻ᵤ 𝓐 x) ＝ (y , p)
-              → x ≈ᵤ⟨ 𝓐 ⟩ z
-concat-helper 𝓐 p q refl = q
-
 concat-edges : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y z : ⊰ 𝓐 ⊱ᵤ}
              → x ≈ᵤ⟨ 𝓐 ⟩ y
              → y ≈ᵤ⟨ 𝓐 ⟩ z
              → x ≈ᵤ⟨ 𝓐 ⟩ z
 concat-edges 𝓐 {x} {y} {z} p q
- = concat-helper 𝓐 p q (I x (x , 𝓻ᵤ 𝓐 x) (y , p))
- module edge-comp where
-  I : (x : ⊰ 𝓐 ⊱ᵤ) → is-prop (fan (underlying-refl-graph 𝓐) x)
-  I x = id-to-edge-equiv-implies-prop-fans (is-univalent 𝓐) x
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 q)
 
 syntax concat-edges 𝓐 p q = p ∙ᵤ⟨ 𝓐 ⟩ q
 
-inverse-edge : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
+inverse-edge : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱ᵤ}
              → x ≈ᵤ⟨ 𝓐 ⟩ y
              → y ≈ᵤ⟨ 𝓐 ⟩ x
-inverse-edge {_} {_} {𝓐} {x} {y} p = II p (I x (x , 𝓻ᵤ 𝓐 x) (y , p))
- where
-  I : (x : ⊰ 𝓐 ⊱ᵤ) → is-prop (fan (underlying-refl-graph 𝓐) x)
-  I x = id-to-edge-equiv-implies-prop-fans (is-univalent 𝓐) x
-  II : (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
-     → (x , 𝓻ᵤ 𝓐 x) ＝ (y , p)
-     → y ≈ᵤ⟨ 𝓐 ⟩ x
-  II p refl = 𝓻ᵤ 𝓐 x
+inverse-edge 𝓐 {x} {y} p
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ⁻¹)
 
-syntax inverse-edge p = p ᵤ⁻¹
-
-\end{code}
-
-Computation lemmas
-
-\begin{code}
-
-concat-on-𝓻 : {𝓐 : univalent-refl-graph 𝓤 𝓥} (x : ⊰ 𝓐 ⊱ᵤ)
-            → 𝓻ᵤ 𝓐 x ∙ᵤ⟨ 𝓐 ⟩ 𝓻ᵤ 𝓐 x ＝ 𝓻ᵤ 𝓐 x
-concat-on-𝓻 {_} {_} {𝓐} x
- = transport (λ - → concat-helper {!!} {!!} {!!} {!!}) (II x) {!!}
- where
-  I : (x : ⊰ 𝓐 ⊱ᵤ) → is-prop (fan (underlying-refl-graph 𝓐) x)
-  I x = id-to-edge-equiv-implies-prop-fans (is-univalent 𝓐) x
-  II : (x : ⊰ 𝓐 ⊱ᵤ) → refl ＝ I x (x , 𝓻ᵤ 𝓐 x) (x , 𝓻ᵤ 𝓐 x) 
-  II x = props-are-sets (I x) refl (I x (x , 𝓻ᵤ 𝓐 x) (x , 𝓻ᵤ 𝓐 x)) 
+syntax inverse-edge 𝓐 p = p ᵤ⟨ 𝓐 ⟩ ⁻¹
 
 \end{code}
 
@@ -79,22 +48,96 @@ We will record unit, symmetry and associativity laws.
 
 \begin{code}
 
-r-unit-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
-             → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
-             → 𝓻ᵤ 𝓐 x ∙ᵤ⟨ 𝓐 ⟩ p ＝ p
-r-unit-edges {𝓤} {𝓥} {𝓐} {x} {y} p
- = II p (I x (x , 𝓻ᵤ 𝓐 x) (y , p))
- where
-  I : (x : ⊰ 𝓐 ⊱ᵤ) → is-prop (fan (underlying-refl-graph 𝓐) x)
-  I x = id-to-edge-equiv-implies-prop-fans (is-univalent 𝓐) x
-  II : (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
-     → (x , 𝓻ᵤ 𝓐 x) ＝ (y , p)
-     → 𝓻ᵤ 𝓐 x ∙ᵤ⟨ 𝓐 ⟩ p ＝ p
-  II p q = ?
-
 l-unit-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
              → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+             → 𝓻ᵤ 𝓐 x ∙ᵤ⟨ 𝓐 ⟩ p ＝ p
+l-unit-edges {𝓤} {𝓥} {𝓐} {x} {y} p
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 (𝓻ᵤ 𝓐 x) ∙ edge-to-id' 𝓐 p) ＝⟨ I ⟩
+   id-to-edge' (𝓐 /ᵤ) (refl ∙ edge-to-id' 𝓐 p)                   ＝⟨ II ⟩
+   id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p)                          ＝⟨ III ⟩
+   p                                                             ∎
+ where
+  I = ap (λ - → id-to-edge' (𝓐 /ᵤ) (- ∙ edge-to-id' 𝓐 p)) (edge-to-id-comp 𝓐)
+  II = ap (id-to-edge' (𝓐 /ᵤ)) {refl ∙ edge-to-id' 𝓐 p} {edge-to-id' 𝓐 p}
+        refl-left-neutral
+  III = inverses-are-sections (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 x y) p
+   
+r-unit-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
+             → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
              → p ∙ᵤ⟨ 𝓐 ⟩ 𝓻ᵤ 𝓐 y ＝ p
-l-unit-edges p = {!!}
+r-unit-edges {𝓤} {𝓥} {𝓐} {x} {y} p
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 (𝓻ᵤ 𝓐 y)) ＝⟨ I ⟩
+   id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p)                          ＝⟨ II ⟩
+   p                                                             ∎
+ where
+  I = ap (λ - → id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ -)) (edge-to-id-comp 𝓐)
+  II = inverses-are-sections (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 x y) p
+
+l-sym-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
+            → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+            → (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ p ＝ 𝓻ᵤ 𝓐 y
+l-sym-edges {_} {_} {𝓐} {x} {y} p
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ edge-to-id' 𝓐 p) ＝⟨ II ⟩
+   id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ⁻¹ ∙ edge-to-id' 𝓐 p)          ＝⟨ III ⟩
+   id-to-edge' (𝓐 /ᵤ) refl                                            ＝⟨ refl ⟩
+   𝓻ᵤ 𝓐 y                                                             ∎ 
+ where
+  I : edge-to-id' 𝓐 (id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ⁻¹))
+    ＝ edge-to-id' 𝓐 p ⁻¹
+  I = inverses-are-retractions (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 y x)
+       (edge-to-id' 𝓐 p ⁻¹)
+  II = ap (λ - → id-to-edge' (𝓐 /ᵤ) (- ∙ edge-to-id' 𝓐 p)) I
+  III = ap (id-to-edge' (𝓐 /ᵤ)) (left-inverse (edge-to-id' 𝓐 p))
+
+r-sym-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
+            → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+            → p ∙ᵤ⟨ 𝓐 ⟩ (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ＝ 𝓻ᵤ 𝓐 x
+r-sym-edges {_} {_} {𝓐} {x} {y} p
+ = id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 (p ᵤ⟨ 𝓐 ⟩ ⁻¹)) ＝⟨ II ⟩
+   id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 p ⁻¹)          ＝⟨ III ⟩
+   id-to-edge' (𝓐 /ᵤ) refl                                            ＝⟨ refl ⟩
+   𝓻ᵤ 𝓐 x                                                             ∎ 
+ where
+  I : edge-to-id' 𝓐 (id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ⁻¹))
+    ＝ edge-to-id' 𝓐 p ⁻¹
+  I = inverses-are-retractions (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 y x)
+       (edge-to-id' 𝓐 p ⁻¹)
+  II = ap (λ - → id-to-edge' (𝓐 /ᵤ) (edge-to-id' 𝓐 p ∙ -)) I
+  III = ap (id-to-edge' (𝓐 /ᵤ)) (right-inverse (edge-to-id' 𝓐 p) ⁻¹)
+
+edge-to-id-preserves-edge-comp
+ : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y z : ⊰ 𝓐 ⊱ᵤ}
+ → (p : x ≈ᵤ⟨ 𝓐 ⟩ y) (q : y ≈ᵤ⟨ 𝓐 ⟩ z)
+ → edge-to-id' 𝓐 (p ∙ᵤ⟨ 𝓐 ⟩ q) ＝ edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 q
+edge-to-id-preserves-edge-comp {_} {_} {𝓐} {x} {y} {z} p q
+ = II (I x (x , 𝓻 (𝓐 /ᵤ) x) (y , p))
+ where
+  I : ((x : ⊰ 𝓐 ⊱ᵤ) → is-prop (fan (𝓐 /ᵤ) x))
+  I = id-to-edge-equiv-implies-prop-fans (is-univalent 𝓐)
+  II : (x , 𝓻 (𝓐 /ᵤ) x) ＝ (y , p)
+     → edge-to-id' 𝓐 (p ∙ᵤ⟨ 𝓐 ⟩ q) ＝ edge-to-id' 𝓐 p ∙ edge-to-id' 𝓐 q
+  II refl = edge-to-id' 𝓐 ((𝓻 (𝓐 /ᵤ) x) ∙ᵤ⟨ 𝓐 ⟩ q)       ＝⟨ III ⟩
+            edge-to-id' 𝓐 q                              ＝⟨ IV ⟩
+            refl ∙ edge-to-id' 𝓐 q                       ＝⟨ V ⟩ 
+            edge-to-id' 𝓐 (𝓻 (𝓐 /ᵤ) x) ∙ edge-to-id' 𝓐 q ∎
+   where
+    III = ap (edge-to-id' 𝓐) (l-unit-edges {_} {_} {𝓐} q)
+    IV = refl-left-neutral ⁻¹
+    V = ap (λ - → - ∙ edge-to-id' 𝓐 q) (edge-to-id-comp 𝓐 ⁻¹)
+
+assoc-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y z w : ⊰ 𝓐 ⊱ᵤ}
+            → (p : x ≈ᵤ⟨ 𝓐 ⟩ y) (q : y ≈ᵤ⟨ 𝓐 ⟩ z) (r : z ≈ᵤ⟨ 𝓐 ⟩ w)
+            → (p ∙ᵤ⟨ 𝓐 ⟩ q) ∙ᵤ⟨ 𝓐 ⟩ r ＝ p ∙ᵤ⟨ 𝓐 ⟩ (q ∙ᵤ⟨ 𝓐 ⟩ r)
+assoc-edges {_} {_} {𝓐} {x} {y} {z} {w} p q r
+ = I (II (p ∙ᵤ⟨ 𝓐 ⟩ q) ∙ II r) ＝⟨ III ⟩
+   I ((II p ∙ II q) ∙ II r)    ＝⟨ ap I (∙assoc (II p) (II q) (II r)) ⟩
+   I (II p ∙ (II q ∙ II r))    ＝⟨ IV ⟩
+   I (II p ∙ II (q ∙ᵤ⟨ 𝓐 ⟩ r)) ∎
+ where
+  I = id-to-edge' (𝓐 /ᵤ)
+  II = edge-to-id' 𝓐
+  III = ap (λ - → I (- ∙ II r)) (edge-to-id-preserves-edge-comp {_} {_} {𝓐} p q)
+  IV = ap (λ - → I (II p ∙ -))
+        (edge-to-id-preserves-edge-comp {_} {_} {𝓐} q r ⁻¹)
 
 \end{code}

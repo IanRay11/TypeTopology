@@ -239,7 +239,8 @@ prop-fans-implies-id-to-edge-equiv {_} {_} {𝓐} prop-fans x y
 
 \end{code}
 
-We now define univalent reflexive graphs.
+We now define univalent reflexive graphs in terms of the equivalence but other
+choices could be made.
 
 \begin{code}
 
@@ -271,15 +272,17 @@ underlying-refl-graph : (𝓐 : univalent-refl-graph 𝓤 𝓥)
                       → refl-graph 𝓤 𝓥
 underlying-refl-graph (𝓐 , _) = 𝓐
 
+syntax underlying-refl-graph 𝓐 = 𝓐 /ᵤ 
+
 is-univalent : (𝓐 : univalent-refl-graph 𝓤 𝓥)
-              → is-univalent-refl-graph (underlying-refl-graph 𝓐)
+             → is-univalent-refl-graph (𝓐 /ᵤ)
 is-univalent (𝓐 , is-ua) = is-ua
 
 id-equiv-edge : (𝓐 : univalent-refl-graph 𝓤 𝓥)
               → (x y : ⊰ 𝓐 ⊱ᵤ)
               → (x ＝ y) ≃ (x ≈ᵤ⟨ 𝓐 ⟩ y)
 id-equiv-edge 𝓐 x y
- = (id-to-edge (underlying-refl-graph 𝓐) x y , is-univalent 𝓐 x y)
+ = (id-to-edge (𝓐 /ᵤ) x y , is-univalent 𝓐 x y)
 
 edge-to-id : (𝓐 : univalent-refl-graph 𝓤 𝓥)
            → (x y : ⊰ 𝓐 ⊱ᵤ)
@@ -291,6 +294,11 @@ edge-to-id' : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱ᵤ}
             → x ≈ᵤ⟨ 𝓐 ⟩ y
             → x ＝ y
 edge-to-id' 𝓐 {x} {y} = edge-to-id 𝓐 x y
+
+edge-to-id-comp : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x : ⊰ 𝓐 ⊱ᵤ}
+                → edge-to-id' 𝓐 (𝓻 (𝓐 /ᵤ) x) ＝ refl
+edge-to-id-comp 𝓐 {x}
+ = inverses-are-retractions (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 x x) refl
 
 \end{code}
 
