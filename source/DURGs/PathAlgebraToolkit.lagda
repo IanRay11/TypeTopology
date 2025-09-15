@@ -141,3 +141,50 @@ assoc-edges {_} {_} {𝓐} {x} {y} {z} {w} p q r
         (edge-to-id-preserves-edge-comp {_} {_} {𝓐} q r ⁻¹)
 
 \end{code}
+
+We will give pre-concatentation of edges since it may be useful later.
+
+\begin{code}
+
+pre-concat-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y z : ⊰ 𝓐 ⊱ᵤ}
+                 → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+                 → y ≈ᵤ⟨ 𝓐 ⟩ z
+                 → x ≈ᵤ⟨ 𝓐 ⟩ z
+pre-concat-edges {_} {_} {𝓐} p q = p ∙ᵤ⟨ 𝓐 ⟩ q
+
+pre-concat-edges-is-equiv
+ : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y z : ⊰ 𝓐 ⊱ᵤ}
+ → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+ → is-equiv (pre-concat-edges {_} {_} {𝓐} {x} {y} {z} p)
+pre-concat-edges-is-equiv {_} {_} {𝓐} {x} {y} {z} p
+ = ((I , II) , (I , III))
+ where
+  I : x ≈ᵤ⟨ 𝓐 ⟩ z
+    → y ≈ᵤ⟨ 𝓐 ⟩ z
+  I r = (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ r
+  II : pre-concat-edges {_} {_} {𝓐} p ∘ I ∼ id
+  II r = p ∙ᵤ⟨ 𝓐 ⟩ ((p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ r) ＝⟨ IV ⟩
+         (p ∙ᵤ⟨ 𝓐 ⟩ (p ᵤ⟨ 𝓐 ⟩ ⁻¹)) ∙ᵤ⟨ 𝓐 ⟩ r ＝⟨ V ⟩
+         𝓻ᵤ 𝓐 x ∙ᵤ⟨ 𝓐 ⟩ r                    ＝⟨ VI ⟩
+         r                                   ∎
+   where
+    IV = assoc-edges {_} {_} {𝓐} p (p ᵤ⟨ 𝓐 ⟩ ⁻¹) r ⁻¹
+    V = ap (λ - → - ∙ᵤ⟨ 𝓐 ⟩ r) (r-sym-edges {_} {_} {𝓐} p)
+    VI = l-unit-edges {_} {_} {𝓐} r
+  III : I ∘ pre-concat-edges {_} {_} {𝓐} p ∼ id
+  III q = (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ (p ∙ᵤ⟨ 𝓐 ⟩ q) ＝⟨ IV ⟩
+          ((p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ p) ∙ᵤ⟨ 𝓐 ⟩ q ＝⟨ V ⟩
+          𝓻ᵤ 𝓐 y ∙ᵤ⟨ 𝓐 ⟩ q                    ＝⟨ VI ⟩
+          q                                   ∎   
+   where
+    IV = assoc-edges {_} {_} {𝓐} (p ᵤ⟨ 𝓐 ⟩ ⁻¹) p q ⁻¹
+    V = ap (λ - → - ∙ᵤ⟨ 𝓐 ⟩ q) (l-sym-edges {_} {_} {𝓐} p)
+    VI = l-unit-edges {_} {_} {𝓐} q
+
+pre-concat-edges-equiv : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y z : ⊰ 𝓐 ⊱ᵤ}
+                       → (p : x ≈ᵤ⟨ 𝓐 ⟩ y)
+                       → (y ≈ᵤ⟨ 𝓐 ⟩ z) ≃ (x ≈ᵤ⟨ 𝓐 ⟩ z)
+pre-concat-edges-equiv {_} {_} {𝓐} p
+ = (pre-concat-edges {_} {_} {𝓐} p , pre-concat-edges-is-equiv {_} {_} {𝓐} p)
+
+\end{code}
