@@ -60,3 +60,32 @@ is-univalent-family-implies-id-to-equiv {𝓤} {𝓣} {A} {B} is-ua-fam x y
 
 We can also state this in terms of contractible/propositional fans (or cofans).
 This may be useful later...
+
+Propositional reflexive graph image
+
+\begin{code}
+
+prop-refl-graph-image : (A : 𝓤 ̇)
+                      → (A → 𝓣 ̇)
+                      → refl-graph 𝓤 𝓣
+prop-refl-graph-image {𝓤} {𝓣} A B = (A , I , II)
+ where
+  I : A → A → 𝓣 ̇
+  I x y = B x ↔ B y
+  II : (x : A) → I x x
+  II x = (id , id)
+
+\end{code}
+
+We define a univalent family of 'path objects'.
+
+\begin{code}
+
+univalent-family-of-path-objects
+ : {𝓦 𝓣 : Universe}
+ → ((U , 𝓔) : Σ U ꞉ 𝓤 ̇ , (U → univalent-refl-graph 𝓦 𝓣))
+ → 𝓤 ⊔ 𝓦 ̇
+univalent-family-of-path-objects (U , 𝓔)
+ = is-univalent-refl-graph (refl-graph-image U (λ A → ⊰ (𝓔 A) ⊱ᵤ))
+
+\end{code}
