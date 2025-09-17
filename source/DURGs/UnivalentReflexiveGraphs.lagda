@@ -21,7 +21,7 @@ open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
 
 fan : (𝓐 : refl-graph 𝓤 𝓥)
-    →  ⊰ 𝓐 ⊱
+    → ⊰ 𝓐 ⊱
     → 𝓤 ⊔ 𝓥 ̇ 
 fan 𝓐 x = Σ y ꞉ ⊰ 𝓐 ⊱ , x ≈⟨ 𝓐 ⟩ y
 

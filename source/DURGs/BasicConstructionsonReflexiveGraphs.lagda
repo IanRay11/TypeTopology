@@ -67,6 +67,8 @@ binary-prod-refl-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓐' = ((⊰ 𝓐 ⊱
   II : (t : ⊰ 𝓐 ⊱ × ⊰ 𝓐' ⊱) → I t t
   II (x , x') = (𝓻 𝓐 x , 𝓻 𝓐' x')
 
+syntax binary-prod-refl-graph 𝓐 𝓐' = 𝓐 ⊗ 𝓐' 
+
 \end{code}
 
 Of course, we can generalize to products of reflexive graphs as follows.
@@ -74,7 +76,7 @@ Of course, we can generalize to products of reflexive graphs as follows.
 \begin{code}
 
 prod-refl-graphs : (A : 𝓤' ̇)
-                 → ((x : A) → refl-graph 𝓤 𝓥)
+                 → (A → refl-graph 𝓤 𝓥)
                  → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 prod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
  = (((x : A) → ⊰ 𝓑 x ⊱) , I , II)
@@ -93,7 +95,7 @@ We define the 'coproduct' of reflexive graphs in terms of sigma types.
 \begin{code}
 
 coprod-refl-graphs : (A : 𝓤' ̇)
-                   → ((x : A) → refl-graph 𝓤 𝓥)
+                   → (A → refl-graph 𝓤 𝓥)
                    → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 coprod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
  = ((Σ x ꞉ A , ⊰ 𝓑 x ⊱) , I , II)
@@ -194,9 +196,11 @@ opposite-refl-graph {𝓤} {𝓥} 𝓐 = (⊰ 𝓐 ⊱ , I , 𝓻 𝓐)
   I : ⊰ 𝓐 ⊱ → ⊰ 𝓐 ⊱ → 𝓥 ̇
   I x y = y ≈⟨ 𝓐 ⟩ x
 
+syntax opposite-refl-graph 𝓐 = 𝓐 ᵒᵖ
+
 private
  observation2 : (𝓐 : refl-graph 𝓤 𝓥)
-              → opposite-refl-graph (opposite-refl-graph 𝓐) ＝ 𝓐
+              → (𝓐 ᵒᵖ) ᵒᵖ ＝ 𝓐
  observation2 𝓐 = refl
 
 opposite-displayed-refl-graph
@@ -209,13 +213,12 @@ opposite-displayed-refl-graph {_} {_} {_} {𝓦} 𝓐 𝓑 = ([ 𝓑 ] , I , �
     → [ 𝓑 ] x → [ 𝓑 ] y → 𝓦 ̇
   I p u v = v ≈＜ 𝓑 , p ＞ u
 
+syntax opposite-displayed-refl-graph 𝓐 𝓑 = 𝓑 ⟨ 𝓐 ⟩ ᵒᵖ
+
 private
  observation3
   : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
-  → opposite-displayed-refl-graph
-     (opposite-refl-graph 𝓐)
-     (opposite-displayed-refl-graph 𝓐 𝓑)
-  ＝ 𝓑
+  → (𝓑 ⟨ 𝓐 ⟩ ᵒᵖ) ⟨ 𝓐 ᵒᵖ ⟩ ᵒᵖ ＝ 𝓑
  observation3 𝓐 𝓑 = refl
 
 \end{code}
