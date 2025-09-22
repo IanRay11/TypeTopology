@@ -88,6 +88,8 @@ prod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
   II : (f : (x : A) → ⊰ 𝓑 x ⊱) → I f f
   II f x = 𝓻 (𝓑 x) (f x)
 
+syntax prod-refl-graphs A 𝓑 = ∏ A , 𝓑
+
 \end{code}
 
 We define the 'coproduct' of reflexive graphs in terms of sigma types.
@@ -108,6 +110,8 @@ coprod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
   II : (t : Σ x ꞉ A , ⊰ 𝓑 x ⊱) → I t t
   II (a , b) = (refl , 𝓻 (𝓑 a) b)
 
+syntax coprod-refl-graphs A 𝓑 = ∐ A , 𝓑
+
 \end{code}
 
 The tensor and cotensor of reflexive graphs can be defined in terms of product
@@ -118,12 +122,12 @@ and coproduct.
 tensor-refl-graph : 𝓤' ̇
                   → refl-graph 𝓤 𝓥
                   → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-tensor-refl-graph A 𝓑 = prod-refl-graphs A (λ - → 𝓑)
+tensor-refl-graph A B = ∏ A , (λ - → B)
 
 cotensor-refl-graph : 𝓤' ̇
                     → refl-graph 𝓤 𝓥
                     → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-cotensor-refl-graph A 𝓑 = coprod-refl-graphs A (λ - → 𝓑)
+cotensor-refl-graph A B = ∐ A , (λ - → B)
 
 \end{code}
 
@@ -156,15 +160,16 @@ constant-displayed-reflexive-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I 
   II : {x y : ⊰ 𝓐 ⊱} → edge-rel 𝓐 x y → ⊰ 𝓑 ⊱ → ⊰ 𝓑 ⊱ → 𝓥' ̇
   II _ u v = u ≈⟨ 𝓑 ⟩ v
 
+syntax constant-displayed-reflexive-graph 𝓐 𝓑 = 𝓐 * 𝓑
+
 private
  observation0 : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : refl-graph 𝓤' 𝓥')
               → (x : ⊰ 𝓐 ⊱)
-              → ⋖ constant-displayed-reflexive-graph 𝓐 𝓑 ⋗ x ＝ 𝓑 
+              → ⋖ 𝓐 * 𝓑 ⋗ x ＝ 𝓑 
  observation0 𝓐 𝓑 x = refl
 
  observation1 : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : refl-graph 𝓤' 𝓥')
-              → 𝓐 ﹐ (constant-displayed-reflexive-graph 𝓐 𝓑)
-              ＝ binary-prod-refl-graph 𝓐 𝓑
+              → 𝓐 ﹐ (𝓐 * 𝓑) ＝ 𝓐 ⊗ 𝓑
  observation1 𝓐 𝓑 = refl
 
 \end{code}
@@ -182,6 +187,8 @@ sub-refl-graph {𝓤} {𝓥} {𝓣} 𝓐 S = (𝕋 S , I , II)
   I (x , _) (y , _) = x ≈⟨ 𝓐 ⟩ y
   II : (p : 𝕋 S) → I p p
   II (x , _) = 𝓻 𝓐 x
+
+syntax sub-refl-graph 𝓐 S = x ∶ 𝓐 ∣ S x
 
 \end{code}
 
@@ -227,12 +234,13 @@ We can iterate displayed reflexive graphs.
 
 \begin{code}
 
-iterated-displayed-refl-graph
- : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
+restriction-iterated-displayed-refl-graph
+ : {𝓐 : refl-graph 𝓤 𝓥} (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
  → displayed-refl-graph 𝓣 𝓦 (𝓐 ﹐ 𝓑)
  → (x : ⊰ 𝓐 ⊱)
  → displayed-refl-graph 𝓣 𝓦 (⋖ 𝓑 ⋗ x)
-iterated-displayed-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 𝓒 x = (I , II , III)
+restriction-iterated-displayed-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} {𝓐} 𝓑 𝓒 x
+ = (I , II , III)
  where
   I : [ 𝓑 ] x → 𝓣 ̇
   I u = [ 𝓒 ] (x , u)
@@ -242,5 +250,7 @@ iterated-displayed-refl-graph {𝓤} {𝓥} {𝓣} {𝓦} 𝓐 𝓑 𝓒 x = (I 
   III : {u : [ 𝓑 ] x} (c : I u)
       → c ≈＜ 𝓒 , (𝓻 𝓐 x , 𝓻𝓭 𝓑 u) ＞ c
   III c = 𝓻𝓭 𝓒 c
+
+syntax restriction-iterated-displayed-refl-graph 𝓑 𝓒 x = 𝓒 ∣ 𝓑 , x 
 
 \end{code}
