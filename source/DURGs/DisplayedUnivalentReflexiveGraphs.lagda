@@ -33,5 +33,12 @@ displayed-univalent-refl-graph : (𝓣 𝓦 : Universe) (𝓐 : refl-graph 𝓤 
                                → 𝓤 ⊔ 𝓥 ⊔ (𝓣 ⊔ 𝓦)⁺ ̇
 displayed-univalent-refl-graph 𝓣 𝓦 𝓐
  = Σ 𝓑 ꞉ (displayed-refl-graph 𝓣 𝓦 𝓐) , is-displayed-univalent-refl-graph 𝓐 𝓑
+
+underlying-displayed-refl-graph : {𝓐 : refl-graph 𝓤 𝓥}
+                                → (𝓑 : displayed-univalent-refl-graph 𝓣 𝓦 𝓐)
+                                → displayed-refl-graph 𝓣 𝓦 𝓐
+underlying-displayed-refl-graph (𝓑 , _) = 𝓑
+
+syntax underlying-displayed-refl-graph 𝓑 = 𝓑 ∣ᵤ 
                                
 \end{code}

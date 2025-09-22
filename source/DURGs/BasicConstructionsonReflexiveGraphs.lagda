@@ -47,9 +47,11 @@ reflexive graph.
 
 \begin{code}
 
-proj-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
+proj-refl-graph : {𝓐 : refl-graph 𝓤 𝓥} (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
                 → refl-graph-hom (𝓐 ﹐ 𝓑) 𝓐
-proj-refl-graph 𝓐 𝓑 = (pr₁ , (λ t t' → pr₁) , ∼-refl)
+proj-refl-graph 𝓑 = (pr₁ , (λ t t' → pr₁) , ∼-refl)
+
+syntax proj-refl-graph 𝓑 = π 𝓑
 
 \end{code}
 
