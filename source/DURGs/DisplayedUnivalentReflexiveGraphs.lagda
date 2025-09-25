@@ -12,7 +12,6 @@ module DURGs.DisplayedUnivalentReflexiveGraphs where
 open import MLTT.Spartan
 open import UF.Equiv
 open import UF.Subsingletons
-open import DURGs.BasicConstructionsonReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
 open import DURGs.UnivalentReflexiveGraphs
