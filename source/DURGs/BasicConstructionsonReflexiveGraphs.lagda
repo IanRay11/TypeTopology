@@ -13,10 +13,9 @@ Sterling.
 module DURGs.BasicConstructionsonReflexiveGraphs where
 
 open import MLTT.Spartan
+open import UF.Powerset-MultiUniverse
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
-open import UF.Powerset-MultiUniverse
-open import UF.UniverseEmbedding
 
 \end{code}
 
@@ -121,15 +120,15 @@ and coproduct.
 
 \begin{code}
 
-tensor-refl-graph : 𝓤' ̇
-                  → refl-graph 𝓤 𝓥
-                  → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-tensor-refl-graph A B = ∏ A , (λ - → B)
-
 cotensor-refl-graph : 𝓤' ̇
                     → refl-graph 𝓤 𝓥
                     → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-cotensor-refl-graph A B = ∐ A , (λ - → B)
+cotensor-refl-graph A 𝓑 = ∏ A , (λ - → 𝓑)
+
+tensor-refl-graph : 𝓤' ̇
+                  → refl-graph 𝓤 𝓥
+                  → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
+tensor-refl-graph A 𝓑 = ∐ A , (λ - → 𝓑)
 
 \end{code}
 

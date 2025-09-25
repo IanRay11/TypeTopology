@@ -9,10 +9,6 @@ open import UF.Base
 open import UF.Equiv
 open import UF.Subsingletons
 open import UF.Subsingletons-Properties
-open import DURGs.BasicConstructionsonReflexiveGraphs
-open import DURGs.DisplayedReflexiveGraphs
-open import DURGs.DisplayedUnivalentReflexiveGraphs
-open import DURGs.PathAlgebraToolkit
 open import DURGs.ReflexiveGraphs
 open import DURGs.UnivalentReflexiveGraphs
 
@@ -46,15 +42,15 @@ id-to-equiv-family : {A : 𝓤 ̇} {B : A → 𝓣 ̇}
                    → (x y : A)
                    → x ＝ y
                    → B x ≃ B y
-id-to-equiv-family {_} {_} {_} {B} x y refl = ≃-refl (B x)
+id-to-equiv-family {_} {_} {A} {B} = id-to-edge (refl-graph-image A B) 
 
 is-univalent-family-implies-id-to-equiv
  : {A : 𝓤 ̇} {B : A → 𝓣 ̇}
  → is-univalent-family (A , B)
  → (x y : A)
- → is-equiv (id-to-edge (refl-graph-image A B) x y)
+ → is-equiv (id-to-equiv-family x y)
 is-univalent-family-implies-id-to-equiv {𝓤} {𝓣} {A} {B} is-ua-fam x y
- = is-ua-fam x y
+ = prop-fans-implies-id-to-edge-equiv is-ua-fam x y
 
 \end{code}
 

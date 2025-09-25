@@ -17,7 +17,6 @@ open import UF.EquivalenceExamples
 open import UF.Retracts
 open import UF.Subsingletons
 open import UF.Subsingletons-Properties
-open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
 
 fan : (𝓐 : refl-graph 𝓤 𝓥)
@@ -239,14 +238,13 @@ prop-fans-implies-id-to-edge-equiv {_} {_} {𝓐} prop-fans x y
 
 \end{code}
 
-We now define univalent reflexive graphs in terms of the equivalence but other
-choices could be made.
+We now define univalent reflexive graphs in terms of propositional fans, but
+one could use any of the equivalent characterizations.
 
 \begin{code}
 
 is-univalent-refl-graph : (𝓐 : refl-graph 𝓤 𝓥) → 𝓤 ⊔ 𝓥 ̇ 
-is-univalent-refl-graph 𝓐 = (x y : ⊰ 𝓐 ⊱)
-                          → is-equiv (id-to-edge 𝓐 x y)
+is-univalent-refl-graph 𝓐 = (x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x)
 
 univalent-refl-graph : (𝓤 𝓥 : Universe) → (𝓤 ⁺) ⊔ (𝓥 ⁺) ̇
 univalent-refl-graph 𝓤 𝓥 = Σ 𝓐 ꞉ (refl-graph 𝓤 𝓥) , is-univalent-refl-graph 𝓐
@@ -282,7 +280,8 @@ id-equiv-edge : (𝓐 : univalent-refl-graph 𝓤 𝓥)
               → (x y : ⊰ 𝓐 ⊱ᵤ)
               → (x ＝ y) ≃ (x ≈ᵤ⟨ 𝓐 ⟩ y)
 id-equiv-edge 𝓐 x y
- = (id-to-edge (𝓐 /ᵤ) x y , is-univalent 𝓐 x y)
+ = (id-to-edge (𝓐 /ᵤ) x y ,
+    prop-fans-implies-id-to-edge-equiv (is-univalent 𝓐) x y)
 
 edge-to-id : (𝓐 : univalent-refl-graph 𝓤 𝓥)
            → (x y : ⊰ 𝓐 ⊱ᵤ)
@@ -298,7 +297,8 @@ edge-to-id' 𝓐 {x} {y} = edge-to-id 𝓐 x y
 edge-to-id-comp : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x : ⊰ 𝓐 ⊱ᵤ}
                 → edge-to-id' 𝓐 (𝓻 (𝓐 /ᵤ) x) ＝ refl
 edge-to-id-comp 𝓐 {x}
- = inverses-are-retractions (id-to-edge' (𝓐 /ᵤ)) (is-univalent 𝓐 x x) refl
+ = inverses-are-retractions (id-to-edge' (𝓐 /ᵤ))
+    (prop-fans-implies-id-to-edge-equiv (is-univalent 𝓐) x x) refl
 
 \end{code}
 
@@ -319,7 +319,8 @@ univalence-implies-edge-induction : {𝓐 : refl-graph 𝓤 𝓥}
                                   → is-univalent-refl-graph 𝓐
                                   → edge-induction 𝓣 𝓐
 univalence-implies-edge-induction {𝓤} {𝓥} {𝓣} {𝓐} ua P R x y p
- = I (id-to-edge-equiv-implies-prop-fans ua x (x , 𝓻 𝓐 x) (y , p))
+ = I (id-to-edge-equiv-implies-prop-fans {_} {_} {𝓐}
+    (prop-fans-implies-id-to-edge-equiv ua) x (x , 𝓻 𝓐 x) (y , p))
  where
   I : (x , 𝓻 𝓐 x) ＝ (y , p) → P x y p
   I refl = R x  
