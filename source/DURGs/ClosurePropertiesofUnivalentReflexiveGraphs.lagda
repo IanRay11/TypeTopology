@@ -9,6 +9,7 @@ open import UF.Base
 open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.FunExt
+open import UF.Powerset-MultiUniverse
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.Subsingletons-Properties
@@ -20,7 +21,7 @@ open import DURGs.UnivalentReflexiveGraphs
 
 \end{code}
 
-We record closure properties of (displayed?) univalent reflexive graphs.
+We record closure properties of univalent (displayed) reflexive graphs.
 
 \begin{code}
 
@@ -126,5 +127,37 @@ univalence-closed-under-tensor : (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)
                                → is-univalent-refl-graph (∐ A , (λ - → 𝓑))
 univalence-closed-under-tensor A 𝓑 𝓑-ua
  = univalence-closed-under-coproduct A (λ - → 𝓑) (λ - → 𝓑-ua)
+
+discrete-refl-graph-is-univalent
+ : (A : 𝓤' ̇)
+ → is-univalent-refl-graph (discrete-reflexive-graph A)
+discrete-refl-graph-is-univalent A x
+ = singletons-are-props (singleton-types-are-singletons x)
+
+codiscrete-refl-graph-is-univalent-when-prop
+ : (A : 𝓤' ̇)
+ → is-prop A
+ → is-univalent-refl-graph (codiscrete-reflexive-graph A)
+codiscrete-refl-graph-is-univalent-when-prop A A-prop x (x' , ⋆) (y' , ⋆)
+ = ap (λ - → (- , ⋆)) (A-prop x' y')
+
+codiscrete-refl-graph-is-univalent-implies-prop
+ : (A : 𝓤' ̇)
+ → is-univalent-refl-graph (codiscrete-reflexive-graph A)
+ → is-prop A
+codiscrete-refl-graph-is-univalent-implies-prop A codis-A-ua x y
+ = ap pr₁ (codis-A-ua x (x , ⋆) (y , ⋆))
+
+univalence-closed-under-subgraph : (𝓐 : refl-graph 𝓤 𝓥) 
+                                 → (S : 𝓟 {𝓣} ⊰ 𝓐 ⊱)
+                                 → is-univalent-refl-graph 𝓐
+                                 → is-univalent-refl-graph (x ∶ 𝓐 ∣ S x)
+univalence-closed-under-subgraph 𝓐 S 𝓐-ua (x , s) ((x' , r) , p) ((y' , t) , q)
+ = I (𝓐-ua x (x , 𝓻 𝓐 x) (x' , p)) (𝓐-ua x (x , 𝓻 𝓐 x) (y' , q))
+ where
+  I : ((x , 𝓻 𝓐 x) ＝ (x' , p))
+    → ((x , 𝓻 𝓐 x) ＝ (y' , q))
+    → ((x' , r) , p) ＝ ((y' , t) , q)
+  I refl refl = ap (λ - → ((x , -) , 𝓻 𝓐 x)) (∈-is-prop S x r t)
 
 \end{code}
