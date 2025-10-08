@@ -16,35 +16,7 @@ open import DURGs.UnivalentReflexiveGraphs
 We introduce the notion of lenses which allow for a deeper characterization
 of transport.
 
-I will leave this artifcat temporarily while I explore definitions via records.
-
-begin{code}
-
-oplax-covariant-lense : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
-                      → 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⁺) ⊔ (𝓥' ⁺) ̇
-oplax-covariant-lense 𝓤' 𝓥' 𝓐
- = Σ 𝓑 ꞉ (⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥') ,
-    Σ push ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x ⊱) → ⊰ 𝓑 y ⊱) ,
-     ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → push x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u)
-
-lense-fam : {𝓐 : refl-graph 𝓤 𝓥}
-          → (oplax-covariant-lense 𝓤' 𝓥' 𝓐)
-          → ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥'
-lense-fam (𝓑 , _ , _) = 𝓑
-
-push : {𝓐 : refl-graph 𝓤 𝓥}
-     → ((𝓑 , push' , push-R') : oplax-covariant-lense 𝓤' 𝓥' 𝓐)
-     → (x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x ⊱) → ⊰ 𝓑 y ⊱
-push (_ , push' , _) = push'
-
-push-R : {𝓐 : refl-graph 𝓤 𝓥}
-       → (𝓞@(𝓑 , push' , pushR') : oplax-covariant-lense 𝓤' 𝓥' 𝓐)
-       → (x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → push 𝓞 x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u
-push-R (_ , _ , push-R')= push-R'
-
-end{code}
-
-Let's try a record type here...
+We will use record types.
 
 \begin{code}
 

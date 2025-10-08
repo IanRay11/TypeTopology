@@ -15,6 +15,12 @@ module _ (𝓤 𝓥 : Universe) where
  refl-graph : (𝓤 ⊔ 𝓥)⁺ ̇
  refl-graph = Σ A ꞉ 𝓤 ̇ , Σ R ꞉ (A → A → 𝓥 ̇) , ((x : A) → R x x)
 
+ record refl-graph-rec : 𝓤ω where
+  field
+   car : 𝓤 ̇
+   rel : car → car → 𝓥 ̇
+   ref : (x : car) → rel x x
+
 \end{code}
 
 We give some boiler plate
@@ -44,5 +50,12 @@ refl-graph-hom 𝓐 𝓐'
  = Σ F ꞉ (⊰ 𝓐 ⊱ → ⊰ 𝓐' ⊱) ,
     Σ F' ꞉ ((x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → F x ≈⟨ 𝓐' ⟩ F y) ,
      ((x : ⊰ 𝓐 ⊱) → F' x x (𝓻 𝓐 x) ＝ 𝓻 𝓐' (F x))
+
+record refl-graph-hom-record
+ (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤' 𝓥') : 𝓤ω where
+ field
+  func : ⊰ 𝓐 ⊱ → ⊰ 𝓐' ⊱
+  act : (x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → func x ≈⟨ 𝓐' ⟩ func y
+  pres-ref : (x : ⊰ 𝓐 ⊱) → act x x (𝓻 𝓐 x) ＝ 𝓻 𝓐' (func x)
 
 \end{code}
