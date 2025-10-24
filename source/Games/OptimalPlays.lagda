@@ -37,6 +37,7 @@ open import MonadOnTypes.Monad
 open import MonadOnTypes.NonEmptyList
 open import Notation.CanonicalMap
 open import UF.Base
+open import UF.Subsingletons
 
 open K-definitions R
 
@@ -46,7 +47,8 @@ The following are the main two notions considered in this file.
 
 \begin{code}
 
-is-optimal-move : {X : Type} {Xf : X → 𝑻}
+is-optimal-move : {X : Type}
+                  {Xf : X → 𝑻}
                   (q : (Σ x ꞉ X , Path (Xf x)) → R)
                   (ϕ : K X)
                   (ϕf : (x : X) → 𝓚 (Xf x))
@@ -64,6 +66,30 @@ is-optimal-play {X ∷ Xf} (ϕ :: ϕf) q (x :: xs) =
 
 \end{code}
 
+Being an optimal move is a decidable proposition.
+
+\begin{code}
+
+being-optimal-move-is-prop : {X : Type}
+                             {Xf : X → 𝑻}
+                             (q : (Σ x ꞉ X , Path (Xf x)) → R)
+                             (ϕ : K X)
+                             (ϕf : (x : X) → 𝓚 (Xf x))
+                             (x : X)
+                           → is-prop (is-optimal-move q ϕ ϕf x)
+being-optimal-move-is-prop q ϕ ϕf x = discrete-types-are-sets R-is-discrete
+
+being-optimal-move-is-decidable : {X : Type}
+                                  {Xf : X → 𝑻}
+                                  (q : (Σ x ꞉ X , Path (Xf x)) → R)
+                                  (ϕ : K X)
+                                  (ϕf : (x : X) → 𝓚 (Xf x))
+                                  (x : X)
+                                → is-decidable (is-optimal-move q ϕ ϕf x)
+being-optimal-move-is-decidable q ϕ ϕf x = R-is-discrete _ _
+
+\end{code}
+
 We now show that the strategic path of a strategy in subgame perfect
 equilibrium is an optimal play. We start with a lemma that is
 interesting on its own right.
@@ -78,13 +104,13 @@ optimal-play-gives-optimal-outcome
  → is-optimal-play {Xt} ϕt q xs
  → q xs ＝ optimal-outcome (game Xt q ϕt)
 optimal-play-gives-optimal-outcome {[]}     ⟨⟩        q ⟨⟩        ⟨⟩ = refl
-optimal-play-gives-optimal-outcome {X ∷ Xf} (ϕ :: ϕf) q (x :: xs) (o :: of)
+optimal-play-gives-optimal-outcome {X ∷ Xf} (ϕ :: ϕf) q (x :: xs) (o :: os)
  = subpred q x xs                                     ＝⟨ IH ⟩
    optimal-outcome (game (Xf x) (subpred q x) (ϕf x)) ＝⟨ o ⁻¹ ⟩
    optimal-outcome (game (X ∷ Xf) q (ϕ :: ϕf))        ∎
  where
   IH : subpred q x xs ＝ optimal-outcome (game (Xf x) (subpred q x) (ϕf x))
-  IH = optimal-play-gives-optimal-outcome {Xf x} (ϕf x) (subpred q x) xs of
+  IH = optimal-play-gives-optimal-outcome {Xf x} (ϕf x) (subpred q x) xs os
 
 strategic-path-is-optimal-play
  : {Xt : 𝑻}
@@ -94,11 +120,11 @@ strategic-path-is-optimal-play
  → is-in-sgpe ϕt q σ
  → is-optimal-play ϕt q (strategic-path σ)
 strategic-path-is-optimal-play {[]} ⟨⟩ q ⟨⟩ ⟨⟩ = ⋆
-strategic-path-is-optimal-play {X ∷ Xf} ϕt@(ϕ :: ϕf) q σ@(x₀ :: σf) ot@(o :: of)
+strategic-path-is-optimal-play {X ∷ Xf} ϕt@(ϕ :: ϕf) q σ@(x₀ :: σf) ot@(o :: os)
  = I , IH x₀
  where
   IH : (x : X) → is-optimal-play (ϕf x) (subpred q x) (strategic-path (σf x))
-  IH x = strategic-path-is-optimal-play {Xf x} (ϕf x) (subpred q x) (σf x) (of x)
+  IH x = strategic-path-is-optimal-play {Xf x} (ϕf x) (subpred q x) (σf x) (os x)
 
   I : is-optimal-move q ϕ ϕf x₀
   I = optimal-outcome (game (X ∷ Xf) q (ϕ :: ϕf))                  ＝⟨ refl ⟩
@@ -186,8 +212,6 @@ include the distinguished element).
 module _ (X : Type)
          (X-is-listed⁺@(x₀ , xs , μ) : listed⁺ X)
          (ϕ : (X → R) → R)
-         (ε : (X → R) → X)
-         (ε-attains-ϕ : ε attains ϕ)
       where
 
  private
@@ -197,8 +221,18 @@ module _ (X : Type)
   δA : (p : X → R) (x : X) → is-decidable (A p x)
   δA p x = R-is-discrete (p x) (ϕ p)
 
-  εᴸ :  (X → R) → List X
-  εᴸ p = filter (A p) (δA p) xs
+ εᴸ :  (X → R) → List X
+ εᴸ p = filter (A p) (δA p) xs
+
+ εᴸ-property→ : (p : X → R) (x : X) → member x (εᴸ p) → p x ＝ ϕ p
+ εᴸ-property→ p x = filter-member→ (A p) (δA p) x xs
+
+ εᴸ-property← : (p : X → R) (x : X) → p x ＝ ϕ p → member x (εᴸ p)
+ εᴸ-property← p x e = filter-member← (A p) (δA p) x xs e (μ x)
+
+ module _ (ε : (X → R) → X)
+          (ε-attains-ϕ : ε attains ϕ)
+        where
 
   ε-member-of-εᴸ : (p : X → R) → member (ε p) (εᴸ p)
   ε-member-of-εᴸ p = filter-member← (A p) (δA p) (ε p) xs (ε-attains-ϕ p) (μ (ε p))
@@ -206,14 +240,8 @@ module _ (X : Type)
   εᴸ-is-non-empty : (p : X → R) → is-non-empty (εᴸ p)
   εᴸ-is-non-empty p = lists-with-members-are-non-empty (ε-member-of-εᴸ p)
 
- ε⁺ : JT X
- ε⁺ p = εᴸ p , εᴸ-is-non-empty p
-
- εᴸ-property→ : (p : X → R) (x : X) → member x (εᴸ p) → p x ＝ ϕ p
- εᴸ-property→ p x = filter-member→ (A p) (δA p) x xs
-
- εᴸ-property← : (p : X → R) (x : X) → p x ＝ ϕ p → member x (εᴸ p)
- εᴸ-property← p x e = filter-member← (A p) (δA p) x xs e (μ x)
+  ε⁺ : JT X
+  ε⁺ p = εᴸ p , εᴸ-is-non-empty p
 
 \end{code}
 
@@ -325,7 +353,7 @@ JT-in-terms-of-K Xt@(X ∷ Xf) ϕt@(ϕ :: ϕf) q εt@(ε :: εf) at@(a :: af) lt
          II₀ = α-extᵀ-explicitly q ((e⁺ ⊗[ 𝕁𝕋 ] d⁺) q)
          II₁ = ap q (head⁺-of-⊗ᴶᵀ e⁺ d⁺ q)
          II₂ = (α-extᵀ-explicitly (subpred q x) (f x))⁻¹
-         II₃ = εᴸ-property→ X l ϕ ε a p x I
+         II₃ = εᴸ-property→ X l ϕ p x I
          II₄ = ap ϕ (dfunext fe IH)
 
 \end{code}
@@ -397,7 +425,7 @@ main-lemma→ Xt@(X ∷ Xf) ϕt@(ϕ :: ϕf) q εt@(ε :: εf) at@(a :: af)
    p x                                      ＝⟨ refl ⟩
    path-sequence (𝕂 R) (ϕf x) (subpred q x) ∎
     where
-     VIII = (εᴸ-property→ X l ϕ ε a p x VII)⁻¹
+     VIII = (εᴸ-property→ X l ϕ p x VII)⁻¹
 
   IH : member xs (ι (tf x))
      → is-optimal-play (ϕf x) (subpred q x) xs
@@ -448,7 +476,7 @@ main-lemma← Xt@(X ∷ Xf) ϕt@(ϕ :: ϕf) q εt@(ε :: εf) at@(a :: af)
   II = transport (λ - → - x ＝ ϕ -) I (om ⁻¹)
 
   III : member x (ι t)
-  III = εᴸ-property← X l ϕ ε a p' x II
+  III = εᴸ-property← X l ϕ p' x II
 
   IV : member (x :: xs) (ι (t ⊗ᴸ⁺ tf))
   IV = join-membership fe x xs t tf (III , IH)
@@ -499,3 +527,226 @@ outcomes has at least one element.
 In a previous version of this file, we instead assumed r₀ : R, and we
 worked with "listed" instead of "listed⁺", but the listings were
 automatically non-empty.
+
+Added 24th September 2025.
+
+\begin{code}
+
+quantifiers-over-empty-types-are-not-attainable
+ : {X : Type}
+ → is-empty X
+ → (ϕ : K X)
+ → ¬ is-attainable ϕ
+quantifiers-over-empty-types-are-not-attainable e ϕ (ε , a)
+ = e (ε (unique-from-𝟘 ∘ e))
+
+\end{code}
+
+Added 17th September. We calculate the subtree of the game tree whose
+paths are precisely the optimal plays of the original game.
+
+\begin{code}
+
+prune : (Xt : 𝑻)
+        (q : Path Xt → R)
+        (ϕt : 𝓚 Xt)
+      → 𝑻
+prune [] q ⟨⟩ = []
+prune (X ∷ Xf) q (ϕ :: ϕf) = (Σ x ꞉ X , is-optimal-move q ϕ ϕf x)
+                           ∷ (λ (x , o) → prune (Xf x) (subpred q x) (ϕf x))
+\end{code}
+
+Notice that it may happen that the pruned tree is non-empty, but all
+the nodes in the tree are empty types of moves. So we can't use the
+pruned tree to decide whether or not there is an optimal
+play. However, if we further assume that the types of moves in the
+original tree are listed, we can decide this, and, moreover, get the
+list of all optimal plays from the pruned tree *without* assuming that
+the quantifiers are attainable (as we did above).
+
+Each path in the pruned tree is a path in the original tree.
+
+\begin{code}
+
+inclusion : {Xt : 𝑻}
+            (ϕt : 𝓚 Xt)
+            (q : Path Xt → R)
+          → Path (prune Xt q ϕt)
+          → Path Xt
+inclusion {[]} ⟨⟩ q ⟨⟩ = ⟨⟩
+inclusion {X ∷ Xf} (ϕ :: ϕf) q ((x , _) :: xos)
+ = x :: inclusion {Xf x} (ϕf x) (subpred q x) xos
+
+\end{code}
+
+The predicate q restricts to a predicate in the pruned tree.
+
+\begin{code}
+
+restriction : {Xt : 𝑻}
+              (ϕt : 𝓚 Xt)
+              (q : Path Xt → R)
+            → Path (prune Xt q ϕt) → R
+restriction ϕt q = q ∘ inclusion ϕt q
+
+\end{code}
+
+The restriction operation is not very useful, because it gives a
+constant predicate with the optimal outcome as its value (see below).
+
+The paths in the pruned tree are precisely the optimals plays in the
+original tree.
+
+\begin{code}
+
+lemma→ : {Xt : 𝑻}
+         (q : Path Xt → R)
+         (ϕt : 𝓚 Xt)
+       → (xos : Path (prune Xt q ϕt))
+       → is-optimal-play ϕt q (inclusion ϕt q xos)
+lemma→ {[]} q ⟨⟩ ⟨⟩ = ⟨⟩
+lemma→ {X ∷ Xf} q (ϕ :: ϕf) ((x , o) :: xos)
+ = o , lemma→ {Xf x} (subpred q x) (ϕf x) xos
+
+lemma← : {Xt : 𝑻}
+         (q : Path Xt → R)
+         (ϕt : 𝓚 Xt)
+         (xs : Path Xt)
+       → is-optimal-play ϕt q xs
+       → Σ xos ꞉ Path (prune Xt q ϕt) , inclusion ϕt q xos ＝ xs
+lemma← {[]} q ⟨⟩ ⟨⟩ ⟨⟩ = ⟨⟩ , refl
+lemma← {X ∷ Xf} q (ϕ :: ϕf) (x :: xs) (o :: os)
+ = ((x , o) :: pr₁ IH) , ap (x ::_) (pr₂ IH)
+ where
+  IH : Σ xos ꞉ Path (prune (Xf x) (subpred q x) (ϕf x))
+             , inclusion (ϕf x) (subpred q x) xos ＝ xs
+  IH = lemma← {Xf x} (subpred q x) (ϕf x) xs os
+
+\end{code}
+
+This gives an alternative way to calculate the list of optimal plays,
+which doesn't use selection functions.
+
+Added 22nd October 2025.
+
+We prove a remark stated above.
+
+\begin{code}
+
+restriction-is-constant
+ : {Xt : 𝑻}
+   (ϕt : 𝓚 Xt)
+   (q : Path Xt → R)
+   (xos : Path (prune Xt q ϕt))
+ → restriction ϕt q xos ＝ optimal-outcome (game Xt q ϕt)
+restriction-is-constant {Xt} ϕt q xos
+ = optimal-play-gives-optimal-outcome ϕt q (inclusion ϕt q xos) (lemma→ q ϕt xos)
+
+\end{code}
+
+Added 8th October 2025.
+
+\begin{code}
+
+prune-is-listed : (Xt : 𝑻)
+                  (q : Path Xt → R)
+                  (ϕt : 𝓚 Xt)
+                → structure listed Xt
+                → structure listed (prune Xt q ϕt)
+prune-is-listed [] q ϕt ⟨⟩ = ⟨⟩
+prune-is-listed (X ∷ Xf) q (ϕ :: ϕf) (X-is-listed , Xf-is-listed) =
+ X'-is-listed :: Xf'-is-listed
+ where
+  X' : Type
+  X' = Σ x ꞉ X , is-optimal-move q ϕ ϕf x
+
+  X'-is-listed : listed X'
+  X'-is-listed = detachable-subtype-of-listed-type-is-listed
+                  (is-optimal-move q ϕ ϕf)
+                  (being-optimal-move-is-decidable q ϕ ϕf)
+                  (being-optimal-move-is-prop q ϕ ϕf)
+                  X-is-listed
+
+  Xf' : X' → 𝑻
+  Xf' (x , o) = prune (Xf x) (subpred q x) (ϕf x)
+
+  Xf'-is-listed : (x' : X') → structure listed (Xf' x')
+  Xf'-is-listed (x , o) = prune-is-listed
+                           (Xf x)
+                           (subpred q x)
+                           (ϕf x)
+                           (Xf-is-listed x)
+
+optimal-plays' : {Xt : 𝑻}
+                 (q : Path Xt → R)
+                 (ϕt : 𝓚 Xt)
+                 (Xt-is-listed : structure listed Xt)
+               → List (Path Xt)
+optimal-plays' {Xt} q ϕt Xt-is-listed = xss
+ where
+  Xt' : 𝑻
+  Xt' = prune Xt q ϕt
+
+  xss' : List (Path (prune Xt q ϕt))
+  xss' = list-of-paths Xt' (prune-is-listed Xt q ϕt Xt-is-listed)
+
+  xss : List (Path Xt)
+  xss = lmap (inclusion ϕt q) xss'
+
+\end{code}
+
+Notice that this way of computing the optimal plays doesn't need the
+assumption that the quantifiers are attainable.
+
+Added 22nd October 2025. We now prove that optimal-plays' lists
+precisely the optimal plays.
+
+\begin{code}
+
+module _ (Xt : 𝑻)
+         (ϕt : 𝓚 Xt)
+         (q : Path Xt → R)
+         (lt : structure listed Xt)
+         (xs : Path Xt)
+       where
+
+ private
+  xss' : List (Path (prune Xt q ϕt))
+  xss' = list-of-paths (prune Xt q ϕt) (prune-is-listed Xt q ϕt lt)
+
+ main-lemma'→ : member xs (optimal-plays' q ϕt lt)
+              → is-optimal-play ϕt q xs
+ main-lemma'→ m = I σ
+  where
+   have-m : member xs (lmap (inclusion ϕt q) xss')
+   have-m = m
+
+   σ : Σ xos ꞉ Path (prune Xt q ϕt) , member xos xss' × (inclusion ϕt q xos ＝ xs)
+   σ = member-of-map← (inclusion ϕt q) xs xss' m
+
+   I : type-of σ → is-optimal-play ϕt q xs
+   I (xos , _ , e) = transport (is-optimal-play ϕt q) e (lemma→ q ϕt xos)
+
+ main-lemma'← : is-optimal-play ϕt q xs
+              → member xs (optimal-plays' q ϕt lt)
+ main-lemma'← o = I σ
+  where
+   σ : Σ xos ꞉ Path (prune Xt q ϕt) , inclusion ϕt q xos ＝ xs
+   σ = lemma← q ϕt xs o
+
+   I : type-of σ → member xs (optimal-plays' q ϕt lt)
+   I (xos , e) = I₂
+    where
+     I₀ : member xos xss'
+     I₀ = path-is-member-of-list-of-paths
+           (prune Xt q ϕt)
+           (prune-is-listed Xt q ϕt lt)
+           xos
+
+     I₁ : member (inclusion ϕt q xos) (lmap (inclusion ϕt q) xss')
+     I₁ = member-of-map→ (inclusion ϕt q) xss' xos I₀
+
+     I₂ : member xs (lmap (inclusion ϕt q) xss')
+     I₂ = transport (λ - → member - (lmap (inclusion ϕt q) xss')) e I₁
+
+\end{code}

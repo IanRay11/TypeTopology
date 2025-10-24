@@ -1,4 +1,4 @@
-Martin Escardo, Paulo Oliva, 2-27 July 2021
+Martin Escardo, Paulo Oliva, 2-27 July 2021, with later additions.
 
 We represent the moves of a history-dependent sequential game by a
 dependent-type tree, collected in a type 𝑻.  This is either an empty
@@ -195,5 +195,109 @@ private
  structure'-∷ : (S : Type → 𝓤 ̇ ) (X : Type) (Xf : X → 𝑻)
               → structure' S (X ∷ Xf) ＝ S X × ((x : X) → structure' S (Xf x))
  structure'-∷ S X Xf = refl
+
+\end{code}
+
+Moved here 22 Oct 2025 from code from 8th October 2025 in the file
+OptimalPlays, with some additions.
+
+Utility functions for lists of paths.
+
+\begin{code}
+
+open import MLTT.List
+
+module _ {X : Type}
+         {Xf : X → 𝑻}
+       where
+
+ prepend : (x : X)
+         → List (Path (Xf x))
+         → List (Path (X ∷ Xf))
+ prepend x [] = []
+ prepend x (xs ∷ xss) = (x :: xs) ∷ prepend x xss
+
+ member-of-prepend→ : (x : X)
+                      (xs : Path (Xf x))
+                      (xss : List (Path (Xf x)))
+                    → member xs xss
+                    → member (x :: xs) (prepend x xss)
+ member-of-prepend→ x xs (_ ∷ xss) in-head = in-head
+ member-of-prepend→ x xs (_ ∷ xss) (in-tail m) =
+  in-tail (member-of-prepend→ x xs xss m)
+
+ map-prepend : ((x : X) → List (Path (Xf x)))
+             → List X
+             → List (List (Path (X ∷ Xf)))
+ map-prepend f [] = []
+ map-prepend f (x ∷ xs) = prepend x (f x) ∷ map-prepend f xs
+
+ member-of-map-prepend→ : (f : (x : X) → List (Path (Xf x)))
+                          (xs : List X)
+                          (x : X)
+                        → member x xs
+                        → member (prepend x (f x)) (map-prepend f xs)
+ member-of-map-prepend→ f (x₀ ∷ xs) x in-head = in-head
+ member-of-map-prepend→ f (x₀ ∷ xs) x (in-tail m) =
+  in-tail (member-of-map-prepend→ f xs x m)
+
+ concat-map-prepend : ((x : X) → List (Path (Xf x)))
+                    → List X
+                    → List (Path (X ∷ Xf))
+ concat-map-prepend f [] = []
+ concat-map-prepend f (x ∷ xs) = prepend x (f x) ++ concat-map-prepend f xs
+
+ member-of-concat-map-prepend→ : (f : (x : X) → List (Path (Xf x)))
+                                 (x : X)
+                                 (xs : Path (Xf x))
+                                 (ys : List X)
+                               → member x ys
+                               → member xs (f x)
+                               → member (x :: xs) (concat-map-prepend f ys)
+ member-of-concat-map-prepend→ f x xs (y ∷ ys) in-head n = II
+  where
+   I : member (x :: xs) (prepend x (f x))
+   I = member-of-prepend→ x xs (f x) n
+
+   II : member (x :: xs) (prepend x (f x) ++ concat-map-prepend f ys)
+   II = right-concatenation-preserves-membership
+         (x :: xs)
+         (prepend x (f x))
+         (concat-map-prepend f ys)
+         I
+ member-of-concat-map-prepend→ f x xs (y ∷ ys) (in-tail m) n = I
+  where
+   IH : member (x :: xs) (concat-map-prepend f ys)
+   IH = member-of-concat-map-prepend→ f x xs ys m n
+
+   I : member (x :: xs) (prepend y (f y) ++ concat-map-prepend f ys)
+   I = left-concatenation-preserves-membership
+        (x :: xs)
+        (concat-map-prepend f ys)
+        (prepend y (f y))
+        IH
+
+list-of-paths : (Xt : 𝑻)
+                (lt : structure listed Xt)
+              → List (Path Xt)
+list-of-paths [] ⟨⟩ = [ ⟨⟩ ]
+list-of-paths (X ∷ Xf) ((xs , m) , lf) =
+ concat-map-prepend (λ x → list-of-paths (Xf x) (lf x)) xs
+
+path-is-member-of-list-of-paths : (Xt : 𝑻)
+                                  (lt : structure listed Xt)
+                                  (xs : Path Xt)
+                                → member xs (list-of-paths Xt lt)
+path-is-member-of-list-of-paths [] ⟨⟩ ⟨⟩ = in-head
+path-is-member-of-list-of-paths (X ∷ Xf) ((ys , m) , lf) (x :: xs) = I
+ where
+  f : (x : X) → List (Path (Xf x))
+  f x = list-of-paths (Xf x) (lf x)
+
+  IH : member xs (f x)
+  IH = path-is-member-of-list-of-paths (Xf x) (lf x) xs
+
+  I : member (x :: xs) (concat-map-prepend f ys)
+  I = member-of-concat-map-prepend→ f x xs ys (m x) IH
 
 \end{code}
