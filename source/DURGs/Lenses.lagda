@@ -41,7 +41,7 @@ record lax-contravariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 �
 \end{code}
 
 We say a oplax (lax) covariant (contraviant) lens is univalent if its family
-is univalent valued.
+is valued in univalent reflexive graphs.
 
 \begin{code}
 
@@ -54,7 +54,51 @@ oplax-covariant-lens-is-univalent 𝓐 𝓞
 lax-contravariant-lens-is-univalent : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
                                     → lax-contravariant-lens 𝓤' 𝓥' 𝓐
                                     → 𝓤 ⊔ 𝓤' ⊔ 𝓥' ̇
-lax-contravariant-lens-is-univalent 𝓐 𝓞
- = (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (lax-contravariant-lens.fam-lens 𝓞 x)
+lax-contravariant-lens-is-univalent 𝓐 𝓛
+ = (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (lax-contravariant-lens.fam-lens 𝓛 x)
 
 \end{code}
+
+We now define a display of lenses.
+
+\begin{code}
+
+covariant-displayed-oplax-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+                               → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+                               → displayed-refl-graph 𝓤' 𝓥' 𝓐
+covariant-displayed-oplax-lens {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , II , III)
+ where
+  I : ⊰ 𝓐 ⊱ → 𝓤' ̇
+  I x = ⊰ oplax-covariant-lens.lens-fam 𝓑 x ⊱
+  II : {x y : ⊰ 𝓐 ⊱}
+     → x ≈⟨ 𝓐 ⟩ y
+     →  ⊰ oplax-covariant-lens.lens-fam 𝓑 x ⊱
+     → ⊰ oplax-covariant-lens.lens-fam 𝓑 y ⊱
+     → 𝓥' ̇
+  II {x} {y} p u v = oplax-covariant-lens.lens-push 𝓑 x y p u
+                   ≈⟨ oplax-covariant-lens.lens-fam 𝓑 y ⟩ v
+  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ oplax-covariant-lens.lens-fam 𝓑 x ⊱)
+      → II (𝓻 𝓐 x) u u
+  III {x} u = oplax-covariant-lens.lens-push-R 𝓑 x u
+
+contravariant-displayed-lax-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+                                 → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
+                                 → displayed-refl-graph 𝓤' 𝓥' 𝓐
+contravariant-displayed-lax-lens {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , II , III)
+ where
+  I : ⊰ 𝓐 ⊱ → 𝓤' ̇
+  I x = ⊰ lax-contravariant-lens.fam-lens 𝓑 x ⊱
+  II : {x y : ⊰ 𝓐 ⊱}
+     → x ≈⟨ 𝓐 ⟩ y
+     → ⊰ lax-contravariant-lens.fam-lens 𝓑 x ⊱
+     → ⊰ lax-contravariant-lens.fam-lens 𝓑 y ⊱
+     → 𝓥' ̇
+  II {x} {y} p u v = u ≈⟨ lax-contravariant-lens.fam-lens 𝓑 x ⟩
+                   lax-contravariant-lens.lens-pull 𝓑 x y p v
+  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ lax-contravariant-lens.fam-lens 𝓑 x ⊱)
+      → II (𝓻 𝓐 x) u u
+  III {x} u = lax-contravariant-lens.lens-pull-R 𝓑 x u
+
+
+\end{code}
+
