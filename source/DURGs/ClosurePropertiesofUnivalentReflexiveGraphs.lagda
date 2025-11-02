@@ -70,7 +70,7 @@ univalence-closed-under-constant
 univalence-closed-under-constant 𝓐 𝓑 ua-𝓑 x = ua-𝓑
     
 univalence-closed-under-binary-product
- : (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤 𝓥)
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓐' : refl-graph 𝓤' 𝓥')
  → is-univalent-refl-graph 𝓐
  → is-univalent-refl-graph 𝓐'
  → is-univalent-refl-graph (𝓐 ⊗ 𝓐')
@@ -130,7 +130,7 @@ univalence-closed-under-tensor A 𝓑 𝓑-ua
 
 discrete-refl-graph-is-univalent
  : (A : 𝓤' ̇)
- → is-univalent-refl-graph (discrete-reflexive-graph A)
+ → is-univalent-refl-graph (Δ A)
 discrete-refl-graph-is-univalent A x
  = singletons-are-props (singleton-types-are-singletons x)
 

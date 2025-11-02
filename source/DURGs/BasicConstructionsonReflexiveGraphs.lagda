@@ -141,6 +141,8 @@ discrete-reflexive-graph : 𝓤 ̇
                          → refl-graph 𝓤 𝓤
 discrete-reflexive-graph A = (A , _＝_ , ∼-refl)
 
+syntax discrete-reflexive-graph A = Δ A
+
 codiscrete-reflexive-graph : 𝓤 ̇
                            → refl-graph 𝓤 𝓤
 codiscrete-reflexive-graph A = (A , (λ - → λ - → 𝟙) , λ - → ⋆)
