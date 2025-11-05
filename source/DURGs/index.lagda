@@ -9,6 +9,7 @@ Investigation of (displayed) (univalent) reflexive graphs.
 module DURGs.index where
 
 import DURGs.BasicConstructionsonReflexiveGraphs
+import DURGs.BivariantMidpointLenses
 import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
 import DURGs.DisplayedReflexiveGraphs
 import DURGs.DisplayedUnivalentReflexiveGraphs
