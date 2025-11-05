@@ -31,9 +31,9 @@ record oplax-covariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 �
 
 record lax-contravariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
  field
-  fam-lens : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥'
+  lens-fam : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥'
  private
-  𝓑 = fam-lens
+  𝓑 = lens-fam
  field
   lens-pull : (x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y ⊱) → ⊰ 𝓑 x ⊱
   lens-pull-R : (x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ lens-pull x x (𝓻 𝓐 x) u
@@ -57,7 +57,7 @@ lax-contravariant-lens-is-univalent : {𝓤' 𝓥' : Universe} (𝓐 : refl-grap
                                     → lax-contravariant-lens 𝓤' 𝓥' 𝓐
                                     → 𝓤 ⊔ 𝓤' ⊔ 𝓥' ̇
 lax-contravariant-lens-is-univalent 𝓐 𝓛
- = (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (fam-lens x)
+ = (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (lens-fam x)
  where
   open lax-contravariant-lens 𝓛
 
@@ -94,14 +94,14 @@ contravariant-displayed-lax-lens {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , 
  where
   open lax-contravariant-lens 𝓑
   I : ⊰ 𝓐 ⊱ → 𝓤' ̇
-  I x = ⊰ fam-lens x ⊱
+  I x = ⊰ lens-fam x ⊱
   II : {x y : ⊰ 𝓐 ⊱}
      → x ≈⟨ 𝓐 ⟩ y
-     → ⊰ fam-lens x ⊱
-     → ⊰ fam-lens y ⊱
+     → ⊰ lens-fam x ⊱
+     → ⊰ lens-fam y ⊱
      → 𝓥' ̇
-  II {x} {y} p u v = u ≈⟨ fam-lens x ⟩ lens-pull x y p v
-  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ fam-lens x ⊱)
+  II {x} {y} p u v = u ≈⟨ lens-fam x ⟩ lens-pull x y p v
+  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ lens-fam x ⊱)
       → II (𝓻 𝓐 x) u u
   III {x} u = lens-pull-R x u
 
@@ -152,7 +152,7 @@ cofan-of-lax-contravariant-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph �
  → (x : ⊰ 𝓐 ⊱)
  → (u : [ disp⁻ 𝓐 , 𝓑 ] x)
  → cofan (⋖ disp⁻ 𝓐 , 𝓑 ⋗ x) u
- ＝ cofan (lax-contravariant-lens.fam-lens 𝓑 x)
+ ＝ cofan (lax-contravariant-lens.lens-fam 𝓑 x)
     (lax-contravariant-lens.lens-pull 𝓑 x x (𝓻 𝓐 x) u)
 cofan-of-lax-contravariant-lens 𝓐 𝓑 x u = refl
 
@@ -178,13 +178,13 @@ disp-lax-contravariant-lens-univalent
  : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
  → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
  → ((x : ⊰ 𝓐 ⊱)
- → is-univalent-refl-graph (lax-contravariant-lens.fam-lens 𝓑 x))
+ → is-univalent-refl-graph (lax-contravariant-lens.lens-fam 𝓑 x))
  → is-displayed-univalent-refl-graph 𝓐 (disp⁻ 𝓐 , 𝓑)
 disp-lax-contravariant-lens-univalent 𝓐 𝓑 fibers-ua x 
  = prop-cofan-to-fan {_} {_} {⋖ disp⁻ 𝓐 , 𝓑 ⋗ x}
     ((λ - → fibers-co-ua (lens-pull x x (𝓻 𝓐 x) -))) 
  where
   open lax-contravariant-lens 𝓑
-  fibers-co-ua = prop-fan-to-cofan {_} {_} {fam-lens x} (fibers-ua x)
+  fibers-co-ua = prop-fan-to-cofan {_} {_} {lens-fam x} (fibers-ua x)
   
 \end{code}
