@@ -15,7 +15,8 @@ open import DURGs.UnivalentReflexiveGraphs
 
 \end{code}
 
-Products
+The identity type of binary products can be characterized using the closure
+property univalent reflexive graphs under products. 
 
 \begin{code}
 
