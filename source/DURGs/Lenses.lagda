@@ -138,22 +138,22 @@ Now let's consider the description of fans of displayed lenses.
 
 \begin{code}
  
-fan-of-oplax-covariant-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+fan-of-oplax-covariant-lens
+ : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
  → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
  → (x : ⊰ 𝓐 ⊱)
  → (u : [ disp⁺ 𝓐 , 𝓑 ] x)
- → fan (⋖ disp⁺ 𝓐 , 𝓑 ⋗ x) u
- ＝ fan (oplax-covariant-lens.lens-fam 𝓑 x)
-    (oplax-covariant-lens.lens-push 𝓑 (𝓻 𝓐 x) u)
+ → fan (⋖ disp⁺ 𝓐 , 𝓑 ⋗ x) u ＝ fan (oplax-covariant-lens.lens-fam 𝓑 x)
+                                 (oplax-covariant-lens.lens-push 𝓑 (𝓻 𝓐 x) u)
 fan-of-oplax-covariant-lens 𝓐 𝓑 x u = refl
 
-cofan-of-lax-contravariant-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+cofan-of-lax-contravariant-lens
+ : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
  → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
  → (x : ⊰ 𝓐 ⊱)
  → (u : [ disp⁻ 𝓐 , 𝓑 ] x)
- → cofan (⋖ disp⁻ 𝓐 , 𝓑 ⋗ x) u
- ＝ cofan (lax-contravariant-lens.lens-fam 𝓑 x)
-    (lax-contravariant-lens.lens-pull 𝓑 (𝓻 𝓐 x) u)
+ → cofan (⋖ disp⁻ 𝓐 , 𝓑 ⋗ x) u ＝ cofan (lax-contravariant-lens.lens-fam 𝓑 x)
+                                  (lax-contravariant-lens.lens-pull 𝓑 (𝓻 𝓐 x) u)
 cofan-of-lax-contravariant-lens 𝓐 𝓑 x u = refl
 
 \end{code}
