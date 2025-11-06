@@ -7,6 +7,10 @@ Ian Ray. 4th November 2025.
 module DURGs.BivariantMidpointLenses where
 
 open import MLTT.Spartan
+open import UF.Base
+open import UF.Equiv
+open import UF.EquivalenceExamples
+open import UF.Subsingletons
 open import DURGs.BasicConstructionsonReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
@@ -87,3 +91,51 @@ private
 \end{code}
 
 Let's now look at fans of bivariant midpoint lenses.
+
+\begin{code}
+
+fan-of-bivariant-midpoint-lens
+ : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+ → (𝓑 : bivariant-midpoint-lens 𝓤' 𝓥' 𝓐)
+ → ((x : ⊰ 𝓐 ⊱)
+  → is-univalent-refl-graph (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x)))
+ → (x : ⊰ 𝓐 ⊱)
+ → (u : [ disp± 𝓐 , 𝓑 ] x)
+ → fan (⋖ disp± 𝓐 , 𝓑 ⋗ x) u ≃ fan (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x))
+                                 (bivariant-midpoint-lens.lext 𝓑 (𝓻 𝓐 x) u)
+fan-of-bivariant-midpoint-lens 𝓐 𝓑 fibers-ua x u = III
+ where
+  open bivariant-midpoint-lens 𝓑
+  I : (v : [ disp± 𝓐 , 𝓑 ] x)
+    → (rext (𝓻 𝓐 x) v , rext-R v)
+    ＝[ fan (lens-fam (𝓻 𝓐 x)) v ]
+      (v , 𝓻 (lens-fam (𝓻 𝓐 x)) v)
+  I v = fibers-ua x v (rext (𝓻 𝓐 x) v , rext-R v) (v , 𝓻 (lens-fam (𝓻 𝓐 x)) v)
+  II : (v : [ disp± 𝓐 , 𝓑 ] x) → rext (𝓻 𝓐 x) v ＝ v
+  II v = ap pr₁ (I v)
+  III : (Σ v ꞉ ([ disp± 𝓐 , 𝓑 ] x) ,
+          lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ rext (𝓻 𝓐 x) v)
+      ≃ (Σ v ꞉ (⊰ lens-fam (𝓻 𝓐 x) ⊱) , lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ v)
+  III = Σ-cong (λ v → transport-≃ (λ - → lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ -)
+               (II v))
+
+\end{code}
+
+We now show that if each fiber of a bivariant midpoint lens is univalent then
+the displayed reflexive graph over it is univalent.
+
+\begin{code}
+
+disp-bivariant-midpoint-lens-univalent
+ : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+ → (𝓑 : bivariant-midpoint-lens 𝓤' 𝓥' 𝓐)
+ → ((x : ⊰ 𝓐 ⊱)
+ → is-univalent-refl-graph (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x)))
+ → is-displayed-univalent-refl-graph 𝓐 (disp± 𝓐 , 𝓑)
+disp-bivariant-midpoint-lens-univalent 𝓐 𝓑 fibers-ua x u 
+ = equiv-to-prop (fan-of-bivariant-midpoint-lens 𝓐 𝓑 fibers-ua x u)
+    (fibers-ua x (lext (𝓻 𝓐 x) u))
+ where
+  open bivariant-midpoint-lens 𝓑
+
+\end{code}
