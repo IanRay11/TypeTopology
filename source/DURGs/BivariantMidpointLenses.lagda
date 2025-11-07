@@ -26,9 +26,9 @@ We define a technical device that generalize the previous two notion of lenses.
 
 record bivariant-midpoint-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
  field
-  lens-fam : {x y : ⊰ 𝓐 ⊱} → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥'
+  bi-lens-fam : {x y : ⊰ 𝓐 ⊱} → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥'
  private
-  𝓑 = lens-fam
+  𝓑 = bi-lens-fam
  field
   lext : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 p ⊱
   rext : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 p ⊱
@@ -47,7 +47,7 @@ bivariant-midpoint-lens-is-univalent : {𝓤' 𝓥' : Universe} (𝓐 : refl-gra
                                      → bivariant-midpoint-lens 𝓤' 𝓥' 𝓐
                                      → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
 bivariant-midpoint-lens-is-univalent 𝓐 𝓜
- = {x y : ⊰ 𝓐 ⊱} → (p : (x ≈⟨ 𝓐 ⟩ y)) → is-univalent-refl-graph (lens-fam p)
+ = {x y : ⊰ 𝓐 ⊱} → (p : (x ≈⟨ 𝓐 ⟩ y)) → is-univalent-refl-graph (bi-lens-fam p)
  where
   open bivariant-midpoint-lens 𝓜
 
@@ -65,14 +65,14 @@ bivariant-midpoint-displayed-lens{𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , 
  where
   open bivariant-midpoint-lens 𝓑
   I : ⊰ 𝓐 ⊱ → 𝓤' ̇
-  I x = ⊰ lens-fam (𝓻 𝓐 x) ⊱
+  I x = ⊰ bi-lens-fam (𝓻 𝓐 x) ⊱
   II : {x y : ⊰ 𝓐 ⊱}
      → (x ≈⟨ 𝓐 ⟩ y)
-     → ⊰ lens-fam (𝓻 𝓐 x) ⊱
-     → ⊰ lens-fam (𝓻 𝓐 y) ⊱
+     → ⊰ bi-lens-fam (𝓻 𝓐 x) ⊱
+     → ⊰ bi-lens-fam (𝓻 𝓐 y) ⊱
      → 𝓥' ̇
-  II {x} {y} p u v = lext p u ≈⟨ lens-fam p ⟩ rext p v
-  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ lens-fam (𝓻 𝓐 x) ⊱)
+  II {x} {y} p u v = lext p u ≈⟨ bi-lens-fam p ⟩ rext p v
+  III : {x : ⊰ 𝓐 ⊱} (u : ⊰ bi-lens-fam (𝓻 𝓐 x) ⊱)
       → II (𝓻 𝓐 x) u u
   III {x} u = ext-R u
 
@@ -98,25 +98,29 @@ fan-of-bivariant-midpoint-lens
  : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
  → (𝓑 : bivariant-midpoint-lens 𝓤' 𝓥' 𝓐)
  → ((x : ⊰ 𝓐 ⊱)
-  → is-univalent-refl-graph (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x)))
+  → is-univalent-refl-graph (bivariant-midpoint-lens.bi-lens-fam 𝓑 (𝓻 𝓐 x)))
  → (x : ⊰ 𝓐 ⊱)
  → (u : [ disp± 𝓐 , 𝓑 ] x)
- → fan (⋖ disp± 𝓐 , 𝓑 ⋗ x) u ≃ fan (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x))
-                                 (bivariant-midpoint-lens.lext 𝓑 (𝓻 𝓐 x) u)
+ → fan (⋖ disp± 𝓐 , 𝓑 ⋗ x) u
+ ≃ fan (bivariant-midpoint-lens.bi-lens-fam 𝓑 (𝓻 𝓐 x))
+       (bivariant-midpoint-lens.lext 𝓑 (𝓻 𝓐 x) u)
 fan-of-bivariant-midpoint-lens 𝓐 𝓑 fibers-ua x u = III
  where
   open bivariant-midpoint-lens 𝓑
   I : (v : [ disp± 𝓐 , 𝓑 ] x)
     → (rext (𝓻 𝓐 x) v , rext-R v)
-    ＝[ fan (lens-fam (𝓻 𝓐 x)) v ]
-      (v , 𝓻 (lens-fam (𝓻 𝓐 x)) v)
-  I v = fibers-ua x v (rext (𝓻 𝓐 x) v , rext-R v) (v , 𝓻 (lens-fam (𝓻 𝓐 x)) v)
+    ＝[ fan (bi-lens-fam (𝓻 𝓐 x)) v ]
+      (v , 𝓻 (bi-lens-fam (𝓻 𝓐 x)) v)
+  I v = fibers-ua x v (rext (𝓻 𝓐 x) v , rext-R v)
+         (v , 𝓻 (bi-lens-fam (𝓻 𝓐 x)) v)
   II : (v : [ disp± 𝓐 , 𝓑 ] x) → rext (𝓻 𝓐 x) v ＝ v
   II v = ap pr₁ (I v)
   III : (Σ v ꞉ ([ disp± 𝓐 , 𝓑 ] x) ,
-          lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ rext (𝓻 𝓐 x) v)
-      ≃ (Σ v ꞉ (⊰ lens-fam (𝓻 𝓐 x) ⊱) , lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ v)
-  III = Σ-cong (λ v → transport-≃ (λ - → lext (𝓻 𝓐 x) u ≈⟨ lens-fam (𝓻 𝓐 x) ⟩ -)
+          lext (𝓻 𝓐 x) u ≈⟨ bi-lens-fam (𝓻 𝓐 x) ⟩ rext (𝓻 𝓐 x) v)
+      ≃ (Σ v ꞉ (⊰ bi-lens-fam (𝓻 𝓐 x) ⊱)
+          , lext (𝓻 𝓐 x) u ≈⟨ bi-lens-fam (𝓻 𝓐 x) ⟩ v)
+  III = Σ-cong (λ v → transport-≃
+                       (λ - → lext (𝓻 𝓐 x) u ≈⟨ bi-lens-fam (𝓻 𝓐 x) ⟩ -)
                (II v))
 
 \end{code}
@@ -130,12 +134,60 @@ disp-bivariant-midpoint-lens-univalent
  : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
  → (𝓑 : bivariant-midpoint-lens 𝓤' 𝓥' 𝓐)
  → ((x : ⊰ 𝓐 ⊱)
- → is-univalent-refl-graph (bivariant-midpoint-lens.lens-fam 𝓑 (𝓻 𝓐 x)))
+ → is-univalent-refl-graph (bivariant-midpoint-lens.bi-lens-fam 𝓑 (𝓻 𝓐 x)))
  → is-displayed-univalent-refl-graph 𝓐 (disp± 𝓐 , 𝓑)
 disp-bivariant-midpoint-lens-univalent 𝓐 𝓑 fibers-ua x u 
  = equiv-to-prop (fan-of-bivariant-midpoint-lens 𝓐 𝓑 fibers-ua x u)
     (fibers-ua x (lext (𝓻 𝓐 x) u))
  where
   open bivariant-midpoint-lens 𝓑
+
+\end{code}
+
+We can construct unbiased lenses from biased lenses.
+
+\begin{code}
+
+oplax-covariant-to-bivariant-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+                                  → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+                                  → bivariant-midpoint-lens 𝓤' 𝓥' 𝓐
+oplax-covariant-to-bivariant-lens 𝓐 𝓑 = record
+ { bi-lens-fam = λ {x} {y} p → lens-fam y
+ ; lext = λ {x} {y} p u → lens-push p u
+ ; rext = λ {x} {y} p u → u 
+ ; ext-R = λ {x} u → lens-push-R u
+ ; rext-R = λ {x} u → 𝓻 (lens-fam x) u
+ }
+ where
+  open oplax-covariant-lens 𝓑
+
+syntax oplax-covariant-to-bivariant-lens 𝓐 𝓑 = disp±̂⁺ 𝓐 , 𝓑
+
+private
+ observation' : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+              → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+              → disp⁺ 𝓐 , 𝓑 ＝ disp± 𝓐 , (disp±̂⁺ 𝓐 , 𝓑)
+ observation' 𝓐 𝓑 = refl
+
+lax-contravariant-to-bivariant-lens : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+                                    → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
+                                    → bivariant-midpoint-lens 𝓤' 𝓥' 𝓐
+lax-contravariant-to-bivariant-lens 𝓐 𝓑 = record
+ { bi-lens-fam = λ {x} {y} p → lens-fam x
+ ; lext = λ {x} {y} p u → u
+ ; rext = λ {x} {y} p u → lens-pull p u
+ ; ext-R = λ {x} u → lens-pull-R u
+ ; rext-R = λ {x} u → lens-pull-R u
+ }
+ where
+  open lax-contravariant-lens 𝓑
+
+syntax lax-contravariant-to-bivariant-lens 𝓐 𝓑 = disp±⁻ 𝓐 , 𝓑
+
+private
+ observation'' : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+               → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
+               → disp⁻ 𝓐 , 𝓑 ＝ disp± 𝓐 , (disp±⁻ 𝓐 , 𝓑)
+ observation'' 𝓐 𝓑 = refl
 
 \end{code}
