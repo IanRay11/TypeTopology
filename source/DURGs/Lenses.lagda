@@ -16,9 +16,17 @@ open import DURGs.UnivalentReflexiveGraphs
 We introduce the notion of lenses which allow for a deeper characterization
 of transport.
 
-We will use record types.
+We will use record types to define lenses but first we will record the structure
+via sigma types as this will be useful later.
 
 \begin{code}
+
+oplax-covariant-lens-structure
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥')
+ → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
+oplax-covariant-lens-structure 𝓐 𝓑
+ = Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+    ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → ϕ x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u)
 
 record oplax-covariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
  field
@@ -28,6 +36,13 @@ record oplax-covariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 �
  field
   lens-push : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x ⊱) → ⊰ 𝓑 y ⊱
   lens-push-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → lens-push (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u
+
+lax-contravariant-lens-structure
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥')
+ → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
+lax-contravariant-lens-structure 𝓐 𝓑
+ = Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y ⊱ → ⊰ 𝓑 x ⊱) ,
+    ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ ϕ x x (𝓻 𝓐 x) u)
 
 record lax-contravariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
  field
