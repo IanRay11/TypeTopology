@@ -20,10 +20,10 @@ Duality involution is investigated for lenses.
 
 \begin{code}
 
-total-opposite-for-oplax-lenses : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+total-opposite-for-oplax-lenses : {𝓤' 𝓥' : Universe} {𝓐 : refl-graph 𝓤 𝓥}
                                 → oplax-covariant-lens 𝓤' 𝓥' 𝓐
                                 → lax-contravariant-lens 𝓤' 𝓥' (𝓐 ᵒᵖ)
-total-opposite-for-oplax-lenses 𝓐 𝓑 = record
+total-opposite-for-oplax-lenses 𝓑 = record
  { lens-fam = λ x → lens-fam x ᵒᵖ
  ; lens-pull = λ {x} {y} p u → lens-push p u
  ; lens-pull-R = λ {x} u → lens-push-R u
@@ -31,12 +31,12 @@ total-opposite-for-oplax-lenses 𝓐 𝓑 = record
  where
   open oplax-covariant-lens 𝓑
 
-syntax total-opposite-for-oplax-lenses 𝓐 𝓑 = 𝓐 , 𝓑 ᵒᵖ
+syntax total-opposite-for-oplax-lenses 𝓑 = 𝓑 ⁻ₒₚ
 
-total-opposite-for-lax-lenses : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+total-opposite-for-lax-lenses : {𝓤' 𝓥' : Universe} {𝓐 : refl-graph 𝓤 𝓥}
                               → lax-contravariant-lens 𝓤' 𝓥' 𝓐
                               → oplax-covariant-lens 𝓤' 𝓥' (𝓐 ᵒᵖ)
-total-opposite-for-lax-lenses 𝓐 𝓑 = record
+total-opposite-for-lax-lenses 𝓑 = record
  { lens-fam = λ x → lens-fam x ᵒᵖ
  ; lens-push = λ {x} {y} p u → lens-pull p u
  ; lens-push-R = λ {x} u → lens-pull-R u
@@ -44,14 +44,27 @@ total-opposite-for-lax-lenses 𝓐 𝓑 = record
  where
   open lax-contravariant-lens 𝓑
 
-syntax total-opposite-for-lax-lenses 𝓐 𝓑 = 𝓐 , 𝓑 ₒₚ
-
-\end{code}
-
-This doesn't quite make sense...
+syntax total-opposite-for-lax-lenses 𝓑 = 𝓑 ⁺ₒₚ
 
 private
- observation : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+ observation : {𝓤' 𝓥' : Universe} {𝓐 : refl-graph 𝓤 𝓥}
              → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
-             → disp⁻ (𝓐 ᵒᵖ) , (𝓐 , 𝓑 ᵒᵖ) ＝ (disp⁺ 𝓐 , 𝓑) ᵒᵖ
- observation = ?
+             → (𝓑 ⁻ₒₚ) ⁺ₒₚ ＝ 𝓑
+ observation 𝓑 = refl
+ 
+ observation' : {𝓤' 𝓥' : Universe} {𝓐 : refl-graph 𝓤 𝓥}
+              → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
+              → (𝓑 ⁺ₒₚ) ⁻ₒₚ ＝ 𝓑
+ observation' 𝓑 = refl
+
+ observation'' : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+               → (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+               → disp⁻ (𝓐 ᵒᵖ) , (𝓑 ⁻ₒₚ) ＝ ⟨ 𝓐 ⟩ (disp⁺ 𝓐 , 𝓑) ᵒᵖ
+ observation'' 𝓐 𝓑 = refl
+
+ observation''' : {𝓤' 𝓥' : Universe} (𝓐 : refl-graph 𝓤 𝓥)
+                → (𝓑 : lax-contravariant-lens 𝓤' 𝓥' 𝓐)
+                → disp⁺ (𝓐 ᵒᵖ) , (𝓑 ⁺ₒₚ) ＝ ⟨ 𝓐 ⟩ (disp⁻ 𝓐 , 𝓑) ᵒᵖ
+ observation''' 𝓐 𝓑 = refl
+
+\end{code}

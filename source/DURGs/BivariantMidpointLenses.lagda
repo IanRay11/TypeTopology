@@ -22,9 +22,32 @@ open import DURGs.UnivalentReflexiveGraphs
 
 We define a technical device that generalize the previous two notion of lenses.
 
+We first give the structure in terms of of sigma types before giving the more
+conveinient record type.
+
 \begin{code}
 
-record bivariant-midpoint-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
+bivariant-midpoint-lens-structure
+ : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥')
+ → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
+bivariant-midpoint-lens-structure 𝓐 𝓑
+ = Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+   Σ ψ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+   Σ θ ꞉ ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+          → ϕ x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x x (𝓻 𝓐 x) u) ,
+    ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+      → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x x (𝓻 𝓐 x) u)
+
+bivariant-midpoint-lens-sigma : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+                              → 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇
+bivariant-midpoint-lens-sigma 𝓤' 𝓥' 𝓐
+ = Σ 𝓕 ꞉ ((x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥') ,
+    bivariant-midpoint-lens-structure 𝓐 𝓕
+
+record bivariant-midpoint-lens
+ (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇ where
  field
   bi-lens-fam : {x y : ⊰ 𝓐 ⊱} → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥'
  private
@@ -38,6 +61,8 @@ record bivariant-midpoint-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 
          → u ≈⟨ 𝓑 (𝓻 𝓐 x) ⟩ rext (𝓻 𝓐 x) u
 
 \end{code}
+
+TODO: Show that the sigma and record types are equivalent.
 
 Now we define when a bivariant midpoint lens is univalent.
 

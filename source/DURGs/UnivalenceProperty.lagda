@@ -43,6 +43,8 @@ displayed-refl-graph-univalence-is-a-property fe 𝓐 𝓑
 
 To show lens structure is a property we will require the following lemmas.
 
+TODO. Show bivariant midpoint lens structure is a property.
+
 \begin{code}
 
 oplax-structure-is-property-lemma

@@ -219,16 +219,16 @@ opposite-displayed-refl-graph
  → displayed-refl-graph 𝓣 𝓦 (opposite-refl-graph 𝓐)
 opposite-displayed-refl-graph {_} {_} {_} {𝓦} 𝓐 𝓑 = ([ 𝓑 ] , I , 𝓻𝓭 𝓑)
  where
-  I : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ opposite-refl-graph 𝓐 ⟩ y)
+  I : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ᵒᵖ ⟩ y)
     → [ 𝓑 ] x → [ 𝓑 ] y → 𝓦 ̇
   I p u v = v ≈＜ 𝓑 , p ＞ u
 
-syntax opposite-displayed-refl-graph 𝓐 𝓑 = 𝓑 ⟨ 𝓐 ⟩ ᵒᵖ
+syntax opposite-displayed-refl-graph 𝓐 𝓑 = ⟨ 𝓐 ⟩ 𝓑 ᵒᵖ
 
 private
  observation3
   : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : displayed-refl-graph 𝓣 𝓦 𝓐)
-  → (𝓑 ⟨ 𝓐 ⟩ ᵒᵖ) ⟨ 𝓐 ᵒᵖ ⟩ ᵒᵖ ＝ 𝓑
+  → ⟨ 𝓐 ᵒᵖ ⟩ (⟨ 𝓐 ⟩ 𝓑 ᵒᵖ) ᵒᵖ ＝ 𝓑
  observation3 𝓐 𝓑 = refl
 
 \end{code}

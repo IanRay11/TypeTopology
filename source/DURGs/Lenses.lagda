@@ -28,7 +28,13 @@ oplax-covariant-lens-structure 𝓐 𝓑
  = Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
     ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → ϕ x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u)
 
-record oplax-covariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
+oplax-covariant-lens-sigma : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+                           → 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇
+oplax-covariant-lens-sigma 𝓤' 𝓥' 𝓐
+ = Σ 𝓕 ꞉ (⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥') , oplax-covariant-lens-structure 𝓐 𝓕
+
+record oplax-covariant-lens
+ (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥) : 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺  ̇ where
  field
   lens-fam : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥'
  private
@@ -44,7 +50,13 @@ lax-contravariant-lens-structure 𝓐 𝓑
  = Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y ⊱ → ⊰ 𝓑 x ⊱) ,
     ((x : ⊰ 𝓐 ⊱) (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ ϕ x x (𝓻 𝓐 x) u)
 
-record lax-contravariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤ω where
+lax-contravariant-lens-sigma : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+                             → 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇
+lax-contravariant-lens-sigma 𝓤' 𝓥' 𝓐
+ = Σ 𝓕 ꞉ (⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥') , lax-contravariant-lens-structure 𝓐 𝓕
+
+record lax-contravariant-lens
+ (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇ where
  field
   lens-fam : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥'
  private
@@ -54,6 +66,8 @@ record lax-contravariant-lens (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 �
   lens-pull-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ lens-pull (𝓻 𝓐 x) u
   
 \end{code}
+
+TODO: Show that the record and sigma are equivalent.
 
 We say a oplax (lax) covariant (contraviant) lens is univalent if its family
 is valued in univalent reflexive graphs.
