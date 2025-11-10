@@ -111,6 +111,8 @@ lax-structure-is-property-lemma {𝓤} fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 x
 
 \end{code}
 
+TODO: Show bivariant structure is a property.
+
 Now we can show the type of lens structures is a proposition.
 
 \begin{code}

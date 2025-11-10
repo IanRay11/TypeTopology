@@ -5,6 +5,7 @@
 module DURGs.Lenses where
 
 open import MLTT.Spartan
+open import UF.Equiv
 open import DURGs.BasicConstructionsonReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
@@ -43,6 +44,23 @@ record oplax-covariant-lens
   lens-push : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x ⊱) → ⊰ 𝓑 y ⊱
   lens-push-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → lens-push (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u
 
+oplax-covariant-lens-equiv-presentation
+ : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+ → oplax-covariant-lens-sigma 𝓤' 𝓥' 𝓐 ≃ oplax-covariant-lens 𝓤' 𝓥' 𝓐
+oplax-covariant-lens-equiv-presentation 𝓤' 𝓥' 𝓐
+ = qinveq I (II , (λ - → refl) , (λ - → refl)) 
+ where
+  I : oplax-covariant-lens-sigma 𝓤' 𝓥' 𝓐 → oplax-covariant-lens 𝓤' 𝓥' 𝓐
+  I (𝓕 , ϕ , ψ) = record
+   { lens-fam = 𝓕
+   ; lens-push = λ {x} {y} p u → ϕ x y p u
+   ; lens-push-R = λ {x} u → ψ x u
+   }
+  II : oplax-covariant-lens 𝓤' 𝓥' 𝓐 → oplax-covariant-lens-sigma 𝓤' 𝓥' 𝓐
+  II 𝓑 = (lens-fam , (λ x y p u → lens-push p u) , λ x u → lens-push-R u)
+   where
+    open oplax-covariant-lens 𝓑
+
 lax-contravariant-lens-structure
  : (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥')
  → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
@@ -64,10 +82,25 @@ record lax-contravariant-lens
  field
   lens-pull : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y ⊱) → ⊰ 𝓑 x ⊱
   lens-pull-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ lens-pull (𝓻 𝓐 x) u
+
+lax-contravariant-lens-equiv-presentation
+ : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+ → lax-contravariant-lens-sigma 𝓤' 𝓥' 𝓐 ≃ lax-contravariant-lens 𝓤' 𝓥' 𝓐
+lax-contravariant-lens-equiv-presentation 𝓤' 𝓥' 𝓐
+ = qinveq I (II , (λ - → refl) , (λ - → refl)) 
+ where
+  I : lax-contravariant-lens-sigma 𝓤' 𝓥' 𝓐 → lax-contravariant-lens 𝓤' 𝓥' 𝓐
+  I (𝓕 , ϕ , ψ) = record
+   { lens-fam = 𝓕
+   ; lens-pull = λ {x} {y} p u → ϕ x y p u
+   ; lens-pull-R = λ {x} u → ψ x u
+   }
+  II : lax-contravariant-lens 𝓤' 𝓥' 𝓐 → lax-contravariant-lens-sigma 𝓤' 𝓥' 𝓐
+  II 𝓑 = (lens-fam , (λ x y p u → lens-pull p u) , λ x u → lens-pull-R u)
+   where
+    open lax-contravariant-lens 𝓑
   
 \end{code}
-
-TODO: Show that the record and sigma are equivalent.
 
 We say a oplax (lax) covariant (contraviant) lens is univalent if its family
 is valued in univalent reflexive graphs.

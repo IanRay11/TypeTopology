@@ -60,9 +60,27 @@ record bivariant-midpoint-lens
   rext-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 (𝓻 𝓐 x) ⊱)
          → u ≈⟨ 𝓑 (𝓻 𝓐 x) ⟩ rext (𝓻 𝓐 x) u
 
-\end{code}
+bivariant-midpoint-equiv-pres
+ : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
+ → bivariant-midpoint-lens-sigma 𝓤' 𝓥' 𝓐 ≃ bivariant-midpoint-lens 𝓤' 𝓥' 𝓐
+bivariant-midpoint-equiv-pres 𝓤' 𝓥' 𝓐
+ = qinveq I (II , (λ - → refl) , (λ - → refl))
+ where
+  I : bivariant-midpoint-lens-sigma 𝓤' 𝓥' 𝓐 → bivariant-midpoint-lens 𝓤' 𝓥' 𝓐
+  I (𝓕 , ϕ , ψ , θ , η) = record
+   { bi-lens-fam = λ {x} {y} p → 𝓕 x y p
+   ; lext = λ {x} {y} p → ϕ x y p
+   ; rext = λ {x} {y} p → ψ x y p
+   ; ext-R = λ {x} u → θ x u
+   ; rext-R = λ {x} u → η x u
+   }
+  II : bivariant-midpoint-lens 𝓤' 𝓥' 𝓐 → bivariant-midpoint-lens-sigma 𝓤' 𝓥' 𝓐
+  II 𝓑 = ((λ x y p → bi-lens-fam p) , (λ x y p → lext p) , (λ x y p → rext p) ,
+          (λ x u → ext-R u) , λ x u → rext-R u)
+   where
+    open bivariant-midpoint-lens 𝓑
 
-TODO: Show that the sigma and record types are equivalent.
+\end{code}
 
 Now we define when a bivariant midpoint lens is univalent.
 
