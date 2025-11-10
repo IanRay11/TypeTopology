@@ -13,6 +13,7 @@ open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.FunExt
 open import DURGs.BasicConstructionsonReflexiveGraphs
+open import DURGs.BivariantMidpointLenses
 open import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
@@ -109,9 +110,22 @@ lax-structure-is-property-lemma {𝓤} fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 x
           (λ (y , p) → ⊰ 𝓑 y ⊱ → ⊰ 𝓑 x ⊱) (≃-sym II))
   IV = Σ-change-of-variable-≃ (λ - → id ≈⟨ ∏ ⊰ 𝓑 x ⊱ , (λ - → 𝓑 x) ⟩ - ) III
 
-\end{code}
+bivariant-structure-is-property-lemma
+ : FunExt
+ → Fun-Ext
+ → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥')
+ → is-univalent-refl-graph 𝓐
+ → ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → is-univalent-refl-graph (𝓑 x y p))
+ → (x : ⊰ 𝓐 ⊱)
+ → (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+ , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
+ , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+ × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
+ ≃ (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+ , ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ id)
+bivariant-structure-is-property-lemma = {!!}
 
-TODO: Show bivariant structure is a property.
+\end{code}
 
 Now we can show the type of lens structures is a proposition.
 
@@ -174,6 +188,27 @@ lax-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = equiv-to-p
   III : is-prop ((x : ⊰ 𝓐 ⊱) → fan (∏ ⊰ 𝓑 x ⊱ , (λ - → 𝓑 x)) id)
   III = Π-is-prop fe' (λ - → II - id)
 
+bivariant-lens-structure-is-a-property
+ : FunExt
+ → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥')
+ → is-univalent-refl-graph 𝓐
+ → ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → is-univalent-refl-graph (𝓑 x y p))
+ → is-prop (bivariant-midpoint-lens-structure 𝓐 𝓑)
+bivariant-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = {!!}
+ where
+  fe' : Fun-Ext
+  fe' = fe _ _
+  I : bivariant-midpoint-lens-structure 𝓐 𝓑
+    ≃ ((x : ⊰ 𝓐 ⊱)
+    → Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+    , ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ id)
+  I = bivariant-midpoint-lens-structure 𝓐 𝓑                           ≃⟨ {!!} ⟩
+      ((x : ⊰ 𝓐 ⊱)
+    → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+    , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
+    , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))                                                                                 ≃⟨ {!!} ⟩
+      ((x : ⊰ 𝓐 ⊱) → cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id)
+                                                                      ■
+
 \end{code}
-
-
