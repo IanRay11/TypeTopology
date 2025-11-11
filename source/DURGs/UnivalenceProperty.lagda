@@ -44,8 +44,6 @@ displayed-refl-graph-univalence-is-a-property fe 𝓐 𝓑
 
 To show lens structure is a property we will require the following lemmas.
 
-TODO. Show bivariant midpoint lens structure is a property.
-
 \begin{code}
 
 oplax-structure-is-property-lemma
@@ -116,18 +114,130 @@ bivariant-structure-is-property-lemma
  → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥')
  → is-univalent-refl-graph 𝓐
  → ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → is-univalent-refl-graph (𝓑 x y p))
- → (x : ⊰ 𝓐 ⊱)
- → (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+ → (bivariant-midpoint-lens-structure 𝓐 𝓑)
+ ≃ ((x : ⊰ 𝓐 ⊱)
+ → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
  , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
  , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
  × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
- ≃ (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
- , ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ id)
-bivariant-structure-is-property-lemma = {!!}
+bivariant-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
+ = bivariant-midpoint-lens-structure 𝓐 𝓑                                ≃⟨ I ⟩
+   (Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+    Σ ψ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+   ((x : ⊰ 𝓐 ⊱)
+    → ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+        → ϕ x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x x (𝓻 𝓐 x) u)
+    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x x (𝓻 𝓐 x) u)))                                                                                ≃⟨ II ⟩
+   (Σ ϕ ꞉ ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+   ((x : ⊰ 𝓐 ⊱)
+    → Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱)
+          → ⊰ 𝓑 x y p ⊱) ,
+    ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+        → ϕ x x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)))
+                                                                       ≃⟨ III ⟩
+   ((x : ⊰ 𝓐 ⊱)
+   → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+   , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
+   , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+   × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))    ■
+  where
+   I = Σ-cong (λ ϕ → Σ-cong (λ ψ → ≃-sym Π×-distr))
+   II = Σ-cong (λ ϕ → ≃-sym ΠΣ-distr-≃)
+   III = ≃-sym ΠΣ-distr-≃
 
+Σ-×-assoc-lemma : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {A : X → 𝓦 ̇ } {B : X → Y → 𝓣 ̇ }
+                → (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
+                ≃ (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
+Σ-×-assoc-lemma {_} {_} {_} {_} {X} {Y} {A} {B} = {!!}
+ where
+  fore : (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
+       → (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
+  fore = {!!}
+  back : (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
+       → (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
+  back = {!!}
+  I : {!!}
+  I = {!!}
+  II : {!!}
+  II = {!!}
+
+bivariant-structure-is-property-lemma'
+ : FunExt
+ → Fun-Ext
+ → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥')
+ → is-univalent-refl-graph 𝓐
+ → ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → is-univalent-refl-graph (𝓑 x y p))
+ → (x : ⊰ 𝓐 ⊱)
+ → (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+  , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
+  , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+ × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
+ ≃ (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+  , ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ id)
+bivariant-structure-is-property-lemma' {𝓤} fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 x
+ = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
+  , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
+  , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+ × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
+                                                           ≃⟨ I ⟩
+ (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x y p ⊱)
+  , Σ ψ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
+  , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+    → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u)
+ × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u))
+                                                           ≃⟨ IV ⟩
+ (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+  , Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+  , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ u)
+ × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ u))
+                                                           ≃⟨ V ⟩
+ (Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+  , (cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) ψ)
+  × (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ))
+                                                           ≃⟨ VI ⟩
+ cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id    ■
+  where
+   I = ≃-comp (Σ-change-of-variable-≃
+         (λ ϕ → Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱)
+                → ⊰ 𝓑 x y p ⊱)
+           , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+                → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
+         × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
+         (≃-sym (curry-uncurry fe)))
+        (Σ-cong (λ - → Σ-change-of-variable-≃
+         (λ ψ → ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+                → - (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u)
+         × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u))
+         (≃-sym (curry-uncurry fe))))
+   II  = (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x y p ⊱) ≃⟨ II' ⟩
+         (𝟙{𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)      ≃⟨ ≃-sym (𝟙→ fe') ⟩
+         (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)             ■
+    where
+     II' = ≃-sym (Π-change-of-variable-≃ fe
+            (λ (y , p) → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x y p ⊱)
+            (≃-sym (singleton-≃-𝟙 (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x))))
+   III = (((y , p) : fan 𝓐 x) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱) ≃⟨ III' ⟩
+         (𝟙{𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)      ≃⟨ ≃-sym (𝟙→ fe') ⟩
+         (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)             ■
+    where
+     III' = ≃-sym (Π-change-of-variable-≃ fe
+             (λ (y , p) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
+             (≃-sym (singleton-≃-𝟙 (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x))))
+   IV = ≃-comp (Σ-change-of-variable-≃ {!!} II)
+         (Σ-cong (λ ϕ → Σ-change-of-variable-≃ {!!} III))
+   V = ≃-comp Σ-flip Σ-×-assoc-lemma
+   VI = Σ-cong (λ ψ → ≃-comp (Σ-change-of-variable-≃
+         {!!} (singleton-≃-𝟙 {!!}))
+         {!!})
+     
+                                                                       
 \end{code}
 
-Now we can show the type of lens structures is a proposition.
+Now we can show that lens structure is a proposition.
 
 \begin{code}
 
@@ -152,7 +262,7 @@ oplax-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = equiv-to
    where
     I' = ≃-sym ΠΣ-distr-≃
     II' = Π-cong fe' fe'
-          (λ - → oplax-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 -)
+          (oplax-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑)
   II : (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (∏ ⊰ 𝓑 x ⊱ , (λ - → 𝓑 x))
   II x = univalence-closed-under-product fe' ⊰ 𝓑 x ⊱ (λ - → 𝓑 x)
           (λ - → is-ua-𝓑 x)
@@ -181,7 +291,7 @@ lax-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = equiv-to-p
    where
     I' = ≃-sym ΠΣ-distr-≃
     II' = Π-cong fe' fe'
-          (λ - → lax-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 -)
+          (lax-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑)
   II : (x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (∏ ⊰ 𝓑 x ⊱ , (λ - → 𝓑 x))
   II x = univalence-closed-under-product fe' ⊰ 𝓑 x ⊱ (λ - → 𝓑 x)
           (λ - → is-ua-𝓑 x)
@@ -194,7 +304,8 @@ bivariant-lens-structure-is-a-property
  → is-univalent-refl-graph 𝓐
  → ((x y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → is-univalent-refl-graph (𝓑 x y p))
  → is-prop (bivariant-midpoint-lens-structure 𝓐 𝓑)
-bivariant-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = {!!}
+bivariant-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
+ = equiv-to-prop I III
  where
   fe' : Fun-Ext
   fe' = fe _ _
@@ -202,13 +313,26 @@ bivariant-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = {!!}
     ≃ ((x : ⊰ 𝓐 ⊱)
     → Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ id)
-  I = bivariant-midpoint-lens-structure 𝓐 𝓑                           ≃⟨ {!!} ⟩
+  I = bivariant-midpoint-lens-structure 𝓐 𝓑                           ≃⟨ I' ⟩
       ((x : ⊰ 𝓐 ⊱)
     → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ⊰ 𝓑 x y p ⊱)
     , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱) → ⊰ 𝓑 x y p ⊱)
     , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
-    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))                                                                                 ≃⟨ {!!} ⟩
+    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))                                                                                 ≃⟨ II' ⟩
       ((x : ⊰ 𝓐 ⊱) → cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id)
                                                                       ■
+   where
+    I' = bivariant-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
+    II' = Π-cong fe' fe'
+           (bivariant-structure-is-property-lemma' fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑)
+  II : (x : ⊰ 𝓐 ⊱)
+     → is-univalent-refl-graph (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)))
+  II x = univalence-closed-under-product fe' ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱
+          (λ - → 𝓑 x x (𝓻 𝓐 x)) (λ - → is-ua-𝓑 x x (𝓻 𝓐 x))
+  III : is-prop ((x : ⊰ 𝓐 ⊱)
+                  → cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id)
+  III = Π-is-prop fe'
+         (λ - → prop-fan-to-cofan {_} {_}
+                 {∏ ⊰ 𝓑 - - (𝓻 𝓐 -) ⊱ , (λ u → 𝓑 - - (𝓻 𝓐 -))} (II -) id)
 
 \end{code}
