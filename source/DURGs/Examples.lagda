@@ -89,8 +89,34 @@ function-univalent-refl-graph {𝓤} {_} {A} {B} fe f
 We wish to move towards a more unified approach to SIP. We will try to give
 some illustrative examples.
 
-We illustrate the standard procedure by giving a characaterization of the
-identity of cones over a cospan.
+Example 1:
+
+We give a detailed characaterization of the identity type of cones over a
+cospan using reflexive graphs.
+
+Two cones witnessed by
+
+             q                                 q'
+        A ───────→ X                      A ───────→ X       
+        │          │                      │          │
+  H : p │          │ g            H' : p' │          │ g
+        │          │                      │          │
+        ↓          ↓                      ↓          ↓
+        Y ───────→ Z                      Y ───────→ Z
+              f                                 f
+
+are the same when we have homotopies α : p ∼ p' and β : q ∼ q' and a natural
+coherence
+
+                           H
+                 f ∘ p  ───────→ g ∘ q
+                   |               |
+               α*  |               |  β*
+                   |               |
+                   ↓               ↓
+                 f ∘ p' ───────→ g ∘ q'
+                           H'
+between the homotopies.
 
 \begin{code}
 
@@ -100,11 +126,26 @@ module _ (fe : Fun-Ext) {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {Z : 𝓦 ̇ }
 
  open pullback f g
 
+\end{code}
+
+We define reflexive graph structure on the base of cone whose underlying type
+must be (A → X) × (A → Y) with edges corresponding to the pair of homotopes
+p ∼ p' and q ∼ q'.
+
+\begin{code}
+
  cone-base-refl-graph : (A : 𝓣 ̇) → refl-graph (𝓤 ⊔ 𝓥 ⊔ 𝓣) (𝓤 ⊔ 𝓥 ⊔ 𝓣)
  cone-base-refl-graph A
   = (((A → X) × (A → Y)) ,
     (λ (p , q) (p' , q') → (p ∼ p') × (q ∼ q')) ,
      λ (p , q) → (∼-refl , ∼-refl))
+
+\end{code}
+
+That this reflexive graph is univalent is automatic as univalence is closed
+under product, functions and use of the discrete reflexive graph.
+
+\begin{code}
      
  cone-base-is-univalent : (A : 𝓣 ̇)
                         → is-univalent-refl-graph (cone-base-refl-graph A)
@@ -114,6 +155,14 @@ module _ (fe : Fun-Ext) {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {Z : 𝓦 ̇ }
                               (discrete-refl-graph-is-univalent X))
                              (univalence-closed-under-cotensor fe A (Δ Y)
                               (discrete-refl-graph-is-univalent Y))
+
+\end{code}
+
+We now give the structure of a displayed reflexive graph over the base
+whose type family takes pairs of maps and returns commutative squares. The
+edges correspond to the natural coherence condition mentioned above.
+
+\begin{code}
                               
  cone-displayed-refl-graph
   : (A : 𝓣 ̇)
@@ -122,6 +171,16 @@ module _ (fe : Fun-Ext) {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {Z : 𝓦 ̇ }
   = ((λ (p , q) → commutative-square (p , q)) ,
     (λ (α , β) H H' → ∼-trans H (∼-ap-∘ g β) ∼ ∼-trans (∼-ap-∘ f α) H') ,
      λ H - → refl-left-neutral ⁻¹)
+
+\end{code}
+
+To see that the displayed reflexive graph is univalent we only have to look
+at the fibers. The luxury here is that the base edges are taken to be the
+reflexive data. The fan of interest here is equivalent to a fan over what is
+essentially the discrete reflexive graph of f ∘ p ∼ g ∘ q (which is manifestly
+univalent).
+
+\begin{code}
 
  cone-display-is-univalent
   : (A : 𝓣 ̇)
@@ -141,6 +200,14 @@ module _ (fe : Fun-Ext) {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {Z : 𝓦 ̇ }
     where
      II = Σ-cong (λ - → transport-≃ (λ - → H ∼ -)
           (dfunext fe (λ x → refl-left-neutral)))
+
+\end{code}
+
+The hard work is done. Since we have a displaye univalent reflexive graph
+over a univalent reflexive graph the total reflexive graph is also univalent.
+The carrier of this total reflexive graph corresponds to the type of cones.
+
+\begin{code}
 
  cone-characterization
   : {A : 𝓣 ̇ } {p p' : A → X} {q q' : A → Y}
@@ -163,3 +230,7 @@ module _ (fe : Fun-Ext) {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {Z : 𝓦 ̇ }
    II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
+
+We now use lens to recreate an existing characterization of transport.
+
+\begin{code}

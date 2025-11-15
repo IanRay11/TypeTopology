@@ -41,7 +41,7 @@ record oplax-covariant-lens
  private
   𝓑 = lens-fam
  field
-  lens-push : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 x ⊱) → ⊰ 𝓑 y ⊱
+  lens-push : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱
   lens-push-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → lens-push (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u
 
 oplax-covariant-lens-equiv-presentation
@@ -80,7 +80,7 @@ record lax-contravariant-lens
  private
   𝓑 = lens-fam
  field
-  lens-pull : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) (u : ⊰ 𝓑 y ⊱) → ⊰ 𝓑 x ⊱
+  lens-pull : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y ⊱ → ⊰ 𝓑 x ⊱
   lens-pull-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ lens-pull (𝓻 𝓐 x) u
 
 lax-contravariant-lens-equiv-presentation
@@ -139,7 +139,7 @@ covariant-displayed-oplax-lens {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓑 = (I , II
   I x = ⊰ lens-fam x ⊱
   II : {x y : ⊰ 𝓐 ⊱}
      → x ≈⟨ 𝓐 ⟩ y
-     →  ⊰ lens-fam x ⊱
+     → ⊰ lens-fam x ⊱
      → ⊰ lens-fam y ⊱
      → 𝓥' ̇
   II {x} {y} p u v = lens-push p u ≈⟨ lens-fam y ⟩ v
