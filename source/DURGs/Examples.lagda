@@ -67,9 +67,8 @@ sigma-characterization-from-univalent-refl-graphs
 
 \end{code}
 
+Just a reminder: 
 Function spaces have univalent reflexive graph structure.
-
-This needs to be deleted lol.
 
 \begin{code}
 
@@ -95,7 +94,7 @@ Example 1:
 We give a detailed characaterization of the identity type of cones over a
 cospan using reflexive graphs.
 
-Two cones witnessed by
+Two cones with commutative graphs witnessed by 
 
              q                                 q'
         A ───────→ X                      A ───────→ X       
@@ -232,7 +231,8 @@ The carrier of this total reflexive graph corresponds to the type of cones.
 
 \end{code}
 
-We now use lenses to recreate an existing characterization of transport.
+We now use lenses to recreate an existing characterization of transport (see
+file FundamentalLemmaOfTransportAlongEquivalences).
 
 \begin{code}
 
@@ -249,8 +249,43 @@ module _ (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
 
 \end{code}
 
-We now show that if a univalent reflexive graph has a univalent oplax covariant
-lens structure on it then push is the same as transport.
+We now show that if a univalent reflexive graph has an oplax covariant lens
+structure on it then push and transport share an edge.
+
+\begin{code}
+
+module _ {𝓤' 𝓥' : Universe}
+         (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
+         (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+       where
+
+ open oplax-covariant-lens 𝓑
+
+ fundamental-theorem-of-transport-for-edges
+  : {x y : ⊰ 𝓐 ⊱}
+  → (e : x ≈⟨ 𝓐 ⟩ y)
+  → (u : ⊰ lens-fam x ⊱)
+  → lens-push e u ≈⟨ lens-fam y ⟩ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e u
+ fundamental-theorem-of-transport-for-edges {x} {y} = I II IV x y
+  where
+   I : edge-induction (𝓤' ⊔ 𝓥') 𝓐
+   I = univalence-implies-edge-induction ua-𝓐
+   II : (x y : ⊰ 𝓐 ⊱) → x ≈⟨ 𝓐 ⟩ y → 𝓤' ⊔ 𝓥' ̇
+   II x y e = (u : ⊰ lens-fam x ⊱)
+    → lens-push e u ≈⟨ lens-fam y ⟩ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e u
+   III : (x : ⊰ 𝓐 ⊱) (u : ⊰ lens-fam x ⊱)
+       → u ＝ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x) u
+   III x u = ap (λ - → transport lens-fam-car - u)
+             (edge-to-id-comp (𝓐 , ua-𝓐)) ⁻¹
+   IV : (x : ⊰ 𝓐 ⊱) (u : ⊰ lens-fam x ⊱)
+      → lens-push (𝓻 𝓐 x) u
+      ≈⟨ lens-fam x ⟩ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x) u
+   IV x u = transport (λ - → lens-push (𝓻 𝓐 x) u ≈⟨ lens-fam x ⟩ -) (III x u)
+             (lens-push-R u)
+
+\end{code}
+
+If the oplax structrue is univalent then we can upgrade the edge to identity.
 
 \begin{code}
 
@@ -266,21 +301,8 @@ module _ {𝓤' 𝓥' : Universe}
   : {x y : ⊰ 𝓐 ⊱}
   → (e : x ≈⟨ 𝓐 ⟩ y)
   → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
- fundamental-theorem-of-transport {x} {y} e
-  = I (λ _ _ - → lens-push - ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car -) II x y e
-  where
-   I : edge-induction 𝓤' 𝓐
-   I = univalence-implies-edge-induction ua-𝓐
-   II : (x : ⊰ 𝓐 ⊱)
-      → lens-push (𝓻 𝓐 x) ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x)
-   II x u = lens-push (𝓻 𝓐 x) u                             ＝⟨ III ⟩
-            u                                               ＝⟨ IV ⟩
-            transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x) u ∎
-    where
-     III = edge-to-id' (lens-fam x , ua-𝓑 x) (lens-push-R u)
-     IV = ap (λ - → transport lens-fam-car - u) (edge-to-id-comp (𝓐 , ua-𝓐)) ⁻¹
+ fundamental-theorem-of-transport {x} {y} e u
+  = edge-to-id' (lens-fam y , ua-𝓑 y)
+     (fundamental-theorem-of-transport-for-edges 𝓐 ua-𝓐 𝓑 e u)
 
 \end{code}
- 
-
-
