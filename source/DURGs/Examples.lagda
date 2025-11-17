@@ -250,7 +250,7 @@ module _ (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
 \end{code}
 
 We now show that if a univalent reflexive graph has a univalent oplax covariant
-lens structure on it then is push is the same as transport.
+lens structure on it then push is the same as transport.
 
 \begin{code}
 
