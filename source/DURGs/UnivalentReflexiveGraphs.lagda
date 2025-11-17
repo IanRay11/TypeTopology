@@ -304,7 +304,7 @@ edge-to-id-comp 𝓐 {x}
 
 We consider the notion of edge induction and show univalence implies it.
 
-ToDo: show they are also equivalent.
+TODO: show they are also equivalent.
 
 \begin{code}
 
