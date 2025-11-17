@@ -285,7 +285,7 @@ module _ {𝓤' 𝓥' : Universe}
 
 \end{code}
 
-If the oplax structrue is univalent then we can upgrade the edge to identity.
+If the oplax lens is univalent then we can upgrade the edge to identity.
 
 \begin{code}
 
