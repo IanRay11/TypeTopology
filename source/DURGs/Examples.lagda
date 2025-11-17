@@ -21,6 +21,7 @@ open import DURGs.BasicConstructionsonReflexiveGraphs
 open import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
+open import DURGs.Lenses
 open import DURGs.ReflexiveGraphs
 open import DURGs.UnivalentReflexiveGraphs
 
@@ -231,6 +232,55 @@ The carrier of this total reflexive graph corresponds to the type of cones.
 
 \end{code}
 
-We now use lens to recreate an existing characterization of transport.
+We now use lenses to recreate an existing characterization of transport.
 
 \begin{code}
+
+module _ (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
+       where
+
+ transport-along-≈ : (P : ⊰ 𝓐 ⊱ → 𝓣 ̇) {x y : ⊰ 𝓐 ⊱}
+                   → x ≈⟨ 𝓐 ⟩ y
+                   → P x → P y
+ transport-along-≈ P {x} {y} e = transport P I
+  where
+   I : x ＝ y
+   I = edge-to-id' (𝓐 , ua-𝓐) e
+
+\end{code}
+
+We now show that if a univalent reflexive graph has a univalent oplax covariant
+lens structure on it then is push is the same as transport.
+
+\begin{code}
+
+module _ {𝓤' 𝓥' : Universe}
+         (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
+         (𝓑 : oplax-covariant-lens 𝓤' 𝓥' 𝓐)
+         (ua-𝓑 : oplax-covariant-lens-is-univalent 𝓐 𝓑)
+       where
+
+ open oplax-covariant-lens 𝓑
+
+ fundamental-theorem-of-transport
+  : {x y : ⊰ 𝓐 ⊱}
+  → (e : x ≈⟨ 𝓐 ⟩ y)
+  → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
+ fundamental-theorem-of-transport {x} {y} e
+  = I (λ _ _ - → lens-push - ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car -) II x y e
+  where
+   I : edge-induction 𝓤' 𝓐
+   I = univalence-implies-edge-induction ua-𝓐
+   II : (x : ⊰ 𝓐 ⊱)
+      → lens-push (𝓻 𝓐 x) ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x)
+   II x u = lens-push (𝓻 𝓐 x) u                             ＝⟨ III ⟩
+            u                                               ＝⟨ IV ⟩
+            transport-along-≈ 𝓐 ua-𝓐 lens-fam-car (𝓻 𝓐 x) u ∎
+    where
+     III = edge-to-id' (lens-fam x , ua-𝓑 x) (lens-push-R u)
+     IV = ap (λ - → transport lens-fam-car - u) (edge-to-id-comp (𝓐 , ua-𝓐)) ⁻¹
+
+\end{code}
+ 
+
+

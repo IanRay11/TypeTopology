@@ -43,6 +43,8 @@ record oplax-covariant-lens
  field
   lens-push : {x y : ⊰ 𝓐 ⊱} (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱
   lens-push-R : {x : ⊰ 𝓐 ⊱} (u : ⊰ 𝓑 x ⊱) → lens-push (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u
+ lens-fam-car : ⊰ 𝓐 ⊱ → 𝓤' ̇
+ lens-fam-car x = ⊰ lens-fam x ⊱
 
 oplax-covariant-lens-equiv-presentation
  : (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥)
