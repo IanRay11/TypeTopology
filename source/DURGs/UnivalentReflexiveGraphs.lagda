@@ -319,8 +319,7 @@ univalence-implies-edge-induction : {𝓐 : refl-graph 𝓤 𝓥}
                                   → is-univalent-refl-graph 𝓐
                                   → edge-induction 𝓣 𝓐
 univalence-implies-edge-induction {𝓤} {𝓥} {𝓣} {𝓐} ua P R x y p
- = I (id-to-edge-equiv-implies-prop-fans {_} {_} {𝓐}
-    (prop-fans-implies-id-to-edge-equiv ua) x (x , 𝓻 𝓐 x) (y , p))
+ = I (ua x (x , 𝓻 𝓐 x) (y , p))
  where
   I : (x , 𝓻 𝓐 x) ＝ (y , p) → P x y p
   I refl = R x  
