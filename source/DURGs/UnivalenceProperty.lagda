@@ -145,18 +145,11 @@ bivariant-structure-is-property-lemma fe fe' 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
    II = Σ-cong (λ ϕ → ≃-sym ΠΣ-distr-≃)
    III = ≃-sym ΠΣ-distr-≃
 
+-- now that it's simple, suggest just inlining where used -Carlo
 Σ-×-assoc-lemma : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } {A : X → 𝓦 ̇ } {B : X → Y → 𝓣 ̇ }
                 → (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
                 ≃ (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
-Σ-×-assoc-lemma {_} {_} {_} {_} {X} {Y} {A} {B}
- = qinveq fore (back , (λ - → refl) , (λ - → refl))
- where
-  fore : (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
-       → (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
-  fore (x , y , b , a) = (x , (y , b) , a)
-  back : (Σ x ꞉ X , ((Σ y ꞉ Y , B x y) × A x))
-       → (Σ x ꞉ X , Σ y ꞉ Y , (B x y × A x))
-  back (x , (y , b) , a) = (x , y , b , a)
+Σ-×-assoc-lemma = Σ-cong (λ - → ≃-sym Σ-assoc)
 
 bivariant-structure-is-property-lemma'
  : FunExt
@@ -272,6 +265,48 @@ oplax-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = equiv-to
   III : is-prop ((x : ⊰ 𝓐 ⊱) → cofan (∏ ⊰ 𝓑 x ⊱ , (λ - → 𝓑 x)) id)
   III = Π-is-prop fe'
          (λ - → prop-fan-to-cofan {_} {_} {∏ ⊰ 𝓑 - ⊱ , (λ u → 𝓑 -)} (II -) id)
+
+-- work in progress, NB doesn't rely on lemma -Carlo
+oplax-lens-structure-is-a-property-carlo
+ : FunExt
+ → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥')
+ → is-univalent-refl-graph 𝓐
+ → ((x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (𝓑 x))
+ → is-prop (oplax-covariant-lens-structure 𝓐 𝓑)
+oplax-lens-structure-is-a-property-carlo {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
+  equiv-to-prop I (Π-is-prop (fe _ _) V)
+  where
+    I : oplax-covariant-lens-structure 𝓐 𝓑 ≃
+        ((x : ⊰ 𝓐 ⊱)
+         → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+             ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+    I = ≃-sym ΠΣ-distr-≃
+    II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
+    II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
+    III : (x : ⊰ 𝓐 ⊱) →
+          ((Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+            ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u)) ≃ 
+          (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id))
+    III x =
+      (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+        ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)) ⟩
+      (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+        ((u : ⊰ 𝓑 x ⊱) → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x ⟩ u))
+        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (Π-change-of-variable-≃ {𝓤} fe _ (II x))) ⟩
+      (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x ⟩ u)) 
+        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
+      (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u)) 
+        ≃⟨ 𝕚𝕕 ⟩
+      cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id ■
+    IV : (x : ⊰ 𝓐 ⊱) → is-prop (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
+    IV x = prop-fan-to-cofan {_} {_} {∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x} 
+     (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x) (λ _ → is-ua-𝓑 x))
+     id
+    V : (x : ⊰ 𝓐 ⊱) → is-prop
+      (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+       ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+    V x = equiv-to-prop (III x) (IV x)
 
 lax-lens-structure-is-a-property
  : FunExt
