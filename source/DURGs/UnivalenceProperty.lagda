@@ -230,7 +230,7 @@ bivariant-structure-is-property-lemma' {𝓤} {𝓥} {𝓤'} {𝓥'} fe fe' 𝓐
           → is-prop (fan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) ψ)
      VI'' ψ = univalence-closed-under-product fe' ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱
                (λ - → 𝓑 x x (𝓻 𝓐 x)) (λ - → is-ua-𝓑 x x (𝓻 𝓐 x)) ψ
-                                                    
+
 \end{code}
 
 Now we can show that lens structure is a proposition.
@@ -266,47 +266,42 @@ oplax-lens-structure-is-a-property fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 = equiv-to
   III = Π-is-prop fe'
          (λ - → prop-fan-to-cofan {_} {_} {∏ ⊰ 𝓑 - ⊱ , (λ u → 𝓑 -)} (II -) id)
 
--- work in progress, NB doesn't rely on lemma -Carlo
-oplax-lens-structure-is-a-property-carlo
+-- Carlo's version, NB doesn't rely on lemma
+oplax-lens-structure-is-contr
  : FunExt
  → (𝓐 : refl-graph 𝓤 𝓥) (𝓑 : ⊰ 𝓐 ⊱ → refl-graph 𝓤' 𝓥')
  → is-univalent-refl-graph 𝓐
  → ((x : ⊰ 𝓐 ⊱) → is-univalent-refl-graph (𝓑 x))
- → is-prop (oplax-covariant-lens-structure 𝓐 𝓑)
-oplax-lens-structure-is-a-property-carlo {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
-  equiv-to-prop I (Π-is-prop (fe _ _) V)
-  where
-    I : oplax-covariant-lens-structure 𝓐 𝓑 ≃
-        ((x : ⊰ 𝓐 ⊱)
-         → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-             ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
-    I = ≃-sym ΠΣ-distr-≃
-    II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
-    II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
-    III : (x : ⊰ 𝓐 ⊱) →
-          ((Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-            ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u)) ≃ 
-          (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id))
-    III x =
-      (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-        ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
-        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)) ⟩
-      (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-        ((u : ⊰ 𝓑 x ⊱) → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x ⟩ u))
-        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (Π-change-of-variable-≃ {𝓤} fe _ (II x))) ⟩
-      (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x ⟩ u)) 
-        ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
-      (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u)) 
-        ≃⟨ 𝕚𝕕 ⟩
-      cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id ■
-    IV : (x : ⊰ 𝓐 ⊱) → is-prop (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
-    IV x = prop-fan-to-cofan {_} {_} {∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x} 
-     (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x) (λ _ → is-ua-𝓑 x))
-     id
-    V : (x : ⊰ 𝓐 ⊱) → is-prop
-      (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-       ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
-    V x = equiv-to-prop (III x) (IV x)
+ → is-contr (oplax-covariant-lens-structure 𝓐 𝓑)
+oplax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
+ equiv-to-singleton I
+  (Π-is-singleton (fe _ _) (λ x → equiv-to-singleton (IV x) 𝟙-is-singleton))
+ where
+  I : oplax-covariant-lens-structure 𝓐 𝓑 ≃
+      ((x : ⊰ 𝓐 ⊱)
+       → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱)
+       , ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+  I = ≃-sym ΠΣ-distr-≃
+  II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
+  II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
+  III : (x : ⊰ 𝓐 ⊱) → is-contr (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
+  III x = prop-fan-to-contr-cofan {_} {_} {∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x}
+          (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x) (λ _ → is-ua-𝓑 x))
+          id
+  IV : (x : ⊰ 𝓐 ⊱) → _ ≃ 𝟙
+  IV x = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+           ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+           ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)) ⟩
+         (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+           ((u : ⊰ 𝓑 x ⊱) → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x ⟩ u))
+           ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (Π-change-of-variable-≃ {𝓤} fe _ (II x))) ⟩
+         (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x ⟩ u))
+           ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
+         (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u))
+           ≃⟨ 𝕚𝕕 ⟩
+         cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id
+           ≃⟨ singleton-≃-𝟙 (III x) ⟩
+         𝟙 {𝓤} ■
 
 lax-lens-structure-is-a-property
  : FunExt

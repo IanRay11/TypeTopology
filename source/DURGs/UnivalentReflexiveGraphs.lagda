@@ -123,6 +123,12 @@ contr-fan-to-cofan {_} {_} {𝓐} contr-fan x
  = pointed-props-are-singletons (x , 𝓻 𝓐 x)
     (prop-fan-to-cofan {_} {_} {𝓐} (λ - → singletons-are-props (contr-fan -)) x)
 
+prop-fan-to-contr-cofan : {𝓐 : refl-graph 𝓤 𝓥}
+                        → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+                        → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
+prop-fan-to-contr-cofan {_} {_} {𝓐} fan-prop x
+ = contr-fan-to-cofan {_} {_} {𝓐} (prop-fan-to-contr {_} {_} {𝓐} fan-prop) x
+
 contr-cofan-to-fan : {𝓐 : refl-graph 𝓤 𝓥} 
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
