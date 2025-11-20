@@ -6,10 +6,14 @@ types, ∞-magmas, magmas, monoids, groups etc.
 We give a sufficient condition for types of mathematical structures to
 be injective, and we apply it to examples such as the above.
 
-This file generalized InjectiveTypes.MathematicalStructures at the
+This file generalizes InjectiveTypes.MathematicalStructures at the
 cost of perhaps being harder to understand. It relies on the file
 InjectiveTypes.Sigma, which also arises as a generalization of the
 above original file.
+
+Added 5 November 2025 by Tom de Jong: The type of metric spaces is
+injective and this relies on the generalizations developed here. This
+is the first example that make uses of the added generality of this file.
 
 \begin{code}
 
@@ -119,10 +123,6 @@ universes-are-flabby-Σ = to-aflabby universes-are-Flabby-Σ
 
 \end{code}
 
-In this file we apply the above constructions only for the case of Π,
-but we include those for Σ for the sake illustration (and perhaps for
-future use).
-
 We now work with an arbitrary notion S of structure on 𝓤. E.g. for
 monoids we will take S X := X → X → X, the type of the multiplication
 operation.
@@ -153,7 +153,8 @@ data.
 \end{code}
 
 We will apply this to get our desired examples with ϕ taken to be the
-above canonical Π-flabby structure on the universe.
+above canonical Π-flabby structure on the universe in most cases, and
+at least one with the canonical Σ-flabby structure.
 
 Next we want to simplify working with compatibility data (as defined
 in the module InjectiveTypes.Sigma), where we avoid transports by
@@ -325,10 +326,9 @@ try to record this explicitly when we do so).
 
 \end{code}
 
-For our examples below, we only need the above functions ρΠ,
-compatibility-data-Π and Π-construction, but we take the opportunity
-to remark that we also have the following, with Π replaced by Σ (for
-which we don't have any application so far).
+For most examples below, we only need the above functions ρΠ,
+compatibility-data-Π and Π-construction, but at least one of them uses
+their Σ versions defined below.
 
 \begin{code}
 
@@ -944,5 +944,215 @@ ainjectivity-of-type-of-nonempty-types =
   is-nonempty
   universes-are-flabby-Π
   Nonempty-Π-data
+
+\end{code}
+
+Added 5 November 2025 by Tom de Jong.
+
+All previous examples used the Π-flabbiness structure on the universe. In what
+follows we put the extra generality of our machinery to good use by instead
+employing the Σ-flabbiness structure to prove that the type of metric spaces is
+injective.
+
+As a first step we show that the collection of types with an R-valued relation
+(for an arbitrary type R, later taken to be ℝ) to be injective.
+We denote this type by Graph' as it generalizes the type Graph of graphs defined
+above. Indeed, the injectivity proof mirrors the above construction for Graph.
+
+\begin{code}
+
+open import UF.Subsingletons-Properties
+
+module _ (R : 𝓥 ̇ ) where
+
+ Graph' : (𝓤 : Universe) → 𝓤 ⁺ ⊔ 𝓥 ̇
+ Graph' 𝓤 = Σ X ꞉ 𝓤 ̇  , (X → X → R)
+
+ graph'-structure : 𝓤 ̇  → 𝓥 ⊔ 𝓤 ̇
+ graph'-structure X = (X → X → R)
+
+ Graph'-Σ-data
+  : compatibility-data (graph'-structure {𝓤}) universes-are-flabby-Σ
+ Graph'-Σ-data {𝓤} =
+  Σ-construction S T T-refl c
+   where
+    S = graph'-structure
+
+    T : {X Y : 𝓤 ̇ } → X ≃ Y → S X → S Y
+    T 𝕗 μ y y' = μ (⌜ 𝕗 ⌝⁻¹ y) (⌜ 𝕗 ⌝⁻¹ y')
+
+    T-refl : {X : 𝓤 ̇ } → T (≃-refl X) ∼ id
+    T-refl R = refl
+
+    module _ (p : Ω 𝓤) (A : p holds → 𝓤 ̇) where
+
+     r :  S (Σ A) → ((h : p holds) → S (A h))
+     r μ h a a' = μ (h , a) (h , a')
+
+     _ : r ＝ ρΣ S T T-refl p A
+     _ = refl
+
+     σ : ((h : p holds) → S (A h)) → S (Σ A)
+     σ g (h , a) (h' , a') =
+      g h (⌜ Σ-𝕚𝕟 p {A} h ⌝⁻¹ (h , a)) (⌜ Σ-𝕚𝕟 p h ⌝⁻¹ (h' , a'))
+
+     rσ : r ∘ σ ∼ id
+     rσ g = dfunext fe' (λ h →
+            dfunext fe' (λ a →
+            dfunext fe' (λ a' →
+            ap₂ (g h) (transport-over-prop (holds-is-prop p))
+                      (transport-over-prop (holds-is-prop p)))))
+
+    c : compatibility-data-Σ S T T-refl
+    c p A = σ p A , rσ p A
+
+ ainjectivity-of-Graph'
+  : ainjective-type (Graph' 𝓤) 𝓤 𝓤
+ ainjectivity-of-Graph' =
+  ainjectivity-of-type-of-structures
+   graph'-structure
+   universes-are-flabby-Σ
+   Graph'-Σ-data
+
+\end{code}
+
+We now take R = ℝ, the type of Dedekind reals, and additionally impose the
+axioms of a metric space.
+
+This mirrors the above construction for the type of posets.
+
+\begin{code}
+
+open import UF.PropTrunc
+
+module _
+        (pt : propositional-truncations-exist)
+       where
+
+ open PropositionalTruncation pt
+
+ private
+  pe : PropExt
+  pe = Univalence-gives-PropExt ua
+
+  pe' : Prop-Ext
+  pe' {𝓤} = pe 𝓤
+
+ open import DedekindReals.Addition fe' pe' pt
+  renaming (_+_ to _+ℝ_) hiding (_-_)
+ open import DedekindReals.Order fe' pe' pt
+ open import DedekindReals.Type fe' pe' pt
+ open import MetricSpaces.StandardDefinition fe' pe' pt
+
+ Metric-Space-Σ-data : compatibility-data {(𝓤 ⊔ 𝓤₁) ⁺}
+                        (λ M → Σ d ꞉ (M → M → ℝ) , metric-axioms M d)
+                        universes-are-flabby-Σ
+ Metric-Space-Σ-data =
+  compatibility-data-with-axioms
+   universes-are-flabby-Σ
+   (graph'-structure ℝ)
+   (Graph'-Σ-data ℝ)
+   metric-axioms
+   metric-axioms-is-prop
+   axioms-Σ-data
+  where
+   σ : (p : Ω 𝓤) (A : p holds → 𝓤 ̇ )
+     → ((h : p holds) → graph'-structure ℝ (A h))
+     → graph'-structure ℝ (Σ A)
+   σ p A = section-map
+            (ρ (graph'-structure ℝ) universes-are-flabby-Σ p A)
+            (Graph'-Σ-data ℝ p A)
+
+   axioms-Σ-data
+    : (p : Ω 𝓤)
+      (A : p holds → 𝓤 ̇ )
+      (α : (h : p holds) → graph'-structure ℝ (A h))
+      (F : (h : p holds) → metric-axioms (A h) (α h))
+    → metric-axioms (Σ A) (σ p A α)
+   axioms-Σ-data p A α F = I , II , III
+    where
+     dₚ : {h : p holds} → A h → A h → ℝ
+     dₚ {h} = α h
+
+     dₚ-reflexive : {h : p holds} → reflexivity (A h) dₚ
+     dₚ-reflexive {h} = pr₁ (F h)
+
+     dₚ-symmetric : {h : p holds} → symmetry (A h) dₚ
+     dₚ-symmetric {h} = pr₁ (pr₂ (F h))
+
+     dₚ-triangle-inequality : {h : p holds} → triangle-inequality (A h) dₚ
+     dₚ-triangle-inequality {h} = pr₂ (pr₂ (F h))
+
+     i : {h h' : p holds} → h ＝ h'
+     i = holds-is-prop p _ _
+
+     τ : {h h' : p holds} → A h → A h'
+     τ = transport A i
+
+     d : Σ A → Σ A → ℝ
+     d (h₁ , a₁) (h₂ , a₂) = α h₁ (τ a₁) (τ a₂)
+
+     lemma : {h₁ h₂ : p holds} {a₁ : A h₁} {a₂ : A h₂}
+             (e₁ : h₂ ＝ h₁) (e₂ : h₁ ＝ h₁)
+             (e₃ : h₂ ＝ h₂) (e₄ : h₁ ＝ h₂)
+           → α h₁ (transport A e₁ a₂) (transport A e₂ a₁)
+             ＝ α h₂ (transport A e₃ a₂) (transport A e₄ a₁)
+     lemma {h₁} {h₂} {a₁} {a₂} refl e₂ e₃ e₄ =
+      ap₂ (α h₂)
+          ((transport-over-prop' (holds-is-prop p) e₃) ⁻¹)
+          (ap (λ - → transport A - a₁)
+              (props-are-sets (holds-is-prop p) e₂ e₄))
+
+     dₚ-equals-d : {h₁ h₂ : p holds} {a₁ : A h₁} {a₂ : A h₂}
+                 → dₚ (τ a₁) (τ a₂) ＝ d (h₁ , a₁) (h₂ , a₂)
+     dₚ-equals-d = refl
+
+     dₚ-equals-d-left : {h₁ h₂ : p holds} {a₁ : A h₁} {a₂ : A h₂}
+                      → dₚ (τ a₁) a₂ ＝ d (h₁ , a₁) (h₂ , a₂)
+     dₚ-equals-d-left = lemma i refl i i
+
+     dₚ-equals-d-right : {h₁ h₂ : p holds} {a₁ : A h₁} {a₂ : A h₂}
+                       → dₚ a₁ (τ a₂) ＝ d (h₁ , a₁) (h₂ , a₂)
+     dₚ-equals-d-right = lemma refl refl i refl
+
+     _ : σ p A α ＝ d
+     _ = refl -- Which is crucial for the proof below to work.
+
+     I : reflexivity (Σ A) (σ p A α)
+     I x@(h₁ , a) y@(h₂ , a') = I₁ , I₂
+      where
+       I₁ : d x y ＝ 0ℝ → x ＝ y
+       I₁ e = to-Σ-＝ (i , lr-implication (dₚ-reflexive (τ a) a')
+                                          (dₚ-equals-d-left ∙ e))
+       I₂ : x ＝ y → d x y ＝ 0ℝ
+       I₂ refl = rl-implication (dₚ-reflexive (τ a) (τ a)) refl
+
+     II : symmetry (Σ A) d
+     II (h₁ , a₁) (h₂ , a₂) =
+      dₚ {h₁} (τ a₁) (τ a₂) ＝⟨ dₚ-symmetric (τ a₁) (τ a₂) ⟩
+      dₚ {h₁} (τ a₂) (τ a₁) ＝⟨ lemma i i i i ⟩
+      dₚ {h₂} (τ a₂) (τ a₁) ∎
+
+     III : triangle-inequality (Σ A) (σ p A α)
+     III x@(h₁ , a₁) y@(h₂ , a₂) z@(h₃ , a₃) = III₂
+      where
+       III₁ : dₚ {h₂} (τ a₁) a₂ +ℝ dₚ {h₂} a₂ (τ a₃) ≤ℝ dₚ {h₂} (τ a₁) (τ a₃)
+       III₁ = dₚ-triangle-inequality (τ a₁) a₂ (τ a₃)
+       III₂ : d x y +ℝ d y z ≤ℝ d x z
+       III₂ = transport₃ (λ r₁ r₂ r₃ → r₁ +ℝ r₂ ≤ℝ r₃)
+              dₚ-equals-d-left dₚ-equals-d-right (lem i i) III₁
+        where
+         lem : (e₁ : h₁ ＝ h₂) (e₂ : h₃ ＝ h₂)
+             → dₚ {h₂} (transport A e₁ a₁) (transport A e₂ a₃)
+               ＝ d (h₁ , a₁) (h₃ , a₃)
+         lem refl refl = lemma refl refl i i
+
+ ainjectivity-of-Metric-Space
+  : ainjective-type (Metric-Space (𝓤₁ ⊔ 𝓤)) (𝓤₁ ⊔ 𝓤) (𝓤₁ ⊔ 𝓤)
+ ainjectivity-of-Metric-Space {𝓤} =
+  ainjectivity-of-type-of-structures
+   (λ M → Σ d ꞉ (M → M → ℝ) , metric-axioms M d)
+   universes-are-flabby-Σ
+   (Metric-Space-Σ-data {𝓤})
 
 \end{code}
