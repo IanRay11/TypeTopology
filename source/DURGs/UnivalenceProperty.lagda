@@ -211,9 +211,6 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
 
 \end{code}
 
-≃-comp (Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))))
-            (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _)))))
-
 Additionally, we observe that lens structure is a property of the underlying
 family. 
 
