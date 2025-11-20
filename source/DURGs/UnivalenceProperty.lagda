@@ -201,16 +201,18 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
        ≃⟨ singleton-≃-𝟙 (IV x) ⟩
     𝟙 {𝓤} ■
    where
-    VI = ≃-comp (Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)))
-          (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe))))
-    VII = ≃-comp (Σ-change-of-variable-≃ _
-           (≃-sym (Π-change-of-variable-≃ fe _ (II x))))
-          (Σ-cong (λ _ → Σ-change-of-variable-≃ _
-           (≃-sym (Π-change-of-variable-≃ fe _ (II x)))))
-    VIII = ≃-comp (Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))))
-            (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _)))))
+    VI = Σ-bicong _ _ (≃-sym (curry-uncurry fe))
+          (λ _ → Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)))
+    VII = Σ-bicong _ _ (≃-sym (Π-change-of-variable-≃ fe _ (II x)))
+           (λ _ → Σ-change-of-variable-≃ _
+            (≃-sym (Π-change-of-variable-≃ fe _ (II x))))
+    VIII = Σ-bicong _ _ (≃-sym (𝟙→ (fe _ _)))
+            (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))))
 
 \end{code}
+
+≃-comp (Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))))
+            (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _)))))
 
 Additionally, we observe that lens structure is a property of the underlying
 family. 
