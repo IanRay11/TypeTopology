@@ -28,7 +28,7 @@ We record closure properties of univalent (displayed) reflexive graphs.
 univalence-closed-under-opposite : (𝓐 : refl-graph 𝓤 𝓥)
                                  → is-univalent-refl-graph 𝓐
                                  → is-univalent-refl-graph (𝓐 ᵒᵖ)
-univalence-closed-under-opposite 𝓐 𝓐-ua = prop-fan-to-cofan {_} {_} {𝓐} 𝓐-ua
+univalence-closed-under-opposite 𝓐 𝓐-ua = prop-fan-to-cofan 𝓐 𝓐-ua
 
 univalence-closed-under-opposite' : (𝓐 : refl-graph 𝓤 𝓥)
                                   → is-univalent-refl-graph (𝓐 ᵒᵖ)

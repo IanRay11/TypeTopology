@@ -64,9 +64,9 @@ oplax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
        , ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
   I = ≃-sym ΠΣ-distr-≃
   II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
-  II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
+  II x = singleton-≃-𝟙' (prop-fan-to-contr 𝓐 is-ua-𝓐 x)
   III : (x : ⊰ 𝓐 ⊱) → is-contr (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
-  III x = prop-fan-to-contr-cofan {_} {_} {∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x}
+  III x = prop-fan-to-contr-cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
           (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x)
            (λ _ → is-ua-𝓑 x))
           id
@@ -81,7 +81,7 @@ oplax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
          (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x ⟩ u))
            ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
          (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u))
-           ≃⟨ ≃-refl _ ⟩
+           ≃⟨by-definition⟩
          cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id
            ≃⟨ singleton-≃-𝟙 (III x) ⟩
          𝟙 {𝓤} ■
@@ -102,9 +102,9 @@ lax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
        , ((u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ ϕ x (𝓻 𝓐 x) u))
   I = ≃-sym ΠΣ-distr-≃
   II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
-  II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
+  II x = singleton-≃-𝟙' (prop-fan-to-contr 𝓐 is-ua-𝓐 x)
   III : (x : ⊰ 𝓐 ⊱) → is-contr (fan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
-  III x = prop-fan-to-contr {_} {_} {∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x}
+  III x = prop-fan-to-contr (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
           (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x)
            (λ _ → is-ua-𝓑 x))
           id
@@ -119,7 +119,7 @@ lax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
          (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ ϕ ⋆ u))
            ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
          (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → u ≈⟨ 𝓑 x ⟩ ϕ u))
-           ≃⟨ ≃-refl _ ⟩
+           ≃⟨by-definition⟩
          fan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id
            ≃⟨ singleton-≃-𝟙 (III x) ⟩
          𝟙 {𝓤} ■
@@ -143,16 +143,15 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
   I = ≃-comp (Σ-cong (λ ϕ → Σ-cong (λ ψ → ≃-sym Π×-distr)))
              (≃-comp (Σ-cong (λ ϕ → ≃-sym ΠΣ-distr-≃)) (≃-sym ΠΣ-distr-≃))
   II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
-  II x = singleton-≃-𝟙' (prop-fan-to-contr {_} {_} {𝓐} is-ua-𝓐 x)
+  II x = singleton-≃-𝟙' (prop-fan-to-contr 𝓐 is-ua-𝓐 x)
   III : (x : ⊰ 𝓐 ⊱) (ψ : ⊰ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⊱)
       → is-contr (cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) ψ)
-  III x = prop-fan-to-contr-cofan {_} {_}
-           {∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))}
+  III x = prop-fan-to-contr-cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)))
            (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱
             (λ - → 𝓑 x x (𝓻 𝓐 x)) (λ _ → is-ua-𝓑 x x ((𝓻 𝓐 x))))
   IV : (x : ⊰ 𝓐 ⊱)
      → is-contr (fan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id)
-  IV x = prop-fan-to-contr {_} {_} {∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))}
+  IV x = prop-fan-to-contr (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)))
           (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱
            (λ - → 𝓑 x x (𝓻 𝓐 x)) (λ _ → is-ua-𝓑 x x ((𝓻 𝓐 x)))) id
   V : (x : ⊰ 𝓐 ⊱) → _ ≃ 𝟙
@@ -161,42 +160,23 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
     , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
     , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
     × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
-       ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)) ⟩
-    (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x y p ⊱)
-    , Σ ψ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
-    , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-     → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u)
-    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ x (𝓻 𝓐 x) u))
-       ≃⟨ Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe))) ⟩
+       ≃⟨ VI ⟩
     (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x y p ⊱)
     , Σ ψ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
     , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
      → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u)
     × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u))
-       ≃⟨ Σ-change-of-variable-≃ _
-           (≃-sym (Π-change-of-variable-≃ fe _ (II x))) ⟩
-    (Σ ϕ ꞉ (𝟙 {𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , Σ ψ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 y y (𝓻 𝓐 y) ⊱ → ⊰ 𝓑 x y p ⊱)
-    , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-     → ϕ ⋆ u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u)
-    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ (x , (𝓻 𝓐 x)) u))
-       ≃⟨ Σ-cong (λ _ → Σ-change-of-variable-≃ _
-           (≃-sym (Π-change-of-variable-≃ fe _ (II x)))) ⟩
-    (Σ ϕ ꞉ (𝟙 {𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+       ≃⟨ VII ⟩
+        (Σ ϕ ꞉ (𝟙 {𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , Σ ψ ꞉ (𝟙 {𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ ⋆ u)
     × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ ⋆ u))
-       ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
-    (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , Σ ψ ꞉ (𝟙 {𝓤} → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ ⋆ u)
-    × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ ⋆ u))
-       ≃⟨ Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _)))) ⟩
+       ≃⟨ VIII ⟩
     (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → ϕ u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ u)
     × ((u : ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱) → u ≈⟨ 𝓑 x x (𝓻 𝓐 x) ⟩ ψ u))
-       ≃⟨ ≃-refl _ ⟩
+       ≃⟨by-definition⟩
     (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , (ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)
@@ -216,10 +196,19 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
        ≃⟨ Σ-cong (λ _ → 𝟙-lneutral) ⟩
     ((Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)))
-       ≃⟨ ≃-refl _ ⟩
+       ≃⟨by-definition⟩
     fan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id
        ≃⟨ singleton-≃-𝟙 (IV x) ⟩
     𝟙 {𝓤} ■
+   where
+    VI = ≃-comp (Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)))
+          (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe))))
+    VII = ≃-comp (Σ-change-of-variable-≃ _
+           (≃-sym (Π-change-of-variable-≃ fe _ (II x))))
+          (Σ-cong (λ _ → Σ-change-of-variable-≃ _
+           (≃-sym (Π-change-of-variable-≃ fe _ (II x)))))
+    VIII = ≃-comp (Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))))
+            (Σ-cong (λ _ → Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _)))))
 
 \end{code}
 

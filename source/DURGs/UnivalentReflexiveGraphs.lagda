@@ -53,10 +53,10 @@ contr-cofan-lemma {_} {_} {𝓐} cofan-contr x y p = I ∙ II
   II : center (cofan-contr x) ＝ (y , p)
   II = centrality (cofan-contr x) (y , p)
 
-prop-fan-to-cofan : {𝓐 : refl-graph 𝓤 𝓥} 
+prop-fan-to-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-prop-fan-to-cofan {_} {_} {𝓐} fan-prop x (y , s) (y' , t)
+prop-fan-to-cofan 𝓐 fan-prop x (y , s) (y' , t)
  = I III VI IV VII
  where
   I : (p : y ＝ x) (q : x ＝ y')
@@ -79,10 +79,10 @@ prop-fan-to-cofan {_} {_} {𝓐} fan-prop x (y , s) (y' , t)
   VII : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) VI t ＝ 𝓻 𝓐 y'
   VII = pr₂ (from-Σ-＝ V)
 
-prop-cofan-to-fan : {𝓐 : refl-graph 𝓤 𝓥} 
+prop-cofan-to-fan : (𝓐 : refl-graph 𝓤 𝓥) 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-prop-cofan-to-fan {_} {_} {𝓐} cofan-prop x (y , s) (y' , t)
+prop-cofan-to-fan 𝓐 cofan-prop x (y , s) (y' , t)
  = I III VI IV VII
  where
   I : (p : y ＝ x) (q : x ＝ y')
@@ -105,37 +105,36 @@ prop-cofan-to-fan {_} {_} {𝓐} cofan-prop x (y , s) (y' , t)
   VII : transport (λ - → - ≈⟨ 𝓐 ⟩ y') VI t ＝ 𝓻 𝓐 y'
   VII = pr₂ (from-Σ-＝ V)
 
-contr-fan-to-prop : {𝓐 : refl-graph 𝓤 𝓥}
+contr-fan-to-prop : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-contr-fan-to-prop fan-contr x = singletons-are-props (fan-contr x)
+contr-fan-to-prop 𝓐 fan-contr x = singletons-are-props (fan-contr x)
 
-prop-fan-to-contr : {𝓐 : refl-graph 𝓤 𝓥} 
+prop-fan-to-contr : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
-prop-fan-to-contr {_} {_} {𝓐} fan-prop x
+prop-fan-to-contr 𝓐 fan-prop x
  = pointed-props-are-singletons (x , 𝓻 𝓐 x) (fan-prop x)
 
-contr-fan-to-cofan : {𝓐 : refl-graph 𝓤 𝓥} 
+contr-fan-to-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
-contr-fan-to-cofan {_} {_} {𝓐} contr-fan x
+contr-fan-to-cofan 𝓐 contr-fan x
  = pointed-props-are-singletons (x , 𝓻 𝓐 x)
-    (prop-fan-to-cofan {_} {_} {𝓐} (λ - → singletons-are-props (contr-fan -)) x)
+    (prop-fan-to-cofan 𝓐 (λ - → singletons-are-props (contr-fan -)) x)
 
-prop-fan-to-contr-cofan : {𝓐 : refl-graph 𝓤 𝓥}
+prop-fan-to-contr-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                         → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                         → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
-prop-fan-to-contr-cofan {_} {_} {𝓐} fan-prop x
- = contr-fan-to-cofan {_} {_} {𝓐} (prop-fan-to-contr {_} {_} {𝓐} fan-prop) x
+prop-fan-to-contr-cofan 𝓐 fan-prop x
+ = contr-fan-to-cofan 𝓐 (prop-fan-to-contr 𝓐 fan-prop) x
 
-contr-cofan-to-fan : {𝓐 : refl-graph 𝓤 𝓥} 
+contr-cofan-to-fan : (𝓐 : refl-graph 𝓤 𝓥)
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (cofan 𝓐 x))
                    → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
-contr-cofan-to-fan {_} {_} {𝓐} contr-cofan x
+contr-cofan-to-fan 𝓐 contr-cofan x
  = pointed-props-are-singletons (x , 𝓻 𝓐 x)
-    (prop-cofan-to-fan {_} {_} {𝓐}
-     (λ - → singletons-are-props (contr-cofan -)) x)
+    (prop-cofan-to-fan 𝓐 (λ - → singletons-are-props (contr-cofan -)) x)
 
 \end{code}
 
@@ -228,7 +227,7 @@ id-to-edge-equiv-implies-prop-fans : {𝓐 : refl-graph 𝓤 𝓥}
                                    → ((x y : ⊰ 𝓐 ⊱) → is-equiv (id-to-edge' 𝓐))
                                    → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
 id-to-edge-equiv-implies-prop-fans {_} {_} {𝓐} e
- = contr-fan-to-prop {_} {_} {𝓐} fan-is-contr
+ = contr-fan-to-prop 𝓐 fan-is-contr
  where
   fan-is-contr : (x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x)
   fan-is-contr x = equiv-to-singleton' (Σ-cong (λ y → id-to-edge' 𝓐 , e x y))

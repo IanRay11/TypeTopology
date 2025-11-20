@@ -245,10 +245,10 @@ disp-lax-contravariant-lens-univalent
  → is-univalent-refl-graph (lax-contravariant-lens.lens-fam 𝓑 x))
  → is-displayed-univalent-refl-graph 𝓐 (disp⁻ 𝓐 , 𝓑)
 disp-lax-contravariant-lens-univalent 𝓐 𝓑 fibers-ua x 
- = prop-cofan-to-fan {_} {_} {⋖ disp⁻ 𝓐 , 𝓑 ⋗ x}
+ = prop-cofan-to-fan (⋖ disp⁻ 𝓐 , 𝓑 ⋗ x)
     ((λ - → fibers-co-ua (lens-pull (𝓻 𝓐 x) -))) 
  where
   open lax-contravariant-lens 𝓑
-  fibers-co-ua = prop-fan-to-cofan {_} {_} {lens-fam x} (fibers-ua x)
+  fibers-co-ua = prop-fan-to-cofan (lens-fam x) (fibers-ua x)
   
 \end{code}
