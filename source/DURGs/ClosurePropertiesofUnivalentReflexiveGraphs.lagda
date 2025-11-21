@@ -82,21 +82,19 @@ univalence-closed-under-product : Fun-Ext
                                 → (A : 𝓤' ̇) (𝓑 : A → refl-graph 𝓤 𝓥)
                                 → ((x : A) → is-univalent-refl-graph (𝓑 x))
                                 → is-univalent-refl-graph (∏ A , 𝓑)
-univalence-closed-under-product fe A 𝓑 𝓑-ua = V
+univalence-closed-under-product fe A 𝓑 𝓑-ua = III
  where
   I : (f : ⊰ ∏ A , 𝓑 ⊱)
     → fan (∏ A , 𝓑) f ≃ ((x : A) → fan (𝓑 x) (f x))
-  I f = fan (∏ A , 𝓑) f                                    ≃⟨ II ⟩
-        (Σ g ꞉ ⊰ ∏ A , 𝓑 ⊱ , f ≈⟨ ∏ A , 𝓑 ⟩ g)             ≃⟨ II ⟩
-        (Σ g ꞉ ⊰ ∏ A , 𝓑 ⊱ , ((x : A) → f x ≈⟨ 𝓑 x ⟩ g x)) ≃⟨ III ⟩
-        ((x : A) → Σ v ꞉ ⊰ 𝓑 x ⊱ , f x ≈⟨ 𝓑 x ⟩ v)         ≃⟨ IV ⟩
+  I f = fan (∏ A , 𝓑) f                                    ≃⟨refl⟩
+        (Σ g ꞉ ⊰ ∏ A , 𝓑 ⊱ , f ≈⟨ ∏ A , 𝓑 ⟩ g)             ≃⟨refl⟩
+        (Σ g ꞉ ⊰ ∏ A , 𝓑 ⊱ , ((x : A) → f x ≈⟨ 𝓑 x ⟩ g x)) ≃⟨ II ⟩
+        ((x : A) → Σ v ꞉ ⊰ 𝓑 x ⊱ , f x ≈⟨ 𝓑 x ⟩ v)         ≃⟨refl⟩
         ((x : A) → fan (𝓑 x) (f x))                        ■
    where
-    II = ≃-refl (fan (∏ A , 𝓑) f)
-    III = ≃-sym ΠΣ-distr-≃
-    IV = ≃-refl ((x : A) → fan (𝓑 x) (f x))
-  V : (f : ⊰ ∏ A , 𝓑 ⊱) → is-prop (fan (∏ A , 𝓑) f)
-  V f = equiv-to-prop (I f) (Π-is-prop fe (λ x → 𝓑-ua x (f x)))
+    II = ≃-sym ΠΣ-distr-≃
+  III : (f : ⊰ ∏ A , 𝓑 ⊱) → is-prop (fan (∏ A , 𝓑) f)
+  III f = equiv-to-prop (I f) (Π-is-prop fe (λ x → 𝓑-ua x (f x)))
 
 univalence-closed-under-cotensor : Fun-Ext
                                  → (A : 𝓤' ̇) (𝓑 : refl-graph 𝓤 𝓥)

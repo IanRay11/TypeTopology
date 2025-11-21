@@ -66,8 +66,7 @@ oplax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
   I = ≃-sym ΠΣ-distr-≃
   II : (x : ⊰ 𝓐 ⊱) → is-contr (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
   II x = prop-fan-to-contr-cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
-          (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x)
-           (λ _ → is-ua-𝓑 x))
+          (univalence-closed-under-cotensor (fe _ _) _ (𝓑 x) (is-ua-𝓑 x))
           id
   III : (x : ⊰ 𝓐 ⊱) → _ ≃ (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
   III x = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
@@ -100,8 +99,7 @@ lax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
   II x = singleton-≃-𝟙' (prop-fan-to-contr 𝓐 is-ua-𝓐 x)
   III : (x : ⊰ 𝓐 ⊱) → is-contr (fan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
   III x = prop-fan-to-contr (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
-          (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x)
-           (λ _ → is-ua-𝓑 x))
+          (univalence-closed-under-cotensor (fe _ _) _ (𝓑 x) (is-ua-𝓑 x))
           id
   IV : (x : ⊰ 𝓐 ⊱) → _ ≃ 𝟙
   IV x = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 y ⊱ → ⊰ 𝓑 x ⊱) ,
