@@ -14,6 +14,7 @@ open import UF.EquivalenceExamples
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.FunExt
+open import UF.PropIndexedPiSigma
 open import DURGs.BasicConstructionsonReflexiveGraphs
 open import DURGs.BivariantMidpointLenses
 open import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
@@ -56,35 +57,29 @@ oplax-lens-structure-is-contr
  → is-contr (oplax-covariant-lens-structure 𝓐 𝓑)
 oplax-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑 =
  equiv-to-singleton I
-  (Π-is-singleton (fe _ _) (λ x → equiv-to-singleton (IV x) 𝟙-is-singleton))
+  (Π-is-singleton (fe _ _) (λ x → equiv-to-singleton (III x) (II x)))
  where
   I : oplax-covariant-lens-structure 𝓐 𝓑
     ≃ ((x : ⊰ 𝓐 ⊱)
        → Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱)
        , ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
   I = ≃-sym ΠΣ-distr-≃
-  II : (x : ⊰ 𝓐 ⊱) → 𝟙 {𝓥} ≃ fan 𝓐 x
-  II x = singleton-≃-𝟙' (prop-fan-to-contr 𝓐 is-ua-𝓐 x)
-  III : (x : ⊰ 𝓐 ⊱) → is-contr (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
-  III x = prop-fan-to-contr-cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
+  II : (x : ⊰ 𝓐 ⊱) → is-contr (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
+  II x = prop-fan-to-contr-cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x)
           (univalence-closed-under-product (fe _ _) ⊰ 𝓑 x ⊱ (λ _ → 𝓑 x)
            (λ _ → is-ua-𝓑 x))
           id
-  IV : (x : ⊰ 𝓐 ⊱) → _ ≃ 𝟙
-  IV x = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-           ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
+  III : (x : ⊰ 𝓐 ⊱) → _ ≃ (cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id)
+  III x = (Σ ϕ ꞉ ((y : ⊰ 𝓐 ⊱) (p : x ≈⟨ 𝓐 ⟩ y) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+            ((u : ⊰ 𝓑 x ⊱) → ϕ x (𝓻 𝓐 x) u ≈⟨ 𝓑 x ⟩ u))
            ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (curry-uncurry fe)) ⟩
-         (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
-           ((u : ⊰ 𝓑 x ⊱) → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x ⟩ u))
+          (Σ ϕ ꞉ (((y , p) : fan 𝓐 x) → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 y ⊱) ,
+            ((u : ⊰ 𝓑 x ⊱) → ϕ (x , (𝓻 𝓐 x)) u ≈⟨ 𝓑 x ⟩ u))
            ≃⟨ Σ-change-of-variable-≃ _
-               (≃-sym (Π-change-of-variable-≃ {𝓤} fe _ (II x))) ⟩
-         (Σ ϕ ꞉ (𝟙 → ⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ ⋆ u ≈⟨ 𝓑 x ⟩ u))
-           ≃⟨ Σ-change-of-variable-≃ _ (≃-sym (𝟙→ (fe _ _))) ⟩
-         (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u))
+               (prop-indexed-product (x , 𝓻 𝓐 x) (fe _ _) (is-ua-𝓐 x)) ⟩
+          (Σ ϕ ꞉ (⊰ 𝓑 x ⊱ → ⊰ 𝓑 x ⊱) , ((u : ⊰ 𝓑 x ⊱) → ϕ u ≈⟨ 𝓑 x ⟩ u))
            ≃⟨by-definition⟩
-         cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id
-           ≃⟨ singleton-≃-𝟙 (III x) ⟩
-         𝟙 {𝓤} ■
+          cofan (∏ ⊰ 𝓑 x ⊱ , λ _ → 𝓑 x) id ■
 
 lax-lens-structure-is-contr
  : FunExt
@@ -181,21 +176,13 @@ bivariant-lens-structure-is-contr {𝓤} fe 𝓐 𝓑 is-ua-𝓐 is-ua-𝓑
     , Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
     , (ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)
     × (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ))
-       ≃⟨ Σ-flip ⟩
-    ((Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , (ϕ ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)
-    × (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)))
        ≃⟨ Σ-cong (λ _ → ≃-sym Σ-assoc) ⟩
-    ((Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , cofan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) ψ
-    × (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)))
-       ≃⟨ Σ-cong (λ - → ×-cong (singleton-≃-𝟙 (III x -)) (≃-refl _)) ⟩
-    ((Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , 𝟙 {𝓤} × (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)))
-       ≃⟨ Σ-cong (λ _ → 𝟙-lneutral) ⟩
-    ((Σ ψ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
-    , (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ)))
+    (Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+    , Σ (ψ , _) ꞉ fan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) ϕ ,
+      (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ψ))
+       ≃⟨ Σ-cong (λ _ → prop-indexed-sum {! center (IV x) !} {! singletons-are-props (IV x) !}) ⟩
+    ((Σ ϕ ꞉ (⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ → ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱)
+    , (id ≈⟨ ∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x)) ⟩ ϕ)))
        ≃⟨by-definition⟩
     fan (∏ ⊰ 𝓑 x x (𝓻 𝓐 x) ⊱ , (λ - → 𝓑 x x (𝓻 𝓐 x))) id
        ≃⟨ singleton-≃-𝟙 (IV x) ⟩
