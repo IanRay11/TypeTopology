@@ -352,6 +352,6 @@ oplax structure is contractible (or a pointed proposition!)
    → {x y : ⊰ 𝓐 ⊱}
    → (e : x ≈⟨ 𝓐 ⟩ y)
    → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
-  observation fe e u = ap pr₁ {!oplax-＝-transport-structure fe!}
+  observation fe e u = ap (λ - → (pr₁ -) _ _ e u) (oplax-＝-transport-structure fe)
 
 \end{code}
