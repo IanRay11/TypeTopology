@@ -24,6 +24,7 @@ open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses
 open import DURGs.ReflexiveGraphs
 open import DURGs.UnivalentReflexiveGraphs
+open import DURGs.UnivalenceProperty
 
 \end{code}
 
@@ -92,7 +93,7 @@ some illustrative examples.
 Example 1:
 
 We give a detailed characaterization of the identity type of cones over a
-cospan using reflexive graphs.
+cospan using reflexive graphs. This illustration is not intended to be brief.
 
 Two cones with commutative graphs witnessed by 
 
@@ -209,6 +210,23 @@ The carrier of this total reflexive graph corresponds to the type of cones.
 
 \begin{code}
 
+ cone-total-refl-graph : (A : 𝓣 ̇) → refl-graph (𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣) (𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣)
+ cone-total-refl-graph A
+  = (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A)
+
+ private
+  observation : (A : 𝓣 ̇)
+              → ⊰ cone-total-refl-graph A ⊱ ＝ cone A
+  observation A = refl
+
+ cone-total-is-univalent : (A : 𝓣 ̇)
+                         → is-univalent-refl-graph (cone-total-refl-graph A)
+ cone-total-is-univalent A
+  = univalence-closed-under-total (cone-base-refl-graph A)
+     (cone-displayed-refl-graph A)
+     (cone-base-is-univalent A)
+     (cone-display-is-univalent A)
+
  cone-characterization
   : {A : 𝓣 ̇ } {p p' : A → X} {q q' : A → Y}
     {H : f ∘ p ∼ g ∘ q} {H' : f ∘ p' ∼ g ∘ q'}
@@ -216,18 +234,12 @@ The carrier of this total reflexive graph corresponds to the type of cones.
   ≃ (Σ (α , β) ꞉ (p ∼ p') × (q ∼ q') ,
      ∼-trans H (∼-ap-∘ g β) ∼ ∼-trans (∼-ap-∘ f α) H')
  cone-characterization {𝓣} {A} {p} {p'} {q} {q'} {H} {H'}
-  = (id-to-edge' (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A)
-    , II ((p , q) , H) ((p' , q') , H'))
+  = (id-to-edge' (cone-total-refl-graph A) , I ((p , q) , H) ((p' , q') , H'))
   where
-   I : is-univalent-refl-graph
-        (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A)
-   I = univalence-closed-under-total (cone-base-refl-graph A)
-        (cone-displayed-refl-graph A) (cone-base-is-univalent A)
-        (cone-display-is-univalent A)
-   II : (c c' : cone A)
+   I : (c c' : cone A)
       → is-equiv (id-to-edge'
          (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A) {c} {c'})
-   II = prop-fans-implies-id-to-edge-equiv I
+   I = prop-fans-implies-id-to-edge-equiv (cone-total-is-univalent A)
 
 \end{code}
 
@@ -242,10 +254,14 @@ module _ (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
  transport-along-≈ : (P : ⊰ 𝓐 ⊱ → 𝓣 ̇) {x y : ⊰ 𝓐 ⊱}
                    → x ≈⟨ 𝓐 ⟩ y
                    → P x → P y
- transport-along-≈ P {x} {y} e = transport P I
-  where
-   I : x ＝ y
-   I = edge-to-id' (𝓐 , ua-𝓐) e
+ transport-along-≈ P {x} {y} e = transport P (edge-to-id' (𝓐 , ua-𝓐) e)
+
+ transport-along-≈-comp : (P : ⊰ 𝓐 ⊱ → 𝓣 ̇) {x : ⊰ 𝓐 ⊱}
+                        → (u : P x)
+                        → transport-along-≈ P (𝓻 𝓐 x) u ＝ u
+ transport-along-≈-comp P {x} u
+  = transport (λ - → transport P - u ＝ u)
+     (edge-to-id-comp (𝓐 , ua-𝓐) {x} ⁻¹) refl
 
 \end{code}
 
@@ -304,5 +320,38 @@ module _ {𝓤' 𝓥' : Universe}
  fundamental-theorem-of-transport {x} {y} e u
   = edge-to-id' (lens-fam y , ua-𝓑 y)
      (fundamental-theorem-of-transport-for-edges 𝓐 ua-𝓐 𝓑 e u)
+
+\end{code}
+
+It is worth noting that this result follows immediatly from the fact that
+oplax structure is contractible (or a pointed proposition!)
+
+\begin{code}
+
+ transport-along-≈-is-oplax-structure
+  : oplax-covariant-lens-structure 𝓐 lens-fam
+ transport-along-≈-is-oplax-structure = (I , II)
+  where
+   I : (x y : ⊰ 𝓐 ⊱) → (x ≈⟨ 𝓐 ⟩ y) → ⊰ lens-fam x ⊱ → ⊰ lens-fam y ⊱
+   I x y = transport-along-≈ 𝓐 ua-𝓐 lens-fam-car
+   II : (x : ⊰ 𝓐 ⊱) (u : ⊰ lens-fam x ⊱)
+      → (I x x (𝓻 𝓐 x) u) ≈⟨ lens-fam x ⟩ u
+   II x u = id-to-edge' (lens-fam x)
+             (transport-along-≈-comp 𝓐 ua-𝓐 lens-fam-car u)
+
+ oplax-＝-transport-structure
+  : FunExt
+  → oplax-data-is-oplax-structure ＝ transport-along-≈-is-oplax-structure
+ oplax-＝-transport-structure fe
+  = oplax-lens-structure-is-a-property fe 𝓐 lens-fam ua-𝓐 ua-𝓑
+     oplax-data-is-oplax-structure transport-along-≈-is-oplax-structure
+
+ private
+  observation
+   : FunExt
+   → {x y : ⊰ 𝓐 ⊱}
+   → (e : x ≈⟨ 𝓐 ⟩ y)
+   → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
+  observation fe e u = ap pr₁ {!oplax-＝-transport-structure fe!}
 
 \end{code}
