@@ -151,7 +151,7 @@ under product, functions and use of the discrete reflexive graph.
  cone-base-is-univalent : (A : 𝓣 ̇)
                         → is-univalent-refl-graph (cone-base-refl-graph A)
  cone-base-is-univalent A = univalence-closed-under-binary-product
-                             (∏ A , (λ - → Δ X)) (∏ A , (λ - → Δ Y))
+                             (A ➙ (Δ X)) (A ➙ (Δ Y))
                              (univalence-closed-under-cotensor fe A (Δ X)
                               (discrete-refl-graph-is-univalent X))
                              (univalence-closed-under-cotensor fe A (Δ Y)
@@ -352,6 +352,7 @@ oplax structure is contractible (or a pointed proposition!)
    → {x y : ⊰ 𝓐 ⊱}
    → (e : x ≈⟨ 𝓐 ⟩ y)
    → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
-  observation fe e u = ap (λ - → (pr₁ -) _ _ e u) (oplax-＝-transport-structure fe)
+  observation fe e u
+   = ap (λ - → (pr₁ -) _ _ e u) (oplax-＝-transport-structure fe)
 
 \end{code}

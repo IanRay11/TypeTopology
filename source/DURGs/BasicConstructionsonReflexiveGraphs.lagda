@@ -14,6 +14,8 @@ module DURGs.BasicConstructionsonReflexiveGraphs where
 
 open import MLTT.Spartan
 open import UF.Powerset-MultiUniverse
+open import UF.Size
+open import UF.UniverseEmbedding
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.ReflexiveGraphs
 
@@ -68,7 +70,23 @@ binary-prod-refl-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓐' = ((⊰ 𝓐 ⊱
   II : (t : ⊰ 𝓐 ⊱ × ⊰ 𝓐' ⊱) → I t t
   II (x , x') = (𝓻 𝓐 x , 𝓻 𝓐' x')
 
-syntax binary-prod-refl-graph 𝓐 𝓐' = 𝓐 ⊗ 𝓐' 
+syntax binary-prod-refl-graph 𝓐 𝓐' = 𝓐 ⊗ 𝓐'
+
+binary-sum-refl-graph : refl-graph 𝓤 𝓥
+                       → refl-graph 𝓤' 𝓥'
+                       → refl-graph (𝓤 ⊔ 𝓤') (𝓥 ⊔ 𝓥')
+binary-sum-refl-graph {𝓤} {𝓥} {𝓤'} {𝓥'} 𝓐 𝓐' = ((⊰ 𝓐 ⊱ + ⊰ 𝓐' ⊱) , I , II)
+ where
+  I : ⊰ 𝓐 ⊱ + ⊰ 𝓐' ⊱ → ⊰ 𝓐 ⊱ + ⊰ 𝓐' ⊱ → 𝓥 ⊔ 𝓥' ̇
+  I (inl x) (inl y) = Lift 𝓥' (x ≈⟨ 𝓐 ⟩ y)
+  I (inl x) (inr y) = 𝟘
+  I (inr x) (inl y) = 𝟘
+  I (inr x) (inr y) = Lift 𝓥 (x ≈⟨ 𝓐' ⟩ y)
+  II : (t : ⊰ 𝓐 ⊱ + ⊰ 𝓐' ⊱) → I t t
+  II (inl x) = lift 𝓥' (𝓻 𝓐 x)
+  II (inr x) = lift 𝓥 (𝓻 𝓐' x)
+
+syntax binary-sum-refl-graph 𝓐 𝓐' = 𝓐 ⊕ 𝓐'
 
 \end{code}
 
@@ -124,6 +142,8 @@ cotensor-refl-graph : 𝓤' ̇
                     → refl-graph 𝓤 𝓥
                     → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
 cotensor-refl-graph A 𝓑 = ∏ A , (λ - → 𝓑)
+
+syntax cotensor-refl-graph A 𝓑 = A ➙ 𝓑  
 
 tensor-refl-graph : 𝓤' ̇
                   → refl-graph 𝓤 𝓥
