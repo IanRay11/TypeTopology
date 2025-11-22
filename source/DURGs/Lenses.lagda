@@ -106,7 +106,7 @@ lax-contravariant-lens-equiv-presentation 𝓤' 𝓥' 𝓐
   
 \end{code}
 
-We say a oplax (lax) covariant (contraviant) lens is univalent if its family
+We say a oplax (lax) covariant (contravariant) lens is univalent if its family
 is valued in univalent reflexive graphs.
 
 \begin{code}
