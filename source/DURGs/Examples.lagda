@@ -38,12 +38,12 @@ product-characterization-from-univalent-refl-graphs
  → ((a , b) ＝ (a' , b')) ≃ (a ＝ a') × (b ＝ b')
 product-characterization-from-univalent-refl-graphs
  {_} {_} {A} {B} {a} {a'} {b} {b'}
- = (id-to-edge' ((Δ A) ⊗ (Δ B)) , II (a , b) (a' , b'))
+ = (id-to-edge ((Δ A) ⊗ (Δ B)) , II (a , b) (a' , b'))
  where
   I : is-univalent-refl-graph ((Δ A) ⊗ (Δ B))
   I = univalence-closed-under-binary-product (Δ A) (Δ B)
        (discrete-refl-graph-is-univalent A) (discrete-refl-graph-is-univalent B)
-  II : (p q : A × B) → is-equiv (id-to-edge' ((Δ A) ⊗ (Δ B)) {p} {q})
+  II : (p q : A × B) → is-equiv (id-to-edge ((Δ A) ⊗ (Δ B)))
   II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
@@ -57,13 +57,13 @@ sigma-characterization-from-univalent-refl-graphs
  → ((a , b) ＝ (a' , b')) ≃ (Σ p ꞉ (a ＝ a') , transport B p b ＝ b')
 sigma-characterization-from-univalent-refl-graphs
  {𝓤} {𝓥} {A} {B} {a} {a'} {b} {b'}
- = (id-to-edge' (∐ A , λ a → Δ (B a)) , II (a , b) (a' , b'))
+ = (id-to-edge (∐ A , λ a → Δ (B a)) , II (a , b) (a' , b'))
  where
   I : is-univalent-refl-graph (∐ A , λ a → Δ (B a))
   I = univalence-closed-under-coproduct A (λ a → Δ (B a))
        (λ a → discrete-refl-graph-is-univalent (B a))
   II : (p q : (Σ a ꞉ A , B a))
-     → is-equiv (id-to-edge' (∐ A , λ a → Δ (B a)) {p} {q})
+     → is-equiv (id-to-edge (∐ A , λ a → Δ (B a)))
   II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
@@ -234,11 +234,11 @@ The carrier of this total reflexive graph corresponds to the type of cones.
   ≃ (Σ (α , β) ꞉ (p ∼ p') × (q ∼ q') ,
      ∼-trans H (∼-ap-∘ g β) ∼ ∼-trans (∼-ap-∘ f α) H')
  cone-characterization {𝓣} {A} {p} {p'} {q} {q'} {H} {H'}
-  = (id-to-edge' (cone-total-refl-graph A) , I ((p , q) , H) ((p' , q') , H'))
+  = (id-to-edge (cone-total-refl-graph A) , I ((p , q) , H) ((p' , q') , H'))
   where
    I : (c c' : cone A)
-      → is-equiv (id-to-edge'
-         (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A) {c} {c'})
+     → is-equiv
+        (id-to-edge (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A))
    I = prop-fans-implies-id-to-edge-equiv (cone-total-is-univalent A)
 
 \end{code}
@@ -254,14 +254,14 @@ module _ (𝓐 : refl-graph 𝓤 𝓥) (ua-𝓐 : is-univalent-refl-graph 𝓐)
  transport-along-≈ : (P : ⊰ 𝓐 ⊱ → 𝓣 ̇) {x y : ⊰ 𝓐 ⊱}
                    → x ≈⟨ 𝓐 ⟩ y
                    → P x → P y
- transport-along-≈ P {x} {y} e = transport P (edge-to-id' (𝓐 , ua-𝓐) e)
+ transport-along-≈ P e = transport P (edge-to-id (𝓐 , ua-𝓐) e)
 
  transport-along-≈-comp : (P : ⊰ 𝓐 ⊱ → 𝓣 ̇) {x : ⊰ 𝓐 ⊱}
                         → (u : P x)
                         → transport-along-≈ P (𝓻 𝓐 x) u ＝ u
- transport-along-≈-comp P {x} u
+ transport-along-≈-comp P u
   = transport (λ - → transport P - u ＝ u)
-     (edge-to-id-comp (𝓐 , ua-𝓐) {x} ⁻¹) refl
+     (edge-to-id-comp (𝓐 , ua-𝓐) ⁻¹) refl
 
 \end{code}
 
@@ -318,7 +318,7 @@ module _ {𝓤' 𝓥' : Universe}
   → (e : x ≈⟨ 𝓐 ⟩ y)
   → lens-push e ∼ transport-along-≈ 𝓐 ua-𝓐 lens-fam-car e
  fundamental-theorem-of-transport {x} {y} e u
-  = edge-to-id' (lens-fam y , ua-𝓑 y)
+  = edge-to-id (lens-fam y , ua-𝓑 y)
      (fundamental-theorem-of-transport-for-edges 𝓐 ua-𝓐 𝓑 e u)
 
 \end{code}
@@ -336,7 +336,7 @@ oplax structure is contractible (or a pointed proposition!)
    I x y = transport-along-≈ 𝓐 ua-𝓐 lens-fam-car
    II : (x : ⊰ 𝓐 ⊱) (u : ⊰ lens-fam x ⊱)
       → (I x x (𝓻 𝓐 x) u) ≈⟨ lens-fam x ⟩ u
-   II x u = id-to-edge' (lens-fam x)
+   II x u = id-to-edge (lens-fam x)
              (transport-along-≈-comp 𝓐 ua-𝓐 lens-fam-car u)
 
  oplax-＝-transport-structure

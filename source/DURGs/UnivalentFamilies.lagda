@@ -42,7 +42,7 @@ id-to-equiv-family : {A : 𝓤 ̇} {B : A → 𝓣 ̇}
                    → (x y : A)
                    → x ＝ y
                    → B x ≃ B y
-id-to-equiv-family {_} {_} {A} {B} = id-to-edge (refl-graph-image A B) 
+id-to-equiv-family {_} {_} {A} {B} x y = id-to-edge (refl-graph-image A B) 
 
 is-univalent-family-implies-id-to-equiv
  : {A : 𝓤 ̇} {B : A → 𝓣 ̇}
