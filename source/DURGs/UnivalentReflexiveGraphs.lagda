@@ -31,62 +31,62 @@ cofan : (𝓐 : refl-graph 𝓤 𝓥)
       → 𝓤 ⊔ 𝓥 ̇ 
 cofan 𝓐 x = Σ y ꞉ ⊰ 𝓐 ⊱ , y ≈⟨ 𝓐 ⟩ x
 
-prop-fan-to-cofan' : Fun-Ext
-                  → (𝓐 : refl-graph 𝓤 𝓥)
-                  → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-                  → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-prop-fan-to-cofan' {𝓤} {𝓥} fe 𝓐 fan-prop = ⌜ I ⌝⁻¹ (λ - → refl)
- where
-  I = ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-        ≃⟨refl⟩
-      ((x : ⊰ 𝓐 ⊱) → ((y , s) (y' , t) : cofan 𝓐 x) → (y , s) ＝ (y' , t))
-        ≃⟨ II ⟩
-      ((x y : ⊰ 𝓐 ⊱) (s : y ≈⟨ 𝓐 ⟩ x) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
-        → (y , s) ＝ (y' , t))
-        ≃⟨ Π-flip ⟩
-      ((y x : ⊰ 𝓐 ⊱) (s : y ≈⟨ 𝓐 ⟩ x) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
-        → (y , s) ＝ (y' , t))
-        ≃⟨ Π-cong fe fe (λ y → ≃-sym (curry-uncurry' fe fe)) ⟩
-      ((y : ⊰ 𝓐 ⊱) ((x , s) : fan 𝓐 y) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
-        → (y , s) ＝ (y' , t))
-        ≃⟨ III ⟩
-      ((y y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ y) → (y , 𝓻 𝓐 y) ＝ (y' , t))
-        ≃⟨ Π-flip ⟩
-      ((y' y : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ y) → (y , 𝓻 𝓐 y) ＝ (y' , t))
-        ≃⟨ Π-cong fe fe (λ y' → ≃-sym (curry-uncurry' fe fe)) ⟩
-      ((y' : ⊰ 𝓐 ⊱) ((y , t) : fan 𝓐 y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
-        ≃⟨ IV ⟩
-      ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝ (y' , 𝓻 𝓐 y'))               ■
-   where
-    II = Π-cong fe fe (λ - → ≃-comp (curry-uncurry' fe fe)
-          (Π-cong fe fe (λ y → Π-cong fe fe (λ s → curry-uncurry' fe fe))))
-    III = Π-cong fe fe (λ y → prop-indexed-product (y , 𝓻 𝓐 y) fe (fan-prop y))
-    IV = Π-cong fe fe
-          (λ y' → prop-indexed-product (y' , 𝓻 𝓐 y') fe (fan-prop y'))
+\end{code}
+
+Temporarily adding syntax
+
+\begin{code}
+
+_⨾⟨_⟩_ : (X : 𝓤 ̇ ) {Y : 𝓥 ̇ } {Z : 𝓦 ̇ } → (X → Y) → (Y → Z) → (X → Z)
+_ ⨾⟨ f ⟩ g = g ∘ f
+
+_∘⟨_⟩_ : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } (Z : 𝓦 ̇ ) → (Y → Z) → (X → Y) → (X → Z)
+_ ∘⟨ g ⟩ f = g ∘ f
+
+_suffices-by⟨_⟩_ : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } (Z : 𝓦 ̇ ) → (Y → Z) → (X → Y) → (X → Z)
+_ suffices-by⟨ g ⟩ f = g ∘ f
+
+_▢ : (X : 𝓤 ̇ ) → X → X
+X ▢ = id
+
+infix  1 _▢
+infixr 0 _⨾⟨_⟩_
+infixr 0 _∘⟨_⟩_
+infixr 0 _suffices-by⟨_⟩_
+
+\end{code}
+
+This will be removed.
+
+\begin{code}
 
 prop-fan-to-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-prop-fan-to-cofan 𝓐 fan-prop x (y , s) (y' , t)
- = I III VI IV VII
+prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I (λ - → refl)
  where
-  I : (p : y ＝ x) (q : x ＝ y')
-      (α : transport (λ - → y ≈⟨ 𝓐 ⟩ -) p (𝓻 𝓐 y) ＝ s)
-      (β : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) q t ＝ 𝓻 𝓐 y')
-    → (y , s) ＝ (y' , t)
-  I refl refl refl refl = refl
-  II : (y , 𝓻 𝓐 y) ＝ (x , s)
-  II = fan-prop y (y , 𝓻 𝓐 y) (x , s)
-  III : y ＝ x
-  III = ap pr₁ II
-  IV : transport (λ - → y ≈⟨ 𝓐 ⟩ -) III (𝓻 𝓐 y) ＝ s
-  IV = pr₂ (from-Σ-＝ II)
-  V : (x , t) ＝ (y' , 𝓻 𝓐 y')
-  V = fan-prop y' (x , t) (y' , 𝓻 𝓐 y')
-  VI : x ＝ y'
-  VI = pr₁ (from-Σ-＝ V)
-  VII : transport (λ - → y' ≈⟨ 𝓐 ⟩ -) VI t ＝ 𝓻 𝓐 y'
-  VII = pr₂ (from-Σ-＝ V)
+  I : ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝[ fan 𝓐 y' ] (y' , 𝓻 𝓐 y'))
+    → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
+  I = ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
+        suffices-by⟨ id ⟩
+      ((x : ⊰ 𝓐 ⊱) → ((y , s) (y' , t) : cofan 𝓐 x) → (y , s) ＝ (y' , t))
+        suffices-by⟨ (λ f x (y , s) (y' , t) → f x y s y' t) ⟩ 
+      ((x y : ⊰ 𝓐 ⊱) (s : y ≈⟨ 𝓐 ⟩ x) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
+        → (y , s) ＝ (y' , t))
+        suffices-by⟨ (λ f x y → f y x) ⟩
+      ((y x : ⊰ 𝓐 ⊱) (s : y ≈⟨ 𝓐 ⟩ x) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
+        → (y , s) ＝ (y' , t))
+        suffices-by⟨ (λ f y x s y' t → f y (x , s) y' t) ⟩
+      ((y : ⊰ 𝓐 ⊱) ((x , s) : fan 𝓐 y) (y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ x)
+        → (y , s) ＝ (y' , t))
+        suffices-by⟨ (λ f y → Π-proj⁻¹ (y , 𝓻 𝓐 y) (fan-prop y) (f y)) ⟩
+      ((y y' : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ y) → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-by⟨ (λ f y' y → f y y') ⟩
+      ((y' y : ⊰ 𝓐 ⊱) (t : y' ≈⟨ 𝓐 ⟩ y) → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-by⟨ (λ f y' y t → f y' (y , t)) ⟩
+      ((y' : ⊰ 𝓐 ⊱) ((y , t) : fan 𝓐 y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-by⟨ (λ _ y' → Π-proj⁻¹ (y' , 𝓻 𝓐 y') (fan-prop y') refl) ⟩
+      ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝ (y' , 𝓻 𝓐 y'))                ▢
 
 prop-cofan-to-fan : (𝓐 : refl-graph 𝓤 𝓥) 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
