@@ -11,6 +11,7 @@ Sterling, Ulrik, etc.)
 module DURGs.UnivalentReflexiveGraphs where
 
 open import MLTT.Spartan
+open import Notation.General
 open import UF.Base
 open import UF.Equiv
 open import UF.EquivalenceExamples
@@ -31,43 +32,11 @@ cofan : (𝓐 : refl-graph 𝓤 𝓥)
       → 𝓤 ⊔ 𝓥 ̇ 
 cofan 𝓐 x = Σ y ꞉ ⊰ 𝓐 ⊱ , y ≈⟨ 𝓐 ⟩ x
 
-\end{code}
-
-Temporarily adding syntax
-
-\begin{code}
-
-_⨾⟨_⟩_ : (X : 𝓤 ̇ ) {Y : 𝓥 ̇ } {Z : 𝓦 ̇ } → (X → Y) → (Y → Z) → (X → Z)
-_ ⨾⟨ f ⟩ g = g ∘ f
-
-_∘⟨_⟩_ : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } (Z : 𝓦 ̇ ) → (Y → Z) → (X → Y) → (X → Z)
-_ ∘⟨ g ⟩ f = g ∘ f
-
-_suffices-to-show⟨_⟩_ : {X : 𝓤 ̇ } {Y : 𝓥 ̇ } (Z : 𝓦 ̇ )
-                      → (Y → Z) → (X → Y) → (X → Z)
-_ suffices-to-show⟨ g ⟩ f = g ∘ f
-
-_▢ : (X : 𝓤 ̇ ) → X → X
-X ▢ = id
-
-infix  1 _▢
-infixr 0 _⨾⟨_⟩_
-infixr 0 _∘⟨_⟩_
-infixr 0 _suffices-to-show⟨_⟩_
-
-\end{code}
-
-This will be removed.
-
-\begin{code}
-
 prop-fan-to-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
 prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I (λ - → refl)
  where
-  I : ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝[ fan 𝓐 y' ] (y' , 𝓻 𝓐 y'))
-    → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
   I = ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
         suffices-to-show⟨ id ⟩
       ((x : ⊰ 𝓐 ⊱) → ((y , s) (y' , t) : cofan 𝓐 x) → (y , s) ＝ (y' , t))
@@ -87,31 +56,34 @@ prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I (λ - → refl)
         suffices-to-show⟨ (λ f y' y t → f y' (y , t)) ⟩
       ((y' : ⊰ 𝓐 ⊱) ((y , t) : fan 𝓐 y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
         suffices-to-show⟨ (λ _ y' → Π-proj⁻¹ (y' , 𝓻 𝓐 y') (fan-prop y') refl) ⟩
-      ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝ (y' , 𝓻 𝓐 y'))                ▢
+      ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝[ fan 𝓐 y' ] (y' , 𝓻 𝓐 y'))    ▢
 
 prop-cofan-to-fan : (𝓐 : refl-graph 𝓤 𝓥) 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-prop-cofan-to-fan 𝓐 cofan-prop x (y , s) (y' , t)
- = I III VI IV VII
+prop-cofan-to-fan 𝓐 co-prop 
+ = I (λ - → refl)
  where
-  I : (p : y ＝ x) (q : x ＝ y')
-      (α : transport (λ - → - ≈⟨ 𝓐 ⟩ y) p (𝓻 𝓐 y) ＝ s)
-      (β : transport (λ - → - ≈⟨ 𝓐 ⟩ y') q t ＝ 𝓻 𝓐 y')
-    → (y , s) ＝ (y' , t)
-  I refl refl refl refl = to-Σ-＝ (refl , refl)
-  II : (y , 𝓻 𝓐 y) ＝ (x , s)
-  II = cofan-prop y (y , 𝓻 𝓐 y) (x , s)
-  III : y ＝ x
-  III = pr₁ (from-Σ-＝ II)
-  IV : transport (λ - → - ≈⟨ 𝓐 ⟩ y) III (𝓻 𝓐 y) ＝ s
-  IV = pr₂ (from-Σ-＝ II)
-  V : (x , t) ＝ (y' , 𝓻 𝓐 y')
-  V = cofan-prop y' (x , t) (y' , 𝓻 𝓐 y')
-  VI : x ＝ y'
-  VI = pr₁ (from-Σ-＝ V)
-  VII : transport (λ - → - ≈⟨ 𝓐 ⟩ y') VI t ＝ 𝓻 𝓐 y'
-  VII = pr₂ (from-Σ-＝ V)
+  I = ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
+        suffices-to-show⟨ id ⟩
+      ((x : ⊰ 𝓐 ⊱) → ((y , s) (y' , t) : fan 𝓐 x) → (y , s) ＝ (y' , t))
+        suffices-to-show⟨ (λ f x (y , s) (y' , t) → f x y s y' t) ⟩ 
+      ((x y : ⊰ 𝓐 ⊱) (s : x ≈⟨ 𝓐 ⟩ y) (y' : ⊰ 𝓐 ⊱) (t : x ≈⟨ 𝓐 ⟩ y')
+        → (y , s) ＝ (y' , t))
+        suffices-to-show⟨ (λ f x y → f y x) ⟩
+      ((y x : ⊰ 𝓐 ⊱) (s : x ≈⟨ 𝓐 ⟩ y) (y' : ⊰ 𝓐 ⊱) (t : x ≈⟨ 𝓐 ⟩ y')
+        → (y , s) ＝ (y' , t))
+        suffices-to-show⟨ (λ f y x s y' t → f y (x , s) y' t) ⟩
+      ((y : ⊰ 𝓐 ⊱) ((x , s) : cofan 𝓐 y) (y' : ⊰ 𝓐 ⊱) (t : x ≈⟨ 𝓐 ⟩ y')
+        → (y , s) ＝ (y' , t))
+        suffices-to-show⟨ (λ f y → Π-proj⁻¹ (y , 𝓻 𝓐 y) (co-prop y) (f y)) ⟩
+      ((y y' : ⊰ 𝓐 ⊱) (t : y ≈⟨ 𝓐 ⟩ y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-to-show⟨ (λ f y y' → f y' y) ⟩
+      ((y' y : ⊰ 𝓐 ⊱) (t : y ≈⟨ 𝓐 ⟩ y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-to-show⟨ (λ f y' y t → f y' (y , t)) ⟩
+      ((y' : ⊰ 𝓐 ⊱) ((y , t) : cofan 𝓐 y') → (y , 𝓻 𝓐 y) ＝ (y' , t))
+        suffices-to-show⟨ (λ _ y' → Π-proj⁻¹ (y' , 𝓻 𝓐 y') (co-prop y') refl) ⟩
+      ((y' : ⊰ 𝓐 ⊱) → (y' , 𝓻 𝓐 y') ＝[ fan 𝓐 y' ] (y' , 𝓻 𝓐 y'))    ▢
 
 contr-fan-to-prop : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-contr (fan 𝓐 x))
