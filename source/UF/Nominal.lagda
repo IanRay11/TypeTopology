@@ -12,8 +12,10 @@ open import Naturals.Addition
 open import Naturals.Order
 open import Quotient.Type
 open import UF.DiscreteAndSeparated
+open import UF.FunExt
 open import UF.Sets
 open import UF.Subsingletons
+open import UF.Subsingletons-FunExt
 
 \end{code}
 
@@ -49,7 +51,10 @@ Now we begin by inductively defining our type of terms.
 
 \begin{code}
 
-module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) where
+module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) (fe : Fun-Ext) where
+
+ var-set : is-set Var
+ var-set = discrete-types-are-sets d
 
  data Λ : 𝓤₀  ̇ where
   V : Var → Λ
@@ -65,8 +70,8 @@ module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) where
  syntax help-decide x y d = x is[ d ] y
 
  swapVar : Var → Var → Var → Var
- swapVar x y z = if (x is[ d x y ] y) then y
-                 else (if (x is[ d x y ] y) then x else z)
+ swapVar x y z = if (z is[ d z x ] x) then y
+                 else (if (z is[ d z y ] y) then x else z)
 
  swap : Var → Var → Λ → Λ
  swap x y (V z) = V (swapVar x y z)
@@ -95,6 +100,11 @@ module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) where
          ＝⟨ ap (termSize (swap x y t) +_) (swap-same-size x y t') ⟩
        termSize (swap x y t) + termSize (swap x y t')  ∎
 
+ swap-no-bigger : (w z : Var) (s : Λ)
+                → termSize (swap w z s) ≤ℕ termSize s
+ swap-no-bigger w z s = transport (λ - → - ≤ℕ termSize s) (swap-same-size w z s)
+                         (≤-refl (termSize s))
+
 \end{code}
 
 In the absence of develop the full theory of constructive nominals sets we will
@@ -107,8 +117,11 @@ simply use a very niave notion of freshness.
  var (L x t) = x ∷ (var t)
  var (A t t') = var t ++ var t'
 
+ _fresh'_ : Var → Λ → 𝓤₀  ̇
+ a fresh' t = ¬ member a (var t)
+
  _fresh_ : Var → Λ → 𝓤₀  ̇
- a fresh t = ¬ member a (var t)
+ a fresh t = (x : Var) → member x (var t) → a ≠ x
 
 \end{code}
 
@@ -123,6 +136,7 @@ We need some lemmas.
  Lemma1 n m o =
   transport (λ - → - <ℕ m + n) (zero-left-neutral n)
    (<-n-monotone-right 0 m n o)
+   
  Lemma2 : (n m : ℕ) → (0 <ℕ m) → (n <ℕ n + m)
  Lemma2 n m o = transport (λ - → n <ℕ -) (addition-commutativity m n)
                  (Lemma1 n m o)
@@ -140,13 +154,8 @@ We need some lemmas.
   → z ≠ x → z fresh t
   → z ≠ y → z fresh t'
   → α-equiv (swap x z t) (swap y z t')
-     (a (termSize (swap x z t)) (I x z t))
-     (a' (termSize (swap y z t')) (I y z t'))
-  where
-   I : (w z : Var) (s : Λ)
-     → termSize (swap w z s) ≤ℕ termSize s
-   I w z s = transport (λ - → - ≤ℕ termSize s) (swap-same-size w z s)
-          (≤-refl (termSize s))
+     (a (termSize (swap x z t)) (swap-no-bigger x z t))
+     (a' (termSize (swap y z t')) (swap-no-bigger y z t'))
  α-equiv (L x t) (A t' s') _ _ = 𝟘
  α-equiv (A t s) (V y) _ _ = 𝟘
  α-equiv (A t s) (L y t') _ _ = 𝟘
@@ -177,7 +186,39 @@ We need some lemmas.
              → (a' : Acc _<ℕ_ (termSize t'))
              → α-equiv t t' a a'
              → α-equiv t' t a' a
- α-equiv-sym t t' a a' x = {!!}
+ α-equiv-sym (V x) (V y) _ _ = _⁻¹ 
+ α-equiv-sym (V x) (L y t') _ _ = id
+ α-equiv-sym (V x) (A t' s') _ _ = id
+ α-equiv-sym (L x t) (V y) _ _ = id
+ α-equiv-sym (L x t) (L y t') (acc a) (acc a') f z z≠y z♯t' z≠x z♯t
+  = α-equiv-sym (swap x z t) (swap y z t')
+     (a (termSize (swap x z t)) (swap-no-bigger x z t))
+     (a' (termSize (swap  y z t')) (swap-no-bigger y z t'))
+     (f z z≠x z♯t z≠y z♯t')
+ α-equiv-sym (L x t) (A t' s') _ _ = id
+ α-equiv-sym (A t s) (V y) _ _ = id
+ α-equiv-sym (A t s) (L y t') _ _ = id
+ α-equiv-sym (A t s) (A t' s') (acc a) (acc a') (f , g)
+  = (I , II)
+  where
+   I : α-equiv t' t
+         (a' (termSize t')
+          (Lemma2 (termSize t') (termSize s') (termSize->-0 s')))
+         (a (termSize t)
+          (Lemma2 (termSize t) (termSize s) (termSize->-0 s)))
+   I = α-equiv-sym t t'
+       (a (termSize t) (Lemma2 (termSize t) (termSize s) (termSize->-0 s)))
+       (a' (termSize t') (Lemma2 (termSize t') (termSize s') (termSize->-0 s')))
+       f
+   II : α-equiv s' s
+          (a' (termSize s')
+           (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
+          (a (termSize s)
+           (Lemma1 (termSize s) (termSize t) (termSize->-0 t)))
+   II = α-equiv-sym s s'
+       (a (termSize s) (Lemma1 (termSize s) (termSize t) (termSize->-0 t)))
+       (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
+       g
 
  α-equiv-tran : (t t' t'' : Λ)
               → (a : Acc _<ℕ_ (termSize t))
@@ -186,7 +227,41 @@ We need some lemmas.
               → α-equiv t t' a a'
               → α-equiv t' t'' a' a''
               → α-equiv t t'' a a''
- α-equiv-tran = {!!}
+ α-equiv-tran t t' t'' (acc a) (acc a') (acc a'') p q = {!!}
+
+\end{code}
+
+We need function extensionality to show α-equiv is prop valued.
+
+\begin{code}
+
+ α-equiv-prop-valued : (t t' : Λ)
+                     → (a : Acc _<ℕ_ (termSize t))
+                     → (a' : Acc _<ℕ_ (termSize t'))
+                     → is-prop (α-equiv t t' a a')
+ α-equiv-prop-valued (V x) (V y) _ _ = var-set
+ α-equiv-prop-valued (V x) (L y t') _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (V x) (A t' s') _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (L x t) (V y) _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (L x t) (L y t') (acc a) (acc a')
+  = Π-is-prop fe
+     (λ z → Π-is-prop fe
+      (λ _ → Π-is-prop fe
+       (λ _ → Π-is-prop fe
+        (λ _ → Π-is-prop fe
+         (λ _ → α-equiv-prop-valued (swap x z t) (swap y z t')
+                 (a (termSize (swap x z t)) (swap-no-bigger x z t))
+                 (a' (termSize (swap y z t')) (swap-no-bigger y z t')))))))
+ α-equiv-prop-valued (L x t) (A t' s') _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (A t s) (V y) _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (A t s) (L y t') _ _ = 𝟘-is-prop
+ α-equiv-prop-valued (A t s) (A t' s') (acc a) (acc a')
+  = ×-is-prop (α-equiv-prop-valued t t'
+     (a (termSize t) (Lemma2 (termSize t) (termSize s) (termSize->-0 s)))
+     (a' (termSize t') (Lemma2 (termSize t') (termSize s') (termSize->-0 s'))))
+    (α-equiv-prop-valued s s'
+     (a (termSize s) (Lemma1 (termSize s) (termSize t) (termSize->-0 t)))
+     (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t'))))
 
  _＝α_ : Λ → Λ → 𝓤₀  ̇
  t ＝α s = α-equiv t s (wfℕ (termSize t)) (wfℕ (termSize s))
@@ -199,12 +274,16 @@ Note that to prove that ＝α is prop valued we would likely need to add an
 assumption that Λ is a set (maybe not?). One could do this with records to
 simulate higher inductive types. Showing ＝α is an equivalence relation is
 reduced to asking if the terminating version is an equivalence relation.
+This has been done with the excpetion of transitivity.
+
+TODO. Finish α-equiv-tran.
 
 \begin{code}
 
  ＝α-is-prop-valued : (t t' : Λ)
                     → is-prop (t ＝α t')
- ＝α-is-prop-valued = {!?proof?!}
+ ＝α-is-prop-valued t t'
+  = α-equiv-prop-valued t t' (wfℕ (termSize t)) (wfℕ (termSize t'))
 
  ＝α-is-equivalence-relation : is-equiv-relation _＝α_
  ＝α-is-equivalence-relation = (＝α-is-prop-valued , I , II , III)
