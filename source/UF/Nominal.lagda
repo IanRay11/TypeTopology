@@ -171,7 +171,7 @@ simply use a very niave notion of freshness.
 We need to show that the natural definition of α-equivalence terminates using
 well-foundedness of ℕ relative to the size of terms in Λ.
 
-We need some lemmas.
+We need some lemmas about order on ℕ.
 
 \begin{code}
 
@@ -209,6 +209,32 @@ We need some lemmas.
   × α-equiv s s'
      (a (termSize s) (Lemma1 (termSize s) (termSize t) (termSize->-0 t)))
      (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
+
+\end{code}
+
+We need to show that α-equiv is equivariant (unchanged underswapping)
+
+\begin{code}
+
+ α-equiv-equivariant : (x z v w : Var) (t t'' : Λ)
+                     → (a : (y : ℕ) → y <ℕ (succ (termSize t))
+                         → Acc (_<ℕ_) y)
+                     → (a'' : (y : ℕ) → y <ℕ (succ (termSize t''))
+                         → Acc (_<ℕ_) y)
+                     → α-equiv (swap x v t) (swap z v t'')
+                        (a (termSize (swap x v t)) (swap-no-bigger x v t))
+                        (a'' (termSize (swap z v t'')) (swap-no-bigger z v t''))
+                     → α-equiv (swap x w t) (swap z w t'')
+                        (a (termSize (swap x w t)) (swap-no-bigger x w t))
+                        (a'' (termSize (swap z w t'')) (swap-no-bigger z w t''))
+ α-equiv-equivariant x z v w t t'' a a'' α-v = {!!}
+
+\end{code}
+
+We begin the laborous task of showing that α-equiv is indeed an equivalence
+relation.
+
+\begin{code}
 
  α-equiv-refl : (t : Λ)
               → (a : Acc _<ℕ_ (termSize t))
@@ -263,6 +289,35 @@ We need some lemmas.
        (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
        g
 
+\end{code}
+
+Before showing transitivity we need some lemmas about lists.
+
+\begin{code}
+
+ lemma : (x : Var) (l l' : List Var)
+       → member x l
+       → member x (l ++ l')
+ lemma x (y ∷ l) l' in-head = in-head
+ lemma x (y ∷ l) l' (in-tail m) = in-tail (lemma x l l' m)
+
+ lemma' : (x : Var) (l l' : List Var)
+        → member x l'
+        → member x (l ++ l')
+ lemma' x [] (y' ∷ l') in-head = in-head
+ lemma' x (y ∷ l) (y' ∷ l') in-head = in-tail (lemma' x l (x ∷ l') in-head)
+ lemma' x [] (y' ∷ l') (in-tail m) = in-tail m
+ lemma' x (y ∷ l) (y' ∷ l') (in-tail m)
+  = in-tail (lemma' x l (y' ∷ l') (in-tail m))
+
+ lemma'' : (x : Var) (l l' l'' : List Var)
+         → member x l'
+         → member x (l ++ l' ++ l'')
+ lemma'' x l l' l'' m = lemma' x l (l' ++ l'') I
+  where
+   I : member x (l' ++ l'')
+   I = lemma x l' l'' m
+
  α-equiv-trans : (t t' t'' : Λ)
                → (a : Acc _<ℕ_ (termSize t))
                → (a' : Acc _<ℕ_ (termSize t'))
@@ -273,22 +328,43 @@ We need some lemmas.
  α-equiv-trans (V x) (V y) (V z) _ _ _ = _∙_
  α-equiv-trans (L x t) (L y t') (L z t'') (acc a) (acc a') (acc a'')
   f g w w≠x w♯t w≠z w♯t'' 
-  = I
+  = α-equiv-equivariant x z v w t t'' a a'' I
   where
    v : Var
-   v = fresh-name (A {!!} {!!})
-   I = α-equiv-trans (swap x w t) (swap y w t') (swap z w t'')
-        (a (termSize (swap x w t)) (swap-no-bigger x w t))
-        (a' (termSize (swap y w t')) (swap-no-bigger y w t'))
-        (a'' (termSize (swap z w t'')) (swap-no-bigger z w t''))
-        (f {!v!} {!!} {!!} {!!} {!!}) (g {!!} {!!} {!!} {!!} {!!})
- α-equiv-trans (A t s) (A t' t''') (A t'' s'') (acc a) (acc a') (acc a'') p q
-  = {!!}
+   v = fresh-name (A (V x) (A (V y) (A (V z) (A t (A t' t'')))))
+   v-fresh : v fresh (A (V x) (A (V y) (A (V z) (A t (A t' t'')))))
+   v-fresh = freshness (A (V x) (A (V y) (A (V z) (A t (A t' t'')))))
+   I = α-equiv-trans (swap x v t) (swap y v t') (swap z v t'')
+        (a (termSize (swap x v t)) (swap-no-bigger x v t))
+        (a' (termSize (swap y v t')) (swap-no-bigger y v t'))
+        (a'' (termSize (swap z v t'')) (swap-no-bigger z v t''))
+        (f v (v-fresh x in-head)
+             (λ - m → v-fresh - (in-tail (in-tail (in-tail
+              (lemma - (var t) (var t' ++ var t'') m)))))
+             (v-fresh y (in-tail in-head))
+             (λ - m → v-fresh - (in-tail (in-tail (in-tail
+              (lemma'' - (var t) (var t') (var t'') m))))))
+        (g v (v-fresh y (in-tail in-head))
+             (λ - m → v-fresh - (in-tail (in-tail (in-tail
+              (lemma'' - (var t) (var t') (var t'') m)))))
+             (v-fresh z (in-tail (in-tail in-head)))
+             (λ - m → v-fresh - (in-tail (in-tail (in-tail
+              (transport (member -) (++-assoc (var t) (var t') (var t''))
+               (lemma' - (var t ++ var t') (var t'') m)))))))
+ α-equiv-trans (A t s) (A t' s') (A t'' s'') (acc a) (acc a') (acc a'')
+  (p , p') (q , q')
+  = (α-equiv-trans t t' t''
+      (a (termSize t) (Lemma2 (termSize t) (termSize s) (termSize->-0 s)))
+      (a' (termSize t') (Lemma2 (termSize t') (termSize s') (termSize->-0 s')))
+      (a'' (termSize t'')
+       (Lemma2 (termSize t'') (termSize s'') (termSize->-0 s''))) p q
+   , α-equiv-trans s s' s''
+      (a (termSize s) (Lemma1 (termSize s) (termSize t) (termSize->-0 t)))
+      (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
+      (a'' (termSize s'')
+       (Lemma1 (termSize s'') (termSize t'') (termSize->-0 t''))) p' q')
 
 \end{code}
-
-We need some notion of equivariance and the choose a fresh name principle to
-finish the proof of transitivity.
 
 We need function extensionality to show α-equiv is prop valued.
 
@@ -327,15 +403,7 @@ We need function extensionality to show α-equiv is prop valued.
 
 \end{code}
 
-Now we will quotient Λ by ＝α.
-
-Note that to prove that ＝α is prop valued we would likely need to add an
-assumption that Λ is a set (maybe not?). One could do this with records to
-simulate higher inductive types. Showing ＝α is an equivalence relation is
-reduced to asking if the terminating version is an equivalence relation.
-This has been done with the excpetion of transitivity...
-
-TODO. Finish α-equiv-tran.
+TODO. Finish α-equiv-equivariance.
 
 \begin{code}
 
@@ -354,6 +422,12 @@ TODO. Finish α-equiv-tran.
    III : transitive _＝α_
    III t t' t'' = α-equiv-trans t t' t''
                    (wfℕ (termSize t)) (wfℕ (termSize t')) (wfℕ (termSize t''))
+
+\end{code}
+
+Now we will quotient Λ by ＝α.
+
+\begin{code}
 
  module _ (sq : general-set-quotients-exist (_⁺)) where
 
