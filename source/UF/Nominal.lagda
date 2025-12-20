@@ -12,6 +12,7 @@ open import Naturals.Addition
 open import Naturals.Order
 open import Quotient.Type
 open import UF.DiscreteAndSeparated
+open import UF.Equiv
 open import UF.FunExt
 open import UF.Sets
 open import UF.Subsingletons
@@ -51,10 +52,13 @@ Now we begin by inductively defining our type of terms.
 
 \begin{code}
 
-module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) (fe : Fun-Ext) where
+module _ (Var : 𝓤₀  ̇) (𝓮 : ℕ ≃ Var) (fe : Fun-Ext) where
+
+ disc-var : is-discrete Var
+ disc-var = equiv-to-discrete 𝓮 ℕ-is-discrete
 
  var-set : is-set Var
- var-set = discrete-types-are-sets d
+ var-set = discrete-types-are-sets disc-var
 
  data Λ : 𝓤₀  ̇ where
   V : Var → Λ
@@ -70,8 +74,8 @@ module _ (Var : 𝓤₀  ̇) (d : is-discrete Var) (fe : Fun-Ext) where
  syntax help-decide x y d = x is[ d ] y
 
  swapVar : Var → Var → Var → Var
- swapVar x y z = if (z is[ d z x ] x) then y
-                 else (if (z is[ d z y ] y) then x else z)
+ swapVar x y z = if (z is[ disc-var z x ] x) then y
+                 else (if (z is[ disc-var z y ] y) then x else z)
 
  swap : Var → Var → Λ → Λ
  swap x y (V z) = V (swapVar x y z)
@@ -122,6 +126,45 @@ simply use a very niave notion of freshness.
 
  _fresh_ : Var → Λ → 𝓤₀  ̇
  a fresh t = (x : Var) → member x (var t) → a ≠ x
+
+ list-max : List ℕ → ℕ
+ list-max [] = 0
+ list-max (x ∷ xs) = max x (list-max xs)
+
+ less-than-list-max : (n : ℕ) (xs : List ℕ)
+                    → member n xs
+                    → n ≤ℕ (list-max xs)
+ less-than-list-max n (n ∷ xs) in-head = max-≤-upper-bound n (list-max xs)
+ less-than-list-max n (x ∷ xs) (in-tail m) =
+  ≤-trans n (list-max xs) (max x (list-max xs)) I
+   (max-≤-upper-bound' (list-max xs) x)
+  where
+   I : n ≤ℕ list-max xs
+   I = less-than-list-max n xs m
+
+ choose-a-fresh-name : (t : Λ)
+                     → Σ x ꞉ Var , x fresh t
+ choose-a-fresh-name t = (⌜ 𝓮 ⌝ II , IV)
+  where
+   I : List ℕ
+   I = map ⌜ 𝓮 ⌝⁻¹ (var t)
+   II : ℕ
+   II = (list-max I) + 1
+   III' : (n : ℕ) → member n I → n <ℕ II
+   III' n m = less-than-list-max n I m
+   III : (n : ℕ) → member n I → II ≠ n
+   III n m p = not-less-than-itself n (transport (λ - → n <ℕ -) p (III' n m))
+   IV : (⌜ 𝓮 ⌝ II) fresh t
+   IV x x-in-t p = III (⌜ 𝓮 ⌝⁻¹ x) (member-map ⌜ 𝓮 ⌝⁻¹ x (var t) x-in-t)
+                    (inverses-are-retractions' 𝓮 II ⁻¹ ∙ ap ⌜ 𝓮 ⌝⁻¹ p)
+
+ fresh-name : (t : Λ)
+            → Var
+ fresh-name t = pr₁ (choose-a-fresh-name t)
+
+ freshness : (t : Λ)
+           → (fresh-name t) fresh t
+ freshness t = pr₂ (choose-a-fresh-name t)
 
 \end{code}
 
@@ -220,16 +263,32 @@ We need some lemmas.
        (a' (termSize s') (Lemma1 (termSize s') (termSize t') (termSize->-0 t')))
        g
 
- α-equiv-tran : (t t' t'' : Λ)
-              → (a : Acc _<ℕ_ (termSize t))
-              → (a' : Acc _<ℕ_ (termSize t'))
-              → (a'' : Acc _<ℕ_ (termSize t''))
-              → α-equiv t t' a a'
-              → α-equiv t' t'' a' a''
-              → α-equiv t t'' a a''
- α-equiv-tran t t' t'' (acc a) (acc a') (acc a'') p q = {!!}
+ α-equiv-trans : (t t' t'' : Λ)
+               → (a : Acc _<ℕ_ (termSize t))
+               → (a' : Acc _<ℕ_ (termSize t'))
+               → (a'' : Acc _<ℕ_ (termSize t''))
+               → α-equiv t t' a a'
+               → α-equiv t' t'' a' a''
+               → α-equiv t t'' a a''
+ α-equiv-trans (V x) (V y) (V z) _ _ _ = _∙_
+ α-equiv-trans (L x t) (L y t') (L z t'') (acc a) (acc a') (acc a'')
+  f g w w≠x w♯t w≠z w♯t'' 
+  = I
+  where
+   v : Var
+   v = fresh-name (A {!!} {!!})
+   I = α-equiv-trans (swap x w t) (swap y w t') (swap z w t'')
+        (a (termSize (swap x w t)) (swap-no-bigger x w t))
+        (a' (termSize (swap y w t')) (swap-no-bigger y w t'))
+        (a'' (termSize (swap z w t'')) (swap-no-bigger z w t''))
+        (f {!v!} {!!} {!!} {!!} {!!}) (g {!!} {!!} {!!} {!!} {!!})
+ α-equiv-trans (A t s) (A t' t''') (A t'' s'') (acc a) (acc a') (acc a'') p q
+  = {!!}
 
 \end{code}
+
+We need some notion of equivariance and the choose a fresh name principle to
+finish the proof of transitivity.
 
 We need function extensionality to show α-equiv is prop valued.
 
@@ -274,7 +333,7 @@ Note that to prove that ＝α is prop valued we would likely need to add an
 assumption that Λ is a set (maybe not?). One could do this with records to
 simulate higher inductive types. Showing ＝α is an equivalence relation is
 reduced to asking if the terminating version is an equivalence relation.
-This has been done with the excpetion of transitivity.
+This has been done with the excpetion of transitivity...
 
 TODO. Finish α-equiv-tran.
 
@@ -293,7 +352,7 @@ TODO. Finish α-equiv-tran.
    II : symmetric _＝α_
    II t t' = α-equiv-sym t t' (wfℕ (termSize t)) (wfℕ (termSize t'))
    III : transitive _＝α_
-   III t t' t'' = α-equiv-tran t t' t''
+   III t t' t'' = α-equiv-trans t t' t''
                    (wfℕ (termSize t)) (wfℕ (termSize t')) (wfℕ (termSize t''))
 
  module _ (sq : general-set-quotients-exist (_⁺)) where
