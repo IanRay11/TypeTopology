@@ -1,3 +1,4 @@
+Ian Ray
 
 \begin{code}
 
@@ -77,9 +78,16 @@ module _ (Var : 𝓤₀  ̇) (𝓮 : ℕ ≃ Var) (fe : Fun-Ext) where
  swapVar x y z = if (z is[ disc-var z x ] x) then y
                  else (if (z is[ disc-var z y ] y) then x else z)
 
+ syntax swapVar x y z = ⁅ x ∣ y ⁆ z
+
+ swapVar-equivariant : {x y z w u v : Var}
+                     → swapVar x z u ＝ v
+                     → swapVar x w u ＝ v
+ swapVar-equivariant {x} {y} {z} {w} {u} {v} refl = {!!}
+
  swap : Var → Var → Λ → Λ
- swap x y (V z) = V (swapVar x y z)
- swap x y (L z t) = L (swapVar x y z) (swap x y t)
+ swap x y (V z) = V (⁅ x ∣ y ⁆ z)
+ swap x y (L z t) = L (⁅ x ∣ y ⁆ z) (swap x y t)
  swap x y (A t t') = A (swap x y t) (swap x y t')
 
  termSize : Λ → ℕ
@@ -216,18 +224,21 @@ We need to show that α-equiv is equivariant (unchanged underswapping)
 
 \begin{code}
 
- α-equiv-equivariant : (x z v w : Var) (t t'' : Λ)
+ α-equiv-equivariant : (x y z w : Var) (t t' : Λ)
                      → (a : (y : ℕ) → y <ℕ (succ (termSize t))
                          → Acc (_<ℕ_) y)
-                     → (a'' : (y : ℕ) → y <ℕ (succ (termSize t''))
+                     → (a' : (y : ℕ) → y <ℕ (succ (termSize t'))
                          → Acc (_<ℕ_) y)
-                     → α-equiv (swap x v t) (swap z v t'')
-                        (a (termSize (swap x v t)) (swap-no-bigger x v t))
-                        (a'' (termSize (swap z v t'')) (swap-no-bigger z v t''))
-                     → α-equiv (swap x w t) (swap z w t'')
+                     → α-equiv (swap x z t) (swap y z t')
+                        (a (termSize (swap x z t)) (swap-no-bigger x z t))
+                        (a' (termSize (swap y z t')) (swap-no-bigger y z t'))
+                     → α-equiv (swap x w t) (swap y w t')
                         (a (termSize (swap x w t)) (swap-no-bigger x w t))
-                        (a'' (termSize (swap z w t'')) (swap-no-bigger z w t''))
- α-equiv-equivariant x z v w t t'' a a'' α-v = {!!}
+                        (a' (termSize (swap y w t')) (swap-no-bigger y w t'))
+ α-equiv-equivariant x y z w (V u) (V v) a a' α-v
+  = ?
+ α-equiv-equivariant x y z w (L u t) (L v t') a a' α-v = {!!}
+ α-equiv-equivariant x y z w (A t s) (A t' s') a a' α-v = {!!}
 
 \end{code}
 
