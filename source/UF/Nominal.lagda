@@ -236,7 +236,7 @@ We need to show that α-equiv is equivariant (unchanged underswapping)
                         (a (termSize (swap x w t)) (swap-no-bigger x w t))
                         (a' (termSize (swap y w t')) (swap-no-bigger y w t'))
  α-equiv-equivariant x y z w (V u) (V v) a a' α-v
-  = ?
+  = {!!}
  α-equiv-equivariant x y z w (L u t) (L v t') a a' α-v = {!!}
  α-equiv-equivariant x y z w (A t s) (A t' s') a a' α-v = {!!}
 
