@@ -7,7 +7,7 @@ Ian Ray. 7th November 2025.
 module DURGs.DualityLenses where
 
 open import MLTT.Spartan
-open import DURGs.BasicConstructionsonReflexiveGraphs
+open import DURGs.ReflexiveGraphConstructions
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses

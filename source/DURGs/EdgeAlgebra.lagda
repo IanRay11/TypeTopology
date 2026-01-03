@@ -2,7 +2,7 @@
 
 {-# OPTIONS --safe --without-K #-}
 
-module DURGs.PathAlgebraToolkit where
+module DURGs.EdgeAlgebra where
 
 open import MLTT.Spartan
 open import UF.Base
@@ -77,7 +77,7 @@ l-sym-edges : {𝓐 : univalent-refl-graph 𝓤 𝓥} {x y : ⊰ 𝓐 ⊱ᵤ}
             → (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ᵤ⟨ 𝓐 ⟩ p ＝ 𝓻ᵤ 𝓐 y
 l-sym-edges {_} {_} {𝓐} {x} {y} p
  = id-to-edge (𝓐 /ᵤ) (edge-to-id 𝓐 (p ᵤ⟨ 𝓐 ⟩ ⁻¹) ∙ edge-to-id 𝓐 p) ＝⟨ II ⟩
-   id-to-edge (𝓐 /ᵤ) (edge-to-id 𝓐 p ⁻¹ ∙ edge-to-id 𝓐 p)         ＝⟨ III ⟩
+   id-to-edge (𝓐 /ᵤ) (edge-to-id 𝓐 p ⁻¹ ∙ edge-to-id 𝓐 p)          ＝⟨ III ⟩
    id-to-edge (𝓐 /ᵤ) refl                                          ＝⟨refl⟩
    𝓻ᵤ 𝓐 y                                                          ∎ 
  where

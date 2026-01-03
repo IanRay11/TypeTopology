@@ -11,7 +11,7 @@ open import UF.Base
 open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.Subsingletons
-open import DURGs.BasicConstructionsonReflexiveGraphs
+open import DURGs.ReflexiveGraphConstructions
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses

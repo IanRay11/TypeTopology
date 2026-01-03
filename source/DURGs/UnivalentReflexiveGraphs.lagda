@@ -35,7 +35,7 @@ cofan 𝓐 x = Σ y ꞉ ⊰ 𝓐 ⊱ , y ≈⟨ 𝓐 ⟩ x
 prop-fan-to-cofan : (𝓐 : refl-graph 𝓤 𝓥)
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
-prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I (λ - → refl)
+prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I ∼-refl
  where
   I = ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
         suffices-to-show⟨ id ⟩
@@ -61,8 +61,7 @@ prop-fan-to-cofan {𝓤} {𝓥} 𝓐 fan-prop = I (λ - → refl)
 prop-cofan-to-fan : (𝓐 : refl-graph 𝓤 𝓥) 
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (cofan 𝓐 x))
                   → ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
-prop-cofan-to-fan 𝓐 co-prop 
- = I (λ - → refl)
+prop-cofan-to-fan 𝓐 co-prop  = I ∼-refl
  where
   I = ((x : ⊰ 𝓐 ⊱) → is-prop (fan 𝓐 x))
         suffices-to-show⟨ id ⟩

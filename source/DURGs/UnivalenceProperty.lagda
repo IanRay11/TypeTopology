@@ -15,9 +15,9 @@ open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.FunExt
 open import UF.PropIndexedPiSigma
-open import DURGs.BasicConstructionsonReflexiveGraphs
+open import DURGs.ReflexiveGraphConstructions
 open import DURGs.BivariantMidpointLenses
-open import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
+open import DURGs.UnivalentReflexiveGraphClosureProperties
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses

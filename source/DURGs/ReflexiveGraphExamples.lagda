@@ -8,7 +8,7 @@ provide a unified framework for developing structured identity principles (SIP).
 
 {-# OPTIONS --safe --without-K #-}
 
-module DURGs.Examples where
+module DURGs.ReflexiveGraphExamples where
 
 open import MLTT.Spartan
 open import UF.Base
@@ -17,8 +17,8 @@ open import UF.EquivalenceExamples
 open import UF.FunExt
 open import UF.Pullback
 open import UF.Subsingletons
-open import DURGs.BasicConstructionsonReflexiveGraphs
-open import DURGs.ClosurePropertiesofUnivalentReflexiveGraphs
+open import DURGs.ReflexiveGraphConstructions
+open import DURGs.UnivalentReflexiveGraphClosureProperties
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses
@@ -57,13 +57,13 @@ sigma-characterization-from-univalent-refl-graphs
  → ((a , b) ＝ (a' , b')) ≃ (Σ p ꞉ (a ＝ a') , transport B p b ＝ b')
 sigma-characterization-from-univalent-refl-graphs
  {𝓤} {𝓥} {A} {B} {a} {a'} {b} {b'}
- = (id-to-edge (∐ A , λ a → Δ (B a)) , II (a , b) (a' , b'))
+ = (id-to-edge (∐ a ˸ A , (Δ (B a))) , II (a , b) (a' , b'))
  where
-  I : is-univalent-refl-graph (∐ A , λ a → Δ (B a))
+  I : is-univalent-refl-graph (∐ a ˸ A , (Δ (B a)))
   I = univalence-closed-under-coproduct A (λ a → Δ (B a))
        (λ a → discrete-refl-graph-is-univalent (B a))
   II : (p q : (Σ a ꞉ A , B a))
-     → is-equiv (id-to-edge (∐ A , λ a → Δ (B a)))
+     → is-equiv (id-to-edge (∐ a ˸ A , (Δ (B a))))
   II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
@@ -193,7 +193,7 @@ univalent).
       (λ - → discrete-refl-graph-is-univalent (f (p -) ＝ g (q -))) H)
   where
    I : fan (⋖ cone-displayed-refl-graph A ⋗ (p , q)) H
-     ≃ fan (∏ A , (λ x → Δ (f (p x) ＝ g (q x)))) H
+     ≃ fan (∏ x ˸ A , (Δ (f (p x) ＝ g (q x)))) H
    I = (Σ H' ꞉ commutative-square (p , q) ,
         ∼-trans H (∼-refl) ∼ ∼-trans (∼-refl) H')
                                                            ≃⟨ II ⟩
@@ -222,7 +222,8 @@ The carrier of this total reflexive graph corresponds to the type of cones.
  cone-total-is-univalent : (A : 𝓣 ̇)
                          → is-univalent-refl-graph (cone-total-refl-graph A)
  cone-total-is-univalent A
-  = univalence-closed-under-total (cone-base-refl-graph A)
+  = univalence-closed-under-total
+     (cone-base-refl-graph A)
      (cone-displayed-refl-graph A)
      (cone-base-is-univalent A)
      (cone-display-is-univalent A)
@@ -356,3 +357,4 @@ oplax structure is contractible (or a pointed proposition!)
    = ap (λ - → (pr₁ -) _ _ e u) (oplax-＝-transport-structure fe)
 
 \end{code}
+

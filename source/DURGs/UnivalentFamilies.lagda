@@ -55,7 +55,6 @@ is-univalent-family-implies-id-to-equiv {𝓤} {𝓣} {A} {B} is-ua-fam x y
 \end{code}
 
 We can also state this in terms of contractible/propositional fans (or cofans).
-This may be useful later...
 
 Propositional reflexive graph image
 

@@ -6,7 +6,7 @@ module DURGs.Lenses where
 
 open import MLTT.Spartan
 open import UF.Equiv
-open import DURGs.BasicConstructionsonReflexiveGraphs
+open import DURGs.ReflexiveGraphConstructions
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.ReflexiveGraphs

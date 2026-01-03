@@ -15,12 +15,6 @@ module _ (𝓤 𝓥 : Universe) where
  refl-graph : (𝓤 ⊔ 𝓥)⁺ ̇
  refl-graph = Σ A ꞉ 𝓤 ̇ , Σ R ꞉ (A → A → 𝓥 ̇) , ((x : A) → R x x)
 
- record refl-graph-rec : 𝓤ω where
-  field
-   car : 𝓤 ̇
-   rel : car → car → 𝓥 ̇
-   ref : (x : car) → rel x x
-
 \end{code}
 
 We give some boiler plate
@@ -40,7 +34,10 @@ syntax edge-rel 𝓐 x y = x ≈⟨ 𝓐 ⟩ y
 
 \end{code}
 
-We define a homomorphism of reflexive graphs as follows.
+We define a homomorphism of reflexive graphs as a sigma and record type.
+
+TODO. Decide which is preferred. So far this notion hasn't been used but it
+seems to be an important theoretical notion...
 
 \begin{code}
 

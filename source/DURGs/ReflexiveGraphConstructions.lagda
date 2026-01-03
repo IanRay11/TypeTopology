@@ -10,7 +10,7 @@ Sterling.
 
 {-# OPTIONS --safe --without-K #-}
 
-module DURGs.BasicConstructionsonReflexiveGraphs where
+module DURGs.ReflexiveGraphConstructions where
 
 open import MLTT.Spartan
 open import UF.Powerset-MultiUniverse
@@ -107,7 +107,7 @@ prod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
   II : (f : (x : A) → ⊰ 𝓑 x ⊱) → I f f
   II f x = 𝓻 (𝓑 x) (f x)
 
-syntax prod-refl-graphs A 𝓑 = ∏ A , 𝓑
+syntax prod-refl-graphs A (λ x → 𝓑) = ∏ x ˸ A , 𝓑
 
 \end{code}
 
@@ -129,7 +129,7 @@ coprod-refl-graphs {𝓤'} {𝓤} {𝓥} A 𝓑
   II : (t : Σ x ꞉ A , ⊰ 𝓑 x ⊱) → I t t
   II (a , b) = (refl , 𝓻 (𝓑 a) b)
 
-syntax coprod-refl-graphs A 𝓑 = ∐ A , 𝓑
+syntax coprod-refl-graphs A (λ x → 𝓑) = ∐ x ˸ A , 𝓑
 
 \end{code}
 
@@ -141,14 +141,14 @@ and coproduct.
 cotensor-refl-graph : 𝓤' ̇
                     → refl-graph 𝓤 𝓥
                     → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-cotensor-refl-graph A 𝓑 = ∏ A , (λ - → 𝓑)
+cotensor-refl-graph A 𝓑 = ∏ _ ˸ A , 𝓑
 
 syntax cotensor-refl-graph A 𝓑 = A ➙ 𝓑  
 
 tensor-refl-graph : 𝓤' ̇
                   → refl-graph 𝓤 𝓥
                   → refl-graph (𝓤' ⊔ 𝓤) (𝓤' ⊔ 𝓥)
-tensor-refl-graph A 𝓑 = ∐ A , (λ - → 𝓑)
+tensor-refl-graph A 𝓑 = ∐ _ ˸ A , 𝓑
 
 \end{code}
 
