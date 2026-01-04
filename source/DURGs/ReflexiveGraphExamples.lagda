@@ -17,12 +17,16 @@ open import UF.EquivalenceExamples
 open import UF.FunExt
 open import UF.Pullback
 open import UF.Subsingletons
+open import UF.Subsingletons-FunExt
+open import UF.Univalence
+open import UF.UA-FunExt
 open import DURGs.ReflexiveGraphConstructions
 open import DURGs.UnivalentReflexiveGraphClosureProperties
 open import DURGs.DisplayedReflexiveGraphs
 open import DURGs.DisplayedUnivalentReflexiveGraphs
 open import DURGs.Lenses
 open import DURGs.ReflexiveGraphs
+open import DURGs.UnivalentFamilies
 open import DURGs.UnivalentReflexiveGraphs
 open import DURGs.UnivalenceProperty
 
@@ -68,24 +72,8 @@ sigma-characterization-from-univalent-refl-graphs
 
 \end{code}
 
-Just a reminder: 
-Function spaces have univalent reflexive graph structure.
-
-\begin{code}
-
-function-refl-graph : (A : 𝓤 ̇) (B : 𝓥 ̇)
-                    → refl-graph (𝓤 ⊔ 𝓥) (𝓤 ⊔ 𝓥)
-function-refl-graph A B = ((A → B) , (λ f g → f ∼ g) , λ f → ∼-refl)
-
-function-univalent-refl-graph
- : {A : 𝓤 ̇} {B : 𝓥 ̇}
- → Fun-Ext
- → is-univalent-refl-graph (function-refl-graph A B)
-function-univalent-refl-graph {𝓤} {_} {A} {B} fe f
- = univalence-closed-under-cotensor fe A (Δ B)
-    (discrete-refl-graph-is-univalent B) f
-
-\end{code}
+Just a reminder: Function spaces have univalent reflexive graph structure
+(see ReflexiveGraphConstructions).
 
 We wish to move towards a more unified approach to SIP. We will try to give
 some illustrative examples.
@@ -228,19 +216,18 @@ The carrier of this total reflexive graph corresponds to the type of cones.
      (cone-base-is-univalent A)
      (cone-display-is-univalent A)
 
- cone-characterization
+ cone-＝-characterization
   : {A : 𝓣 ̇ } {p p' : A → X} {q q' : A → Y}
     {H : f ∘ p ∼ g ∘ q} {H' : f ∘ p' ∼ g ∘ q'}
   → (((p , q) , H) ＝ ((p' , q') , H'))
   ≃ (Σ (α , β) ꞉ (p ∼ p') × (q ∼ q') ,
      ∼-trans H (∼-ap-∘ g β) ∼ ∼-trans (∼-ap-∘ f α) H')
- cone-characterization {𝓣} {A} {p} {p'} {q} {q'} {H} {H'}
-  = (id-to-edge (cone-total-refl-graph A) , I ((p , q) , H) ((p' , q') , H'))
+ cone-＝-characterization {𝓣} {A} {p} {p'} {q} {q'} {H} {H'}
+  = (id-to-edge (cone-total-refl-graph A) , I)
   where
-   I : (c c' : cone A)
-     → is-equiv
-        (id-to-edge (cone-base-refl-graph A ﹐ cone-displayed-refl-graph A))
-   I = prop-fans-implies-id-to-edge-equiv (cone-total-is-univalent A)
+   I : is-equiv (id-to-edge (cone-total-refl-graph A))
+   I = prop-fans-implies-id-to-edge-equiv
+        (cone-total-is-univalent A) ((p , q) , H) ((p' , q') , H')
 
 \end{code}
 
@@ -358,3 +345,115 @@ oplax structure is contractible (or a pointed proposition!)
 
 \end{code}
 
+We observe that univalent universes form a univalent family (which is a specific
+form of univalent reflexive graph).
+
+\begin{code}
+
+univalent-universe-refl-graph : (𝓤 : Universe)
+                              → refl-graph (𝓤 ⁺) 𝓤
+univalent-universe-refl-graph 𝓤 = refl-graph-image (𝓤  ̇) id
+
+univalent-universe-is-univalent-family : is-univalent 𝓤
+                                       → funext (𝓤 ⁺) 𝓤
+                                       → is-univalent-family ((𝓤  ̇) , id)
+univalent-universe-is-univalent-family {𝓤} ua fe
+ = id-to-edge-equiv-implies-prop-fans {𝓤 ⁺} {𝓤} {univalent-universe-refl-graph 𝓤}
+    (λ X Y → transport is-equiv (II X Y) (ua X Y))
+ where
+  I : (X Y : 𝓤  ̇)
+    → idtoeq X Y ∼ id-to-edge (univalent-universe-refl-graph 𝓤) {X} {Y}
+  I X Y refl = refl
+  II : (X Y : 𝓤  ̇)
+     → idtoeq X Y ＝ id-to-edge (univalent-universe-refl-graph 𝓤) {X} {Y}
+  II X Y = dfunext fe (I X Y)
+
+\end{code}
+
+We conclude this example file (for now) with a characterization of the identity
+type of ∞-magmas and monoids(?).
+
+\begin{code}
+
+∞-Magma : (𝓤 : Universe) → (𝓤 ⁺) ̇
+∞-Magma 𝓤 = Σ X ꞉ 𝓤 ̇ , (X → X → X)
+
+\end{code}
+
+We now define a displayed reflexive graph over 𝓤 of binary operations.
+
+\begin{code}
+
+bin-op-displayed-refl-graph
+ : (𝓤 : Universe)
+ → displayed-refl-graph 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+bin-op-displayed-refl-graph 𝓤
+ = ((λ X → (X → X → X)) , I , II)
+ where
+  I : {X Y : 𝓤 ̇}
+    → (X ≃ Y)
+    → (X → X → X)
+    → (Y → Y → Y)
+    → 𝓤 ̇
+  I {X} {_} e _·X_ _·Y_ = (x y : X) → ⌜ e ⌝ (x ·X y) ＝ (⌜ e ⌝ x ·Y ⌜ e ⌝ y)
+  II : {X : 𝓤 ̇}
+     → (_·X_ : X → X → X)
+     → (x y : X)
+     → (x ·X y) ＝ (x ·X y)
+  II _·X_ x y = refl
+
+bin-op-disp-is-univalent
+ : (fe : Fun-Ext) (𝓤 : Universe)
+ → is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+    (bin-op-displayed-refl-graph 𝓤)
+bin-op-disp-is-univalent fe 𝓤 X _·X_
+ = equiv-to-prop I
+    (Π-is-prop fe (λ x → Π-is-prop fe λ y
+      → singletons-are-props (singleton-types-are-singletons (x ·X y))))
+ where
+  I : fan (⋖ bin-op-displayed-refl-graph 𝓤 ⋗ X) _·X_
+    ≃ ((x y : X) → Σ z ꞉ X , x ·X y ＝ z)
+  I = (Σ _·X'_ ꞉ (X → X → X) , ((x y : X) → x ·X y ＝ x ·X' y))
+        ≃⟨ II ⟩
+      ((x y : X) → Σ z ꞉ X , x ·X y ＝ z)          ■
+   where
+    II = ≃-sym (≃-comp (Π-cong fe fe (λ x → ΠΣ-distr-≃)) ΠΣ-distr-≃)
+
+\end{code}
+
+Now we can give the total univalent reflexive graph whose carrier is the type of
+∞-magmas and then characterize the type of identifications of them.
+
+\begin{code}
+
+∞-Magma-total-refl-graph : (𝓤 : Universe)
+                         → refl-graph (𝓤 ⁺) 𝓤
+∞-Magma-total-refl-graph 𝓤
+ = (univalent-universe-refl-graph 𝓤 ﹐ bin-op-displayed-refl-graph 𝓤)
+
+∞-Magma-total-univalent-refl-graph
+ : (𝓤 : Universe)
+ → is-univalent 𝓤
+ → Fun-Ext
+ → is-univalent-refl-graph (∞-Magma-total-refl-graph 𝓤)
+∞-Magma-total-univalent-refl-graph 𝓤 ua fe
+ = univalence-closed-under-total
+    (univalent-universe-refl-graph 𝓤)
+    (bin-op-displayed-refl-graph 𝓤)
+    (univalent-universe-is-univalent-family ua fe)
+    (bin-op-disp-is-univalent fe 𝓤)
+
+∞-Magma-＝-char
+ : {𝓤 : Universe} (X Y : 𝓤 ̇) (_·X_ : X → X → X) (_·Y_ : Y → Y → Y)
+ → Fun-Ext
+ → is-univalent 𝓤
+ → ((X , _·X_) ＝ (Y , _·Y_))
+  ≃ (Σ e ꞉ X ≃ Y , ((x y : X) → ⌜ e ⌝ (x ·X y) ＝ (⌜ e ⌝ x ·Y ⌜ e ⌝ y)))
+∞-Magma-＝-char {𝓤} X Y _·X_ _·Y_ fe ua
+ = (id-to-edge (∞-Magma-total-refl-graph 𝓤) , I)
+ where
+  I : is-equiv (id-to-edge (∞-Magma-total-refl-graph 𝓤))
+  I = prop-fans-implies-id-to-edge-equiv
+       (∞-Magma-total-univalent-refl-graph 𝓤 ua fe) (X , _·X_) (Y , _·Y_)
+
+\end{code}

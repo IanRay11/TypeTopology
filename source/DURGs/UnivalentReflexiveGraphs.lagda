@@ -251,15 +251,16 @@ underlying-refl-graph (𝓐 , _) = 𝓐
 
 syntax underlying-refl-graph 𝓐 = 𝓐 /ᵤ 
 
-is-univalent : (𝓐 : univalent-refl-graph 𝓤 𝓥)
-             → is-univalent-refl-graph (𝓐 /ᵤ)
-is-univalent (𝓐 , is-ua) = is-ua
+underlying-univalence : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+                      → is-univalent-refl-graph (𝓐 /ᵤ)
+underlying-univalence (𝓐 , is-ua) = is-ua
 
 id-equiv-edge : (𝓐 : univalent-refl-graph 𝓤 𝓥)
               → (x y : ⊰ 𝓐 ⊱ᵤ)
               → (x ＝ y) ≃ (x ≈ᵤ⟨ 𝓐 ⟩ y)
 id-equiv-edge 𝓐 x y
- = (id-to-edge (𝓐 /ᵤ) , prop-fans-implies-id-to-edge-equiv (is-univalent 𝓐) x y)
+ = (id-to-edge (𝓐 /ᵤ)
+   , prop-fans-implies-id-to-edge-equiv (underlying-univalence 𝓐) x y)
 
 edge-to-id : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x y : ⊰ 𝓐 ⊱ᵤ}
            → x ≈ᵤ⟨ 𝓐 ⟩ y
@@ -270,7 +271,7 @@ edge-to-id-comp : (𝓐 : univalent-refl-graph 𝓤 𝓥) {x : ⊰ 𝓐 ⊱ᵤ}
                 → edge-to-id 𝓐 (𝓻 (𝓐 /ᵤ) x) ＝ refl
 edge-to-id-comp 𝓐 {x}
  = inverses-are-retractions (id-to-edge (𝓐 /ᵤ))
-    (prop-fans-implies-id-to-edge-equiv (is-univalent 𝓐) x x) refl
+    (prop-fans-implies-id-to-edge-equiv (underlying-univalence 𝓐) x x) refl
 
 \end{code}
 
