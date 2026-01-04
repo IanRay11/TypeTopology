@@ -371,7 +371,7 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 \end{code}
 
 We conclude this example file (for now) with a characterization of the identity
-type of ∞-magmas and monoids(?).
+type of ∞-magmas.
 
 \begin{code}
 
@@ -413,9 +413,8 @@ bin-op-disp-is-univalent fe 𝓤 X _·X_
  where
   I : fan (⋖ bin-op-displayed-refl-graph 𝓤 ⋗ X) _·X_
     ≃ ((x y : X) → Σ z ꞉ X , x ·X y ＝ z)
-  I = (Σ _·X'_ ꞉ (X → X → X) , ((x y : X) → x ·X y ＝ x ·X' y))
-        ≃⟨ II ⟩
-      ((x y : X) → Σ z ꞉ X , x ·X y ＝ z)          ■
+  I = (Σ _·X'_ ꞉ (X → X → X) , ((x y : X) → x ·X y ＝ x ·X' y)) ≃⟨ II ⟩
+      ((x y : X) → Σ z ꞉ X , x ·X y ＝ z)                       ■
    where
     II = ≃-sym (≃-comp (Π-cong fe fe (λ x → ΠΣ-distr-≃)) ΠΣ-distr-≃)
 
@@ -430,6 +429,11 @@ Now we can give the total univalent reflexive graph whose carrier is the type of
                          → refl-graph (𝓤 ⁺) 𝓤
 ∞-Magma-total-refl-graph 𝓤
  = (univalent-universe-refl-graph 𝓤 ﹐ bin-op-displayed-refl-graph 𝓤)
+
+private
+ observation : (𝓤 : Universe)
+              → ⊰ ∞-Magma-total-refl-graph 𝓤 ⊱ ＝ ∞-Magma 𝓤
+ observation 𝓤 = refl
 
 ∞-Magma-total-univalent-refl-graph
  : (𝓤 : Universe)
