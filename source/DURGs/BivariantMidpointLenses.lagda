@@ -44,7 +44,7 @@ bivariant-midpoint-lens-sigma 𝓤' 𝓥' 𝓐
     bivariant-midpoint-lens-structure 𝓐 𝓕
 
 record bivariant-midpoint-lens
- (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥): 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇ where
+ (𝓤' 𝓥' : Universe) (𝓐 : refl-graph 𝓤 𝓥) : 𝓤 ⊔ 𝓥 ⊔ (𝓤' ⊔ 𝓥')⁺ ̇ where
  field
   bi-lens-fam : {x y : ⊰ 𝓐 ⊱} → (x ≈⟨ 𝓐 ⟩ y) → refl-graph 𝓤' 𝓥'
  private

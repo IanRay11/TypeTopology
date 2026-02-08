@@ -20,6 +20,7 @@ open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.Univalence
 open import UF.UA-FunExt
+open import DURGs.BivariantMidpointLenses
 open import DURGs.ReflexiveGraphConstructions
 open import DURGs.UnivalentReflexiveGraphClosureProperties
 open import DURGs.DisplayedReflexiveGraphs
@@ -370,8 +371,8 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 
 \end{code}
 
-We conclude this example file (for now) with a characterization of the identity
-type of ∞-magmas.
+We conclude this example file (for now) with a comparison of characterizations of
+the identity type of ∞-magmas.
 
 \begin{code}
 
@@ -420,8 +421,8 @@ bin-op-disp-is-univalent fe 𝓤 X _·X_
 
 \end{code}
 
-Now we can give the total univalent reflexive graph whose carrier is the type of
-∞-magmas and then characterize the type of identifications of them.
+Now we can give the total univalent reflexive graph whose carrier is the type
+of ∞-magmas and then characterize the type of identifications of them.
 
 \begin{code}
 
@@ -461,3 +462,93 @@ private
        (∞-Magma-total-univalent-refl-graph 𝓤 ua fe) (X , _·X_) (Y , _·Y_)
 
 \end{code}
+
+We may instead use the bivariant lense machinary, which allows us to characterize
+structures that have 'mixed variance'.
+
+\begin{code}
+
+mixed-var-bin-op-is-bivariant-midpoint-lens
+ : (𝓤 : Universe)
+ → bivariant-midpoint-lens 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤 = record
+   { bi-lens-fam = λ {X} {Y} e → (X ➙ (X ➙ (Δ Y)))
+   ; lext = λ e u → λ x x' → ⌜ e ⌝ (u x x')
+   ; rext = λ e u → λ x x' → u (⌜ e ⌝ x) (⌜ e ⌝ x')
+   ; ext-R = λ u x x' → refl
+   ; rext-R = λ u x x' → refl
+   }
+
+mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent
+ : (𝓤 : Universe)
+ → Fun-Ext
+ → bivariant-midpoint-lens-is-univalent (univalent-universe-refl-graph 𝓤)
+    (mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤)
+mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent 𝓤 fe {X} {Y} p
+ = univalence-closed-under-cotensor fe X (X ➙ (Δ Y))
+    (univalence-closed-under-cotensor fe X (Δ Y)
+     (discrete-refl-graph-is-univalent Y))
+
+mixed-var-bin-op-display
+ : (𝓤 : Universe)
+ → displayed-refl-graph 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+mixed-var-bin-op-display 𝓤
+ = disp± univalent-universe-refl-graph 𝓤
+    , mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤
+
+mixed-var-bin-op-display-univalent
+ : (𝓤 : Universe)
+ → Fun-Ext
+ → is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+    (mixed-var-bin-op-display 𝓤)
+mixed-var-bin-op-display-univalent 𝓤 fe
+ = disp-bivariant-midpoint-lens-univalent (univalent-universe-refl-graph 𝓤)
+    (mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤)
+    (λ x → mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent 𝓤 fe
+            (≃-refl x))
+
+mixed-var-bin-op-total
+ : (𝓤 : Universe)
+ → refl-graph (𝓤 ⁺) 𝓤
+mixed-var-bin-op-total 𝓤 
+ = univalent-universe-refl-graph 𝓤 ﹐ mixed-var-bin-op-display 𝓤
+
+private
+ obs1 : (𝓤 : Universe)
+      → ⊰ mixed-var-bin-op-total 𝓤 ⊱ ＝ ∞-Magma 𝓤
+ obs1 𝓤 = refl
+
+mixed-var-bin-op-total-univalent
+ : (𝓤 : Universe)
+ → is-univalent 𝓤
+ → Fun-Ext
+ → is-univalent-refl-graph (mixed-var-bin-op-total 𝓤)
+mixed-var-bin-op-total-univalent 𝓤 ua fe
+ = univalence-closed-under-total
+    (univalent-universe-refl-graph 𝓤)
+    (mixed-var-bin-op-display 𝓤)
+    (univalent-universe-is-univalent-family ua fe)
+    (mixed-var-bin-op-display-univalent 𝓤 fe)
+
+∞-Magma-＝-lens-char
+ : {𝓤 : Universe} (X Y : 𝓤 ̇) (_·X_ : X → X → X) (_·Y_ : Y → Y → Y)
+ → Fun-Ext
+ → is-univalent 𝓤
+ → ((X , _·X_) ＝ (Y , _·Y_))
+  ≃ (Σ e ꞉ X ≃ Y , ((x y : X) → ⌜ e ⌝ (x ·X y) ＝ (⌜ e ⌝ x ·Y ⌜ e ⌝ y)))
+∞-Magma-＝-lens-char {𝓤} X Y _·X_ _·Y_ fe ua
+ = (id-to-edge (mixed-var-bin-op-total 𝓤) , I)
+ where
+  I : is-equiv (id-to-edge (mixed-var-bin-op-total 𝓤))
+  I = prop-fans-implies-id-to-edge-equiv
+       (mixed-var-bin-op-total-univalent 𝓤 ua fe) (X , _·X_) (Y , _·Y_)
+
+\end{code}
+
+Appealing simply to line counting one could not justify the latter approach to
+characterizing the identity type of ∞-Magma. But we would like to point out a
+few advantages. First, we get the displayed reflexive graph (and its univalence)
+for free by identifying the left and right hand side of the equation relating
+the mixed variance data. This offers a blueprint for characterizing mixed variance
+structures of increasingly complicated nature where "guessing" (or maybe it is
+more apt to say "being clever") is not feasible.
