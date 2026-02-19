@@ -352,22 +352,22 @@ specific form of univalent reflexive graph).
 
 \begin{code}
 
-univalent-universe-refl-graph : (𝓤 : Universe)
-                              → refl-graph (𝓤 ⁺) 𝓤
-univalent-universe-refl-graph 𝓤 = refl-graph-image (𝓤  ̇) id
+universe-refl-graph : (𝓤 : Universe)
+                    → refl-graph (𝓤 ⁺) 𝓤
+universe-refl-graph 𝓤 = refl-graph-image (𝓤  ̇) id
 
 univalent-universe-is-univalent-family : is-univalent 𝓤
                                        → funext (𝓤 ⁺) 𝓤
                                        → is-univalent-family ((𝓤  ̇) , id)
 univalent-universe-is-univalent-family {𝓤} ua fe
- = id-to-edge-equiv-implies-prop-fans {𝓤 ⁺} {𝓤} {univalent-universe-refl-graph 𝓤}
+ = id-to-edge-equiv-implies-prop-fans {𝓤 ⁺} {𝓤} {universe-refl-graph 𝓤}
     (λ X Y → transport is-equiv (II X Y) (ua X Y))
  where
   I : (X Y : 𝓤  ̇)
-    → idtoeq X Y ∼ id-to-edge (univalent-universe-refl-graph 𝓤) {X} {Y}
+    → idtoeq X Y ∼ id-to-edge (universe-refl-graph 𝓤) {X} {Y}
   I X Y refl = refl
   II : (X Y : 𝓤  ̇)
-     → idtoeq X Y ＝ id-to-edge (univalent-universe-refl-graph 𝓤) {X} {Y}
+     → idtoeq X Y ＝ id-to-edge (universe-refl-graph 𝓤) {X} {Y}
   II X Y = dfunext fe (I X Y)
 
 \end{code}
@@ -386,7 +386,7 @@ displayed-univalent-refl-graph-to-SNS
  : {𝓤 𝓣 𝓦 : Universe}
  → Fun-Ext
  → (((B , _ , _) , _) : displayed-univalent-refl-graph 𝓣 𝓦
-                         (univalent-universe-refl-graph 𝓤))
+                         (universe-refl-graph 𝓤))
  → SNS B 𝓦
 displayed-univalent-refl-graph-to-SNS {𝓤} {𝓣} {𝓦} fe (𝓑@(B , R , r) , ua)
  = (I , II , III)
@@ -412,18 +412,18 @@ SNS-to-displayed-univalent-refl-graph
  → Fun-Ext
  → (B : 𝓤 ̇ → 𝓣 ̇)
  → SNS B 𝓦 
- → displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤)
+ → displayed-univalent-refl-graph 𝓣 𝓦 (universe-refl-graph 𝓤)
 SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
  = ((B , I , II) , III)
  where
-  I : {X Y : ⊰ univalent-universe-refl-graph 𝓤 ⊱}
-    → edge-rel (univalent-universe-refl-graph 𝓤) X Y
+  I : {X Y : ⊰ universe-refl-graph 𝓤 ⊱}
+    → edge-rel (universe-refl-graph 𝓤) X Y
     → B X
     → B Y
     → 𝓦 ̇
   I {X} {Y} e s t = ι (X , s) (Y , t) e
-  II : {X : ⊰ univalent-universe-refl-graph 𝓤 ⊱} (u : B X)
-     → ι (X , u) (X , u) (𝓻 (univalent-universe-refl-graph 𝓤) X)
+  II : {X : ⊰ universe-refl-graph 𝓤 ⊱} (u : B X)
+     → ι (X , u) (X , u) (𝓻 (universe-refl-graph 𝓤) X)
   II {X} u = ρ (X , u)
   obs : {X : 𝓤 ̇} (s t : B X)
       → canonical-map ι ρ s t ＝ id-to-edge (⋖ (B , I , II)  ⋗ X)
@@ -432,7 +432,7 @@ SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
     obs'
      : canonical-map ι ρ s t ∼ id-to-edge (component-refl-graph (B , I , II) X)
     obs' refl = refl
-  III : is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+  III : is-displayed-univalent-refl-graph (universe-refl-graph 𝓤)
          (B , I , II)
   III X u = id-to-edge-equiv-implies-prop-fans
              (λ s t → transport is-equiv (obs s t) (θ s t)) u
@@ -440,16 +440,16 @@ SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
 displayed-univalent-refl-graph-≃-SNS
  : {𝓤 𝓣 𝓦 : Universe}
  → Fun-Ext
- → (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+ → (displayed-univalent-refl-graph 𝓣 𝓦 (universe-refl-graph 𝓤))
  ≃ (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
 displayed-univalent-refl-graph-≃-SNS fe
  = (I , qinvs-are-equivs I (II , III , IV))
  where
-  I : (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+  I : (displayed-univalent-refl-graph 𝓣 𝓦 (universe-refl-graph 𝓤))
     → (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
   I (𝓑@((B , _ , _) , _)) = (B , displayed-univalent-refl-graph-to-SNS fe 𝓑)
   II : (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
-     → (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+     → (displayed-univalent-refl-graph 𝓣 𝓦 (universe-refl-graph 𝓤))
   II (B , sns) = SNS-to-displayed-univalent-refl-graph fe B sns
   III : II ∘ I ∼ id
   III ((B , R , r) , ua) = _
@@ -474,7 +474,7 @@ We now define a displayed reflexive graph over 𝓤 of binary operations.
 
 bin-op-displayed-refl-graph
  : (𝓤 : Universe)
- → displayed-refl-graph 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+ → displayed-refl-graph 𝓤 𝓤 (universe-refl-graph 𝓤)
 bin-op-displayed-refl-graph 𝓤
  = ((λ X → (X → X → X)) , I , II)
  where
@@ -492,7 +492,7 @@ bin-op-displayed-refl-graph 𝓤
 
 bin-op-disp-is-univalent
  : (fe : Fun-Ext) (𝓤 : Universe)
- → is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+ → is-displayed-univalent-refl-graph (universe-refl-graph 𝓤)
     (bin-op-displayed-refl-graph 𝓤)
 bin-op-disp-is-univalent fe 𝓤 X _·X_
  = equiv-to-prop I
@@ -516,7 +516,7 @@ of ∞-magmas and then characterize the type of identifications of them.
 ∞-Magma-total-refl-graph : (𝓤 : Universe)
                          → refl-graph (𝓤 ⁺) 𝓤
 ∞-Magma-total-refl-graph 𝓤
- = (univalent-universe-refl-graph 𝓤 ﹐ bin-op-displayed-refl-graph 𝓤)
+ = (universe-refl-graph 𝓤 ﹐ bin-op-displayed-refl-graph 𝓤)
 
 private
  observation : (𝓤 : Universe)
@@ -530,7 +530,7 @@ private
  → is-univalent-refl-graph (∞-Magma-total-refl-graph 𝓤)
 ∞-Magma-total-univalent-refl-graph 𝓤 ua fe
  = univalence-closed-under-total
-    (univalent-universe-refl-graph 𝓤)
+    (universe-refl-graph 𝓤)
     (bin-op-displayed-refl-graph 𝓤)
     (univalent-universe-is-univalent-family ua fe)
     (bin-op-disp-is-univalent fe 𝓤)
@@ -557,7 +557,7 @@ structures that have 'mixed variance'.
 
 mixed-var-bin-op-is-bivariant-midpoint-lens
  : (𝓤 : Universe)
- → bivariant-midpoint-lens 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+ → bivariant-midpoint-lens 𝓤 𝓤 (universe-refl-graph 𝓤)
 mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤 = record
    { bi-lens-fam = λ {X} {Y} e → (X ➙ (X ➙ (Δ Y)))
    ; lext = λ e u → λ x x' → ⌜ e ⌝ (u x x')
@@ -569,7 +569,7 @@ mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤 = record
 mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent
  : (𝓤 : Universe)
  → Fun-Ext
- → bivariant-midpoint-lens-is-univalent (univalent-universe-refl-graph 𝓤)
+ → bivariant-midpoint-lens-is-univalent (universe-refl-graph 𝓤)
     (mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤)
 mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent 𝓤 fe {X} {Y} p
  = univalence-closed-under-cotensor fe X (X ➙ (Δ Y))
@@ -578,18 +578,18 @@ mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent 𝓤 fe {X} {Y} p
 
 mixed-var-bin-op-display
  : (𝓤 : Universe)
- → displayed-refl-graph 𝓤 𝓤 (univalent-universe-refl-graph 𝓤)
+ → displayed-refl-graph 𝓤 𝓤 (universe-refl-graph 𝓤)
 mixed-var-bin-op-display 𝓤
- = disp± univalent-universe-refl-graph 𝓤
+ = disp± universe-refl-graph 𝓤
     , mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤
 
 mixed-var-bin-op-display-univalent
  : (𝓤 : Universe)
  → Fun-Ext
- → is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+ → is-displayed-univalent-refl-graph (universe-refl-graph 𝓤)
     (mixed-var-bin-op-display 𝓤)
 mixed-var-bin-op-display-univalent 𝓤 fe
- = disp-bivariant-midpoint-lens-univalent (univalent-universe-refl-graph 𝓤)
+ = disp-bivariant-midpoint-lens-univalent (universe-refl-graph 𝓤)
     (mixed-var-bin-op-is-bivariant-midpoint-lens 𝓤)
     (λ x → mixed-var-bin-op-is-bivariant-midpoint-lens-is-univalent 𝓤 fe
             (≃-refl x))
@@ -598,7 +598,7 @@ mixed-var-bin-op-total
  : (𝓤 : Universe)
  → refl-graph (𝓤 ⁺) 𝓤
 mixed-var-bin-op-total 𝓤 
- = univalent-universe-refl-graph 𝓤 ﹐ mixed-var-bin-op-display 𝓤
+ = universe-refl-graph 𝓤 ﹐ mixed-var-bin-op-display 𝓤
 
 private
  obs1 : (𝓤 : Universe)
@@ -612,7 +612,7 @@ mixed-var-bin-op-total-univalent
  → is-univalent-refl-graph (mixed-var-bin-op-total 𝓤)
 mixed-var-bin-op-total-univalent 𝓤 ua fe
  = univalence-closed-under-total
-    (univalent-universe-refl-graph 𝓤)
+    (universe-refl-graph 𝓤)
     (mixed-var-bin-op-display 𝓤)
     (univalent-universe-is-univalent-family ua fe)
     (mixed-var-bin-op-display-univalent 𝓤 fe)
