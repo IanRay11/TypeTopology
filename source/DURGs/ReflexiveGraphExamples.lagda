@@ -372,9 +372,11 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 
 \end{code}
 
-We observe a relationship between displayed reflexive graphs and the standard
-notion of structure (SNS) (see UF.SIP) already present in the TypeTopology
-library.
+We observe a relationship between displayed univalent reflexive graphs and the
+standard notion of structure (SNS) (see UF.SIP) already present in the
+TypeTopology library.
+
+TODO finish showing the equivalence stated below.
 
 \begin{code}
 
@@ -433,7 +435,26 @@ SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
   III : is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
          (B , I , II)
   III X u = id-to-edge-equiv-implies-prop-fans
-             (λ s t → transport is-equiv (obs s t) (θ s t)) u  
+             (λ s t → transport is-equiv (obs s t) (θ s t)) u
+
+displayed-univalent-refl-graph-≃-SNS
+ : {𝓤 𝓣 𝓦 : Universe}
+ → Fun-Ext
+ → (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+ ≃ (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
+displayed-univalent-refl-graph-≃-SNS fe
+ = (I , qinvs-are-equivs I (II , III , IV))
+ where
+  I : (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+    → (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
+  I (𝓑@((B , _ , _) , _)) = (B , displayed-univalent-refl-graph-to-SNS fe 𝓑)
+  II : (Σ B ꞉ (𝓤 ̇ → 𝓣 ̇) , SNS B 𝓦)
+     → (displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤))
+  II (B , sns) = SNS-to-displayed-univalent-refl-graph fe B sns
+  III : II ∘ I ∼ id
+  III ((B , R , r) , ua) = _
+  IV : I ∘ II ∼ id
+  IV (B , (ι , ρ , θ)) = _
 
 \end{code}
 
