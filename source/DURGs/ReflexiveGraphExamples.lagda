@@ -16,6 +16,7 @@ open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.FunExt
 open import UF.Pullback
+open import UF.SIP
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.Univalence
@@ -346,8 +347,8 @@ oplax structure is contractible (or a pointed proposition!)
 
 \end{code}
 
-We observe that univalent universes form a univalent family (which is a specific
-form of univalent reflexive graph).
+We observe that univalent universes form a univalent family (which is a
+specific form of univalent reflexive graph).
 
 \begin{code}
 
@@ -371,8 +372,73 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 
 \end{code}
 
-We conclude this example file (for now) with a comparison of characterizations of
-the identity type of ∞-magmas.
+We observe a relationship between displayed reflexive graphs and the standard
+notion of structure (SNS) (see UF.SIP) already present in the TypeTopology
+library.
+
+\begin{code}
+
+open sip
+
+displayed-univalent-refl-graph-to-SNS
+ : {𝓤 𝓣 𝓦 : Universe}
+ → Fun-Ext
+ → (((B , _ , _) , _) : displayed-univalent-refl-graph 𝓣 𝓦
+                         (univalent-universe-refl-graph 𝓤))
+ → SNS B 𝓦
+displayed-univalent-refl-graph-to-SNS {𝓤} {𝓣} {𝓦} fe (𝓑@(B , R , r) , ua)
+ = (I , II , III)
+ where
+  I : (X Y : Σ B) → ⟨ X ⟩ ≃ ⟨ Y ⟩ → 𝓦 ̇
+  I X Y e = structure X ≈＜ 𝓑 , e ＞ structure Y
+  II : (X : Σ B) → I X X (≃-refl ⟨ X ⟩)
+  II X = r (structure X)
+  obs : {X : 𝓤 ̇} (s t : B X)
+      → id-to-edge (⋖ 𝓑 ⋗ X) {s} {t} ＝ canonical-map I II s t
+  obs {X} s t = dfunext fe obs'
+   where
+    obs'
+     : id-to-edge (component-refl-graph (B , R , r) X) ∼ canonical-map I II s t 
+    obs' refl = refl
+  III : {X : 𝓤 ̇} (s t : B X)
+      → is-equiv (canonical-map I II s t)
+  III {X} s t = transport is-equiv (obs s t)
+                 (prop-fans-implies-id-to-edge-equiv (ua X) s t)
+
+SNS-to-displayed-univalent-refl-graph
+ : {𝓤 𝓣 𝓦 : Universe}
+ → Fun-Ext
+ → (B : 𝓤 ̇ → 𝓣 ̇)
+ → SNS B 𝓦 
+ → displayed-univalent-refl-graph 𝓣 𝓦 (univalent-universe-refl-graph 𝓤)
+SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
+ = ((B , I , II) , III)
+ where
+  I : {X Y : ⊰ univalent-universe-refl-graph 𝓤 ⊱}
+    → edge-rel (univalent-universe-refl-graph 𝓤) X Y
+    → B X
+    → B Y
+    → 𝓦 ̇
+  I {X} {Y} e s t = ι (X , s) (Y , t) e
+  II : {X : ⊰ univalent-universe-refl-graph 𝓤 ⊱} (u : B X)
+     → ι (X , u) (X , u) (𝓻 (univalent-universe-refl-graph 𝓤) X)
+  II {X} u = ρ (X , u)
+  obs : {X : 𝓤 ̇} (s t : B X)
+      → canonical-map ι ρ s t ＝ id-to-edge (⋖ (B , I , II)  ⋗ X)
+  obs {X} s t = dfunext fe obs'
+   where
+    obs'
+     : canonical-map ι ρ s t ∼ id-to-edge (component-refl-graph (B , I , II) X)
+    obs' refl = refl
+  III : is-displayed-univalent-refl-graph (univalent-universe-refl-graph 𝓤)
+         (B , I , II)
+  III X u = id-to-edge-equiv-implies-prop-fans
+             (λ s t → transport is-equiv (obs s t) (θ s t)) u  
+
+\end{code}
+
+We conclude this example file (for now) with a comparison of characterizations
+of the identity type of ∞-magmas.
 
 \begin{code}
 
@@ -549,6 +615,6 @@ Appealing simply to line counting one could not justify the latter approach to
 characterizing the identity type of ∞-Magma. But we would like to point out a
 few advantages. First, we get the displayed reflexive graph (and its univalence)
 for free by identifying the left and right hand side of the equation relating
-the mixed variance data. This offers a blueprint for characterizing mixed variance
-structures of increasingly complicated nature where "guessing" (or maybe it is
-more apt to say "being clever") is not feasible.
+the mixed variance data. This offers a blueprint for characterizing mixed
+variance structures of increasingly complicated nature where "guessing" (or
+maybe it is more apt to say "being clever") is not feasible.
