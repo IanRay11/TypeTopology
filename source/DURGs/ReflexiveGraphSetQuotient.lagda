@@ -65,6 +65,39 @@ module _ (fe : Fun-Ext)
 TODO use effectivity of quotients to show that this reflexive graph is
 univalent.
 
+\begin{code}
+
+ return-map-set-quo : (u v : A / R)
+                    → u ≈⟨ set-quotient-refl-graph ⟩ v
+                    → u ＝ v
+ return-map-set-quo u v = ∥∥-rec (/-is-set R) III
+  where
+   I : (x : A) → (Σ y ꞉ A , (η/ R x ＝ u) × (η/ R y ＝ v) × (x ≋ y)) → u ＝ v
+   I x (y , p , q , r) = u      ＝⟨ p ⁻¹ ⟩ 
+                         η/ R x ＝⟨ ⌜ (char-set-quotient-＝ x y) ⌝⁻¹ r ⟩
+                         η/ R y ＝⟨ q ⟩
+                         v      ∎
+   II : (x : A) → (∃ y ꞉ A , (η/ R x ＝ u) × (η/ R y ＝ v) × (x ≋ y)) → u ＝ v
+   II x = ∥∥-rec (/-is-set R) (I x)
+   III : (Σ x ꞉ A , ∃ y ꞉ A , (η/ R x ＝ u) × (η/ R y ＝ v) × (x ≋ y)) → u ＝ v
+   III = uncurry II
+
+ canonical-map-set-quo-is-equiv : (u v : A / R)
+                                → is-equiv (id-to-edge set-quotient-refl-graph)
+ canonical-map-set-quo-is-equiv u v
+  = logical-equivs-of-props-are-equivs (/-is-set R) ∃-is-prop
+     (id-to-edge set-quotient-refl-graph) (return-map-set-quo u v)
+ 
+ char-/-＝ : (u v : A / R)
+           → (u ＝ v) ≃ (u ≈⟨ set-quotient-refl-graph ⟩ v)
+ char-/-＝ u v
+  = (id-to-edge set-quotient-refl-graph , canonical-map-set-quo-is-equiv u v)
+
+ set-quotient-refl-graph-univalent
+  : is-univalent-refl-graph set-quotient-refl-graph
+ set-quotient-refl-graph-univalent
+  = id-to-edge-equiv-implies-prop-fans canonical-map-set-quo-is-equiv
+
 
 
  
