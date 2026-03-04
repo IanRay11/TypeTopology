@@ -369,8 +369,8 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 \end{code}
 
 We show that propositional valued families on univalent reflexive graphs induce
-displayed univalent reflexive graphs such that the resulting total reflexive
-graph contains no new edge information.
+displayed univalent reflexive graphs such that the resulting total univalent
+reflexive graph contains no new edge information.
 
 \begin{code}
 
@@ -426,7 +426,8 @@ prop-display-total-edge-char 𝓐 B B-prop x y u v
 
 \end{code}
 
-We characterize the identity type of hSets.
+We use this fact to give a characterization of the identity type of hSets
+(although this is by no means better than existing characterizations).
 
 \begin{code}
 
@@ -542,7 +543,9 @@ displayed-univalent-refl-graph-≃-SNS fe
 end{code}
 
 We conclude this example file (for now) with a comparison of characterizations
-of the identity type of ∞-magmas.
+of the identity type of ∞-magmas. The former characterization directly via
+displayed reflexive graphs (but by the above observation this is equivalent to
+a characterization via SNS) and the latter via bivariant midpoint lenses. 
 
 \begin{code}
 
