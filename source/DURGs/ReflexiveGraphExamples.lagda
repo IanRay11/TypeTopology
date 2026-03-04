@@ -12,13 +12,17 @@ module DURGs.ReflexiveGraphExamples where
 
 open import MLTT.Spartan
 open import UF.Base
+open import UF.Embeddings
 open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.FunExt
 open import UF.Pullback
+open import UF.Sets
+open import UF.Sets-Properties
 open import UF.SIP
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
+open import UF.Subsingletons-Properties
 open import UF.Univalence
 open import UF.UA-FunExt
 open import DURGs.BivariantMidpointLenses
@@ -372,6 +376,89 @@ univalent-universe-is-univalent-family {𝓤} ua fe
 
 \end{code}
 
+We show that propositional valued families on univalent reflexive graphs induce
+displayed univalent reflexive graphs such that the resulting total reflexive
+graph contains no new edge information.
+
+\begin{code}
+
+discrete-displayed-reflexive-graph : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+                                   → (⊰ 𝓐 ⊱ᵤ → 𝓣 ̇)
+                                   → displayed-refl-graph 𝓣 𝓣 (𝓐 /ᵤ)
+discrete-displayed-reflexive-graph {_} {_} {𝓣} 𝓐 B = (B , I , II)
+ where
+  I : {x y : ⊰ 𝓐 ⊱ᵤ} → x ≈ᵤ⟨ 𝓐 ⟩ y → B x → B y → 𝓣 ̇
+  I e u v = transport B (edge-to-id 𝓐 e) u ＝ v
+  II : {x : ⊰ 𝓐 ⊱ᵤ} (u : B x)
+     → I (𝓻 (𝓐 /ᵤ) x) u u
+  II u = transport (λ - → transport B - u ＝ u) (edge-to-id-comp 𝓐 ⁻¹) refl
+
+syntax discrete-displayed-reflexive-graph 𝓐 B = 𝓐 Δ B
+
+prop-display-univalent
+ : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+ → (B : ⊰ 𝓐 ⊱ᵤ → 𝓣 ̇)
+ → ((x : ⊰ 𝓐 ⊱ᵤ) → is-prop (B x))
+ → is-displayed-univalent-refl-graph (𝓐 /ᵤ) (𝓐 Δ B)
+prop-display-univalent 𝓐 B B-prop x u = Σ-is-prop (B-prop x) I
+ where
+  I : (v : B x) → is-prop (u ≈＜ 𝓐 Δ B , 𝓻 (𝓐 /ᵤ) x ＞ v)
+  I v = props-are-sets (B-prop x)
+
+prop-display-total-univalent : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+                             → (B : ⊰ 𝓐 ⊱ᵤ → 𝓣 ̇)
+                             → ((x : ⊰ 𝓐 ⊱ᵤ) → is-prop (B x))
+                             → is-univalent-refl-graph ((𝓐 /ᵤ) ﹐ (𝓐 Δ B))
+prop-display-total-univalent 𝓐 B B-prop
+ = univalence-closed-under-total (𝓐 /ᵤ) (𝓐 Δ B) (underlying-univalence 𝓐)
+    (prop-display-univalent 𝓐 B B-prop)
+
+prop-display-total-edge-char : (𝓐 : univalent-refl-graph 𝓤 𝓥)
+                             → (B : ⊰ 𝓐 ⊱ᵤ → 𝓣 ̇)
+                             → ((x : ⊰ 𝓐 ⊱ᵤ) → is-prop (B x))
+                             → (x y : ⊰ 𝓐 ⊱ᵤ) (u : B x) (v : B y)
+                             → (x , u) ≈⟨ (𝓐 /ᵤ) ﹐ (𝓐 Δ B) ⟩ (y , v)
+                             ≃ x ≈ᵤ⟨ 𝓐 ⟩ y
+prop-display-total-edge-char 𝓐 B B-prop x y u v
+ = (x , u) ≈⟨ (𝓐 /ᵤ) ﹐ (𝓐 Δ B) ⟩ (y , v)                     ≃⟨by-definition⟩
+   (Σ e ꞉ x ≈ᵤ⟨ 𝓐 ⟩ y , transport B (edge-to-id 𝓐 e) u ＝ v) ≃⟨ I ⟩
+   (Σ p ꞉ x ＝ y , transport B p u ＝ v)                     ≃⟨ ≃-sym Σ-＝-≃ ⟩
+   ((x , u) ＝ (y , v))                                      ≃⟨ II ⟩
+   (x ＝ y)                                                  ≃⟨ III ⟩
+   x ≈ᵤ⟨ 𝓐 ⟩ y                                               ■
+ where
+  I = Σ-change-of-variable-≃ (λ p → transport B p u ＝ v)
+       (≃-sym (id-equiv-edge 𝓐 x y))
+  II = ≃-sym (to-subtype-＝-≃ B-prop)
+  III = id-equiv-edge 𝓐 x y
+
+\end{code}
+
+We characterize identity of hSets.
+
+\begin{code}
+
+char-＝-hSet : is-univalent 𝓤
+             → funext 𝓤 𝓤
+             → funext (𝓤 ⁺) 𝓤
+             → (X Y : hSet 𝓤)
+             → (X ＝ Y) ≃ (underlying-set X ≃ underlying-set Y)
+char-＝-hSet {𝓤} ua fe fe' 𝓧@(X , X-is-set) 𝓨@(Y , Y-is-set)
+ = (𝓧 ＝ 𝓨)                               ≃⟨ IV ⟩
+   (Σ p ꞉ X ＝ Y , {!transport is-set p X-is-set ＝ Y-is-set!})                  ≃⟨ {!!} ⟩
+   (𝓧 ≈⟨ III ⟩ 𝓨)                         ≃⟨ VI ⟩
+   (X ≃ Y)                                ■
+ where
+  I = (universe-refl-graph 𝓤 , univalent-universe-is-univalent-family ua fe')
+  II = I Δ is-set
+  III = universe-refl-graph 𝓤 ﹐ II
+  IV = Σ-＝-≃
+  V = {!!}
+  VI = prop-display-total-edge-char I is-set (λ X → being-set-is-prop fe)
+        X Y X-is-set Y-is-set
+
+\end{code}transport is-set (edge-to-id I e) X-is-set ＝ Y-is-set
+
 We observe a relationship between displayed univalent reflexive graphs and the
 standard notion of structure (SNS) (see UF.SIP) already present in the
 TypeTopology library.
@@ -437,6 +524,10 @@ SNS-to-displayed-univalent-refl-graph {𝓤} {𝓣} {𝓦} fe B (ι , ρ , θ)
   III X u = id-to-edge-equiv-implies-prop-fans
              (λ s t → transport is-equiv (obs s t) (θ s t)) u
 
+\end{code}
+
+TODO characterize ＝ of displayed refl graphs and finish this proof.
+
 displayed-univalent-refl-graph-≃-SNS
  : {𝓤 𝓣 𝓦 : Universe}
  → Fun-Ext
@@ -456,7 +547,7 @@ displayed-univalent-refl-graph-≃-SNS fe
   IV : I ∘ II ∼ id
   IV (B , (ι , ρ , θ)) = _
 
-\end{code}
+end{code}
 
 We conclude this example file (for now) with a comparison of characterizations
 of the identity type of ∞-magmas.
