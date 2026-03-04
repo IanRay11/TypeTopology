@@ -444,20 +444,20 @@ char-＝-hSet : is-univalent 𝓤
              → (X Y : hSet 𝓤)
              → (X ＝ Y) ≃ (underlying-set X ≃ underlying-set Y)
 char-＝-hSet {𝓤} ua fe fe' 𝓧@(X , X-is-set) 𝓨@(Y , Y-is-set)
- = (𝓧 ＝ 𝓨)                               ≃⟨ IV ⟩
-   (Σ p ꞉ X ＝ Y , {!transport is-set p X-is-set ＝ Y-is-set!})                  ≃⟨ {!!} ⟩
+ = (𝓧 ＝ 𝓨)                               ≃⟨ V ⟩
    (𝓧 ≈⟨ III ⟩ 𝓨)                         ≃⟨ VI ⟩
    (X ≃ Y)                                ■
  where
   I = (universe-refl-graph 𝓤 , univalent-universe-is-univalent-family ua fe')
   II = I Δ is-set
   III = universe-refl-graph 𝓤 ﹐ II
-  IV = Σ-＝-≃
-  V = {!!}
-  VI = prop-display-total-edge-char I is-set (λ X → being-set-is-prop fe)
+  V = id-equiv-edge
+      (III , prop-display-total-univalent I is-set (λ - → being-set-is-prop fe))
+       𝓧 𝓨
+  VI = prop-display-total-edge-char I is-set (λ - → being-set-is-prop fe)
         X Y X-is-set Y-is-set
 
-\end{code}transport is-set (edge-to-id I e) X-is-set ＝ Y-is-set
+\end{code}
 
 We observe a relationship between displayed univalent reflexive graphs and the
 standard notion of structure (SNS) (see UF.SIP) already present in the
