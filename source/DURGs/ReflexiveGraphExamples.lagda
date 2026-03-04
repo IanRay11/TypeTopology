@@ -434,7 +434,7 @@ prop-display-total-edge-char 𝓐 B B-prop x y u v
 
 \end{code}
 
-We characterize identity of hSets.
+We characterize the identity type of hSets.
 
 \begin{code}
 
