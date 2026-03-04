@@ -48,13 +48,11 @@ product-characterization-from-univalent-refl-graphs
  → ((a , b) ＝ (a' , b')) ≃ (a ＝ a') × (b ＝ b')
 product-characterization-from-univalent-refl-graphs
  {_} {_} {A} {B} {a} {a'} {b} {b'}
- = (id-to-edge ((Δ A) ⊗ (Δ B)) , II (a , b) (a' , b'))
+ = id-equiv-edge ((Δ A) ⊗ (Δ B) , I) (a , b) (a' , b')
  where
   I : is-univalent-refl-graph ((Δ A) ⊗ (Δ B))
   I = univalence-closed-under-binary-product (Δ A) (Δ B)
        (discrete-refl-graph-is-univalent A) (discrete-refl-graph-is-univalent B)
-  II : (p q : A × B) → is-equiv (id-to-edge ((Δ A) ⊗ (Δ B)))
-  II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
 
@@ -67,14 +65,11 @@ sigma-characterization-from-univalent-refl-graphs
  → ((a , b) ＝ (a' , b')) ≃ (Σ p ꞉ (a ＝ a') , transport B p b ＝ b')
 sigma-characterization-from-univalent-refl-graphs
  {𝓤} {𝓥} {A} {B} {a} {a'} {b} {b'}
- = (id-to-edge (∐ a ˸ A , (Δ (B a))) , II (a , b) (a' , b'))
+ = id-equiv-edge ((∐ a ˸ A , (Δ (B a))) , I) (a , b) (a' , b')
  where
   I : is-univalent-refl-graph (∐ a ˸ A , (Δ (B a)))
   I = univalence-closed-under-coproduct A (λ a → Δ (B a))
        (λ a → discrete-refl-graph-is-univalent (B a))
-  II : (p q : (Σ a ꞉ A , B a))
-     → is-equiv (id-to-edge (∐ a ˸ A , (Δ (B a))))
-  II = prop-fans-implies-id-to-edge-equiv I
 
 \end{code}
 
@@ -229,11 +224,8 @@ The carrier of this total reflexive graph corresponds to the type of cones.
   ≃ (Σ (α , β) ꞉ (p ∼ p') × (q ∼ q') ,
      ∼-trans H (∼-ap-∘ g β) ∼ ∼-trans (∼-ap-∘ f α) H')
  cone-＝-characterization {𝓣} {A} {p} {p'} {q} {q'} {H} {H'}
-  = (id-to-edge (cone-total-refl-graph A) , I)
-  where
-   I : is-equiv (id-to-edge (cone-total-refl-graph A))
-   I = prop-fans-implies-id-to-edge-equiv
-        (cone-total-is-univalent A) ((p , q) , H) ((p' , q') , H')
+  = id-equiv-edge (cone-total-refl-graph A , cone-total-is-univalent A)
+     ((p , q) , H) ((p' , q') , H')
 
 \end{code}
 
@@ -633,16 +625,14 @@ private
  → ((X , _·X_) ＝ (Y , _·Y_))
   ≃ (Σ e ꞉ X ≃ Y , ((x y : X) → ⌜ e ⌝ (x ·X y) ＝ (⌜ e ⌝ x ·Y ⌜ e ⌝ y)))
 ∞-Magma-＝-char {𝓤} X Y _·X_ _·Y_ fe ua
- = (id-to-edge (∞-Magma-total-refl-graph 𝓤) , I)
- where
-  I : is-equiv (id-to-edge (∞-Magma-total-refl-graph 𝓤))
-  I = prop-fans-implies-id-to-edge-equiv
-       (∞-Magma-total-univalent-refl-graph 𝓤 ua fe) (X , _·X_) (Y , _·Y_)
+ = id-equiv-edge
+    (∞-Magma-total-refl-graph 𝓤 , ∞-Magma-total-univalent-refl-graph 𝓤 ua fe)
+    (X , _·X_) (Y , _·Y_)
 
 \end{code}
 
-We may instead use the bivariant lense machinary, which allows us to characterize
-structures that have 'mixed variance'.
+We may instead use the bivariant lense machinary, which allows us to
+characterize structures that have 'mixed variance'.
 
 \begin{code}
 
@@ -715,11 +705,9 @@ mixed-var-bin-op-total-univalent 𝓤 ua fe
  → ((X , _·X_) ＝ (Y , _·Y_))
   ≃ (Σ e ꞉ X ≃ Y , ((x y : X) → ⌜ e ⌝ (x ·X y) ＝ (⌜ e ⌝ x ·Y ⌜ e ⌝ y)))
 ∞-Magma-＝-lens-char {𝓤} X Y _·X_ _·Y_ fe ua
- = (id-to-edge (mixed-var-bin-op-total 𝓤) , I)
- where
-  I : is-equiv (id-to-edge (mixed-var-bin-op-total 𝓤))
-  I = prop-fans-implies-id-to-edge-equiv
-       (mixed-var-bin-op-total-univalent 𝓤 ua fe) (X , _·X_) (Y , _·Y_)
+ = id-equiv-edge
+    (mixed-var-bin-op-total 𝓤 , mixed-var-bin-op-total-univalent 𝓤 ua fe)
+    (X , _·X_) (Y , _·Y_)
 
 \end{code}
 
