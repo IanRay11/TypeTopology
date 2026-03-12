@@ -443,6 +443,11 @@ hSet-refl-graph : is-univalent 𝓤
 hSet-refl-graph {𝓤} ua fe
  = universe-refl-graph 𝓤 ﹐ (universe-univalent-refl-graph ua fe Δ is-set)
 
+private
+  observation-I : (ua : is-univalent 𝓤) (fe : funext (𝓤 ⁺) 𝓤) →
+    ⊰ hSet-refl-graph ua fe ⊱ ＝ hSet 𝓤
+  observation-I = λ ua fe → refl
+
 hSet-refl-graph-is-univalent : (ua : is-univalent 𝓤)
                              → funext 𝓤 𝓤
                              → (fe' : funext (𝓤 ⁺) 𝓤)
