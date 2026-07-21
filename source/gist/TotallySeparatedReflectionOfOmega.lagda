@@ -1,4 +1,4 @@
-Martin Escardo, 17-19 June 2025.
+Martin Escardo, 17-19 June 2026.
 
 The totally separated reflection of the type Ω of propositions.
 
@@ -29,7 +29,7 @@ precomposition with η (the restriction map) is an equivalence
 Resizing is used to define a section s : T → Ω of η by
 s t = "the resized proposition that t is the constant function ₁".
 
-Second, we ask whether this equivalence be established without
+Second, we ask whether this equivalence can be established without
 assuming propositional resizing.
 
 We don't know, but we explore this a bit here. In particular, we
@@ -192,6 +192,7 @@ constancy-lemma f e p = 𝟚-is-¬¬-separated (f p) (f ⊥) I
     I₀ ph = ne (f p ＝⟨ lemma-⊤ f p ph ⟩
                 f ⊤ ＝⟨ e ⁻¹ ⟩
                 f ⊥ ∎)
+
     I₁ : ¬¬ (p holds)
     I₁ ν = ne (lemma-⊥ f p ν)
 
@@ -206,12 +207,76 @@ WEM-lemma f ne p = I (𝟚-is-discrete (f p) (f ⊤))
 
 \end{code}
 
+Some observations not needed for our development:
+
+\begin{code}
+
+_ : (Y : 𝓥 ̇ ) → is-totally-separated Y → is-¬¬-separated Y
+_ = totally-separated-types-are-¬¬-separated
+
+_ : {Y : 𝓥 ̇ }
+  → is-¬¬-separated Y
+  → (f : Ω → Y) → f ⊥ ＝ f ⊤ → (p q : Ω) → f p ＝ f q
+_ = ⊥-⊤-density' fe pe
+
+¬WEM-observation : ¬ WEM
+                 → {Y : 𝓥 ̇ }
+                 → is-totally-separated Y
+                 → (f : Ω → Y) (p q : Ω) → f p ＝ f q
+¬WEM-observation nwem {Y} ts f = III
+ where
+  I : (g : Y → 𝟚) → g (f ⊥) ＝ g (f ⊤)
+  I g = 𝟚-is-¬¬-separated (g (f ⊥)) (g (f ⊤)) I₀
+   where
+    I₀ : ¬¬ (g (f ⊥) ＝ g (f ⊤))
+    I₀ ne = nwem (WEM-lemma (g ∘ f) ne)
+
+  II : f ⊥ ＝ f ⊤
+  II = ts I
+
+  III : (p q : Ω) → f p ＝ f q
+  III = ⊥-⊤-density' fe pe (totally-separated-types-are-¬¬-separated Y ts) f II
+
+¬¬WEM-observation : (Y : 𝓥 ̇ )
+                  → is-totally-separated Y
+                  → (Σ f ꞉ (Ω → Y) , f ⊥ ≠ f ⊤)
+                  → ¬¬ WEM
+¬¬WEM-observation Y ts (f , ne) =
+ contrapositive
+  (λ (nwem : ¬ WEM) → ¬WEM-observation nwem ts f ⊥ ⊤)
+  ne
+
+τ₀＝τ₁-gives-¬WEM : τ₀ ＝ τ₁ → ¬ WEM
+τ₀＝τ₁-gives-¬WEM e w = zero-is-not-one (happly e w)
+
+¬¬WEM-gives-τ₀≠τ₁ : ¬¬ WEM → τ₀ ≠ τ₁
+¬¬WEM-gives-τ₀≠τ₁ = contrapositive τ₀＝τ₁-gives-¬WEM
+
+τ₀≠τ₁-gives-¬¬WEM : τ₀ ≠ τ₁ → ¬¬ WEM
+τ₀≠τ₁-gives-¬¬WEM ne nw =
+ ¬¬WEM-observation T T-is-totally-separated (η , I) nw
+ where
+  I : η ⊥ ≠ η ⊤
+  I e = ne (τ₀  ＝⟨ η⊥ ⁻¹ ⟩
+            η ⊥ ＝⟨ e ⟩
+            η ⊤ ＝⟨ η⊤ ⟩
+            τ₁  ∎)
+
+¬WEM-gives-τ₀＝τ₁ : ¬ WEM → τ₀ ＝ τ₁
+¬WEM-gives-τ₀＝τ₁ nw =
+ totally-separated-types-are-¬¬-separated T T-is-totally-separated τ₀ τ₁ I
+ where
+  I : ¬¬ (τ₀ ＝ τ₁)
+  I ne = τ₀≠τ₁-gives-¬¬WEM ne nw
+
+\end{code}
+
 Restriction along η:
 
 \begin{code}
 
-ρ : (Z : 𝓦 ̇ ) → (T → Z) → (Ω → Z)
-ρ Z g = g ∘ η
+ρ : (Y : 𝓥 ̇ ) → (T → Y) → (Ω → Y)
+ρ Y g = g ∘ η
 
 \end{code}
 

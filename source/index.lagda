@@ -63,8 +63,8 @@
      control safety and, to the extent this is currently possible, to
      control which type theory is used.
 
-   * In our last count, on 2026-06-24, this development has 969 Agda
-     files with 281K lines of code, including comments and blank
+   * In our last count, on 2026-07-17, this development has 979 Agda
+     files with 284K lines of code, including comments and blank
      lines.
 
 Philosophy of the repository
@@ -163,6 +163,7 @@ import Duploids.index
 import Dyadics.index
 import DyadicsInductive.index
 import EffectfulForcing.index
+import EGroups.index
 import Factorial.index
 import Field.index
 import Fin.index

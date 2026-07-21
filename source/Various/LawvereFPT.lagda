@@ -24,10 +24,8 @@ See also the file Various.CantorTheoremForEmbeddings by Jon Sterling.
 module Various.LawvereFPT where
 
 open import MLTT.Spartan
-
 open import MLTT.Two-Properties
 open import Naturals.Properties
-
 open import UF.Base
 open import UF.Equiv
 open import UF.FunExt
@@ -47,7 +45,7 @@ as saying that r has a pointwise section).
 \begin{code}
 
 _is-section·-of_ : {A : 𝓤 ̇ } {X : 𝓥 ̇ } → ((A → X) → A) → (A → (A → X)) → 𝓤 ⊔ 𝓥 ̇
-s is-section·-of r  = ∀ g a → r (s g) a ＝ g a
+s is-section·-of r  = ∀ g a → (r ∘ s) g a ＝ g a
 
 \end{code}
 
@@ -77,10 +75,11 @@ section·-gives-section fe r (s , rs·) = s , λ g → dfunext fe (rs· g)
 
 \end{code}
 
-Lawvere's fixed-point combinator for a type X can be defined if we
-have maps r : A → (A → X) and s : (A → X) → A subject to no
-assumptions, but, to show that it produces a fixed point combinator,
-we will assume that s is a pointwise section of r.
+Lawvere misses the opportunity to define what I here call "Lawvere's
+fixed-point combinator" for a type X. It can be defined if we have
+maps r : A → (A → X) and s : (A → X) → A subject to no assumptions at
+all, but, to show that it produces a fixed point combinator, we will
+assume that s is a pointwise section of r.
 
 \begin{code}
 
@@ -97,7 +96,7 @@ Notice the similarity with the usual fixed-point combinator Y of the
 untyped λ-calculus.
 
 The intuitionistic proof of ¬ (A ↔ ¬ A) is the particular case of lfix
-with X = 𝟘 and f = id.
+with X = 𝟘, r : A → ¬ A, s : ¬ A → A, and f = id.
 
 \begin{code}
 
@@ -126,12 +125,13 @@ is a fixed point of f.
 
 \begin{code}
 
- lfix-is-fixed-point : {A : 𝓤 ̇ }
-                       {X : 𝓥 ̇ }
-                       (r : A → (A → X))
-                     → (s : (A → X) → A)
-                     → s is-section·-of r
-                     → (f : X → X) → lfix r s f ＝ f (lfix r s f)
+ lfix-is-fixed-point
+  : {A : 𝓤 ̇ }
+    {X : 𝓥 ̇ }
+    (r : A → (A → X))
+  → (s : (A → X) → A)
+  → s is-section·-of r
+  → (f : X → X) → lfix r s f ＝ f (lfix r s f)
  lfix-is-fixed-point {𝓤} {𝓥} {A} {X} r s rs f = p
   where
    g : A → X
@@ -152,12 +152,35 @@ is a fixed point of f.
        g a       ＝⟨by-definition⟩
        f x       ∎
 
+\end{code}
+
+The above is an attempt to make the proof understandable. Here is the
+same proof in normal form:
+
+\begin{code}
+
+ lfix-is-fixed-point-concise
+  : {A : 𝓤 ̇ }
+    {X : 𝓥 ̇ }
+    (r : A → (A → X))
+  → (s : (A → X) → A)
+  → s is-section·-of r
+  → (f : X → X) → lfix r s f ＝ f (lfix r s f)
+ lfix-is-fixed-point-concise r s rs f
+  = rs (λ a → f (r a a)) (s (λ a → f (r a a)))
+
+\end{code}
+
+We now consider some useful direct consequences.
+
+\begin{code}
+
  LFPT· : {A : 𝓤 ̇ }
          {X : 𝓥 ̇ }
          (r : A → (A → X))
        → has-section· r
        → designated-fixed-point-property X
- LFPT· {𝓤} {𝓥} {A} {X} r (s , rs) f = lfix r s f , lfix-is-fixed-point r s rs f
+ LFPT· r (s , rs) f = lfix r s f , lfix-is-fixed-point r s rs f
 
  LFPT : {A : 𝓤 ̇ }
         {X : 𝓥 ̇ }
@@ -619,8 +642,11 @@ types, Π types, W types and a universe 𝓤 closed under them. In
 particular, extensionality and univalence are not needed. We again use
 Lawvere's fixed point theorem.
 
-TODO. It should also be possible to replace the diagonal construction
-of Lemma₀ by a second application of LFPT.
+Question. It should also be possible to replace the diagonal construction
+of Lemma₀ below by a second application of LFPT.
+
+Added 25th June 2026. This question is now answered in the file
+Various.LawvereFPT-Generalized. End of addition.
 
 \begin{code}
 
