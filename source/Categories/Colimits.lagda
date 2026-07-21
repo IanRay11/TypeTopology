@@ -1,0 +1,142 @@
+Ian Ray. July 21st 2026.
+
+This is a explicit account of colimits but we should consider an approach
+that uses natural transformations or something more sophisticated...
+
+\begin{code}
+
+{-# OPTIONS --safe --without-K #-}
+
+open import MLTT.Spartan
+open import Categories.Functor
+open import Categories.Functor-Composition
+open import Categories.Pre
+open import Categories.Wild
+open import Categories.Notation.Functor
+open import Categories.Notation.Pre
+open import Categories.Notation.Wild
+
+module Categories.Colimits where
+
+\end{code}
+
+We start by defining a cocone on a given diagram D : X → Y, which consists of
+an object y : obj Y
+
+\begin{code}
+
+module _ {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓦 𝓣} (D : Functor X Y)
+       where
+
+ open PrecategoryNotation X
+ open PrecategoryNotation Y
+
+ record cocone : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇ where
+  field
+   appex : obj Y
+   compo : (x : obj X) → hom (Functor.F₀ D x) appex
+   commu : (x x' : obj X) (f : hom x x')
+         → compo x' ◦ Functor.F₁ D f ＝ compo x
+
+ module _ (c : cocone) where
+
+  record is-colim : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇ where
+   field
+    universal : (x : obj X) (C : cocone)
+              → hom (cocone.appex c) (cocone.appex C)
+    universal-commu : (x : obj X) (C : cocone)
+                    → universal x C ◦ cocone.compo c x ＝ cocone.compo C x
+    unique : (x : obj X) (C : cocone)
+           → (m : hom (cocone.appex c) (cocone.appex C))
+           → m ◦ cocone.compo c x ＝ cocone.compo C x
+           → universal x C ＝ m
+
+ Colim : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
+ Colim = Σ c ꞉ cocone , is-colim c
+
+\end{code}
+
+We will give some boilerplate naming for all the fields and projections.
+
+\begin{code}
+
+ module _ (𝓒@(c , u) : Colim) where
+ 
+  colim : obj Y
+  colim = cocone.appex c
+
+  colim-component : (x : obj X) → hom (Functor.F₀ D x) colim
+  colim-component = cocone.compo c
+
+  colim-commutes : (x x' : obj X) (f : hom x x')
+                 → colim-component x' ◦ Functor.F₁ D f ＝ colim-component x
+  colim-commutes = cocone.commu c
+
+  colim-universal : (x : obj X) (C : cocone)
+                  → hom colim (cocone.appex C)
+  colim-universal = is-colim.universal u
+  
+  colim-universal-commutes
+   : (x : obj X) (C : cocone)
+   → colim-universal x C ◦ colim-component x ＝ cocone.compo C x
+  colim-universal-commutes = is-colim.universal-commu u
+
+  colim-unique : (x : obj X) (C : cocone)
+               → (m : hom colim (cocone.appex C))
+               → m ◦ colim-component x ＝ cocone.compo C x
+               → colim-universal x C ＝ m
+  colim-unique = is-colim.unique u
+
+\end{code}
+
+We define a cocomplete category with respect to the universes for which
+it has colimits.
+
+\begin{code}
+
+module _ {𝓤 𝓥 : Universe} (P : Precategory 𝓤 𝓥) where
+
+ has-colimits : (𝓣 𝓦 : Universe) → 𝓤 ⊔ 𝓥 ⊔ (𝓣 ⊔ 𝓦)⁺ ̇
+ has-colimits 𝓣 𝓦 = {C : Precategory 𝓣 𝓦} (D : Functor C P)
+                  → Colim D
+
+module _ {𝓤 𝓥 : Universe} where
+
+ Cocomplete-Category : (𝓣 𝓦 : Universe) → (𝓤 ⊔ 𝓥 ⊔ 𝓣 ⊔ 𝓦)⁺ ̇
+ Cocomplete-Category 𝓣 𝓦 = Σ P ꞉ Precategory 𝓤 𝓥 , has-colimits P 𝓣 𝓦
+
+\end{code}
+
+We now give define some important interactions between colimits and functors.
+
+\begin{code}
+
+module _ {C : Precategory 𝓦 𝓣}
+         {X : Precategory 𝓤 𝓥}
+         {Y : Precategory 𝓤' 𝓥'}
+         {D : Functor C X} 
+       where
+
+ open PrecategoryNotation C
+ open PrecategoryNotation X
+ open PrecategoryNotation Y
+
+ _preserves_ : (F : Functor X Y) (c : Colim D) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
+ F preserves c = is-colim (F F∘ D) I
+  where
+   open Functor F
+   I : cocone (F F∘ D)
+   I = record
+        {appex = F₀ (colim D c) ;
+         compo = λ (x : obj C) → F₁ (colim-component D c x) ;
+         commu
+          = λ (x x' : obj C) (f : hom x x')
+          → F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f)
+              ＝⟨ {!!} ⟩
+            F₁ (colim-component D c x' ◦ Functor.F₁ D f)
+              ＝⟨ ap F₁ (colim-commutes D c x x' f) ⟩
+            F₁ (colim-component D c x) ∎}
+
+\end{code}
+
+
