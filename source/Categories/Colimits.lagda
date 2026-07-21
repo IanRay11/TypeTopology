@@ -121,21 +121,26 @@ module _ {C : Precategory 𝓦 𝓣}
  open PrecategoryNotation X
  open PrecategoryNotation Y
 
- _preserves_ : (F : Functor X Y) (c : Colim D) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
- F preserves c = is-colim (F F∘ D) I
+ cocone-on : (F : Functor X Y) (c : Colim D) → cocone (F F∘ D)
+ cocone-on F c = record{appex = F₀ (colim D c) ;
+                        compo = I ;
+                        commu = II }
   where
    open Functor F
-   I : cocone (F F∘ D)
-   I = record
-        {appex = F₀ (colim D c) ;
-         compo = λ (x : obj C) → F₁ (colim-component D c x) ;
-         commu
-          = λ (x x' : obj C) (f : hom x x')
-          → F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f)
-              ＝⟨ {!!} ⟩
-            F₁ (colim-component D c x' ◦ Functor.F₁ D f)
-              ＝⟨ ap F₁ (colim-commutes D c x x' f) ⟩
-            F₁ (colim-component D c x) ∎}
+   I : (x : obj C) → hom (Functor.F₀ (F F∘ D) x) (F₀ (colim D c))
+   I x = F₁ (colim-component D c x) 
+   II : (x x' : obj C) (f : hom x x')
+      → F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f)
+      ＝ F₁ (colim-component D c x)
+   II x x' f = F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f) ＝⟨ III ⟩
+               F₁ (colim-component D c x' ◦ Functor.F₁ D f)      ＝⟨ IV ⟩
+               F₁ (colim-component D c x)                        ∎
+    where
+     III = ?
+     IV = ap F₁ (colim-commutes D c x x' f)
+     
+ _preserves_ : (F : Functor X Y) (c : Colim D) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
+ F preserves c = is-colim (F F∘ D) (cocone-on F c)
 
 \end{code}
 
