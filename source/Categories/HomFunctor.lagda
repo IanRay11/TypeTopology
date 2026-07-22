@@ -10,6 +10,7 @@ open import MLTT.Spartan
 open import UF.FunExt
 open import Categories.Functor
 open import Categories.Functor-Composition
+open import Categories.LocallySmall
 open import Categories.Pre
 open import Categories.Sets
 open import Categories.Wild
