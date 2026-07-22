@@ -91,3 +91,8 @@ module _ {C : Precategory 𝓦 𝓣} {X : Precategory 𝓤 𝓥} {Y : Precategor
  is-finitary F = (D : Functor C X)
                → ((c , fil) : Filtered-Colimit D)
                → F preserves c
+\end{code}
+
+An object is finitely presented if its induced hom functor finitary.
+
+\begin{code}
