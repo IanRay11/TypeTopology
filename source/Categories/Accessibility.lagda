@@ -1,13 +1,17 @@
 Ian Ray. July 20th 2026.
 
-This file expirements with using universes rather than cardinals to define
+We expirement with using universes rather than cardinals to define
 accessibility and related notions.
+
+We test this expiremental development by formalizing results from
+"Initial Algebras Unchained".
 
 \begin{code}
 
 {-# OPTIONS --safe --without-K #-}
 
 open import MLTT.Spartan
+open import Categories.Colimits
 open import Categories.Functor
 open import Categories.Pre
 open import Categories.Wild
@@ -43,23 +47,47 @@ Filtered-Precategory 𝓤 𝓥 = Σ P ꞉ Precategory 𝓤 𝓥 , is-filtered P
 
 \end{code}
 
-A diagram (functor) D : P → X is filtered if P is filtered.
+A functor F : X → Y is filtered if P is filtered.
 
 \begin{code}
 
-module _ {𝓤 𝓥 𝓦 𝓣 : Universe} {P : Precategory 𝓤 𝓥} {X : Precategory 𝓦 𝓣}
+module _ {𝓤 𝓥 𝓦 𝓣 : Universe} {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓦 𝓣}
        where
- open PrecategoryNotation P
 
- is-filtered-functor : Functor P X → 𝓤 ⊔ 𝓥 ̇
- is-filtered-functor F = is-filtered P
+ is-filtered-functor : Functor X Y → 𝓤 ⊔ 𝓥 ̇
+ is-filtered-functor F = is-filtered X
+
+Filtered-Functor : (X : Precategory 𝓤 𝓥) (Y : Precategory 𝓦 𝓣) → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
+Filtered-Functor X Y = Σ F ꞉ Functor X Y , is-filtered-functor F
 
 \end{code}
 
-TODO Add colimits to the library so we can define filtered colimits.
-
-A colimit of a filtered diagram D : P → X is filtered.
+A colimit of a filtered diagram D : C → X is filtered.
 
 \begin{code}
 
+module _ {C : Precategory 𝓤 𝓥} {X : Precategory 𝓦 𝓣} (D : Functor C X)
+       where
+
+ is-filtered-colimit : Colim D → 𝓤 ⊔ 𝓥 ̇
+ is-filtered-colimit c = is-filtered-functor D
+
+Filtered-Colimit
+ : {C : Precategory 𝓤 𝓥} {X : Precategory 𝓦 𝓣} (D : Functor C X)
+ → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
+Filtered-Colimit D = Σ c ꞉ Colim D , is-filtered-colimit D c
+
 \end{code}
+
+A functor is finitary if it preserves filtered colimits.
+
+\begin{code}
+
+module _ {C : Precategory 𝓦 𝓣} {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓤' 𝓥'}
+       where
+
+ is-finitary : (Functor X Y)
+             → 𝓦 ⊔ 𝓣 ⊔ 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
+ is-finitary F = (D : Functor C X)
+               → ((c , fil) : Filtered-Colimit D)
+               → F preserves c

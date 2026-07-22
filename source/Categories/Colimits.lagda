@@ -136,7 +136,7 @@ module _ {C : Precategory 𝓦 𝓣}
                F₁ (colim-component D c x' ◦ Functor.F₁ D f)      ＝⟨ IV ⟩
                F₁ (colim-component D c x)                        ∎
     where
-     III = ?
+     III = Functor.distributivity F (colim-component D c x') (Functor.F₁ D f) ⁻¹
      IV = ap F₁ (colim-commutes D c x x' f)
      
  _preserves_ : (F : Functor X Y) (c : Colim D) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
