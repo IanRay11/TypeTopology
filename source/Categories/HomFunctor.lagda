@@ -37,17 +37,21 @@ module _ (fe : Fun-Ext) (X : Precategory 𝓤 𝓥) where
 
 \end{code}
 
-Sadly this code can probably be deleted...
+We can also define a more generalized hom functor in case we have a locally
+small precategory.
 
 \begin{code}
 
-module _ (fe : Fun-Ext) (𝓧@(X , loc) : Locally-Small-Precategory 𝓤 𝓥 𝓤) where
+module _ (𝓣 : Universe)
+         (fe : Fun-Ext)
+         (𝓧@(X , loc) : Locally-Small-Precategory 𝓤 𝓥 𝓣)
+       where
 
  open PrecategoryNotation X
- open Local-Smallness-Properties 𝓤 𝓧
+ open Local-Smallness-Properties 𝓣 𝓧
 
- covariant-hom' : (x : obj X) → Functor X (Pre-Cat-Set fe 𝓤)
- covariant-hom' x
+ small-covariant-hom : (x : obj X) → Functor X (Pre-Cat-Set fe 𝓣)
+ small-covariant-hom x
   = record
     {F₀ = λ a → (small-hom x a
                  , equiv-to-set (≃-sym small-hom-equiv) (hom-is-set X)) ;
