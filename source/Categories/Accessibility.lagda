@@ -97,8 +97,8 @@ module _ (𝓦 𝓣 : Universe) {X : Precategory 𝓤 𝓥} {Y : Precategory �
                → F preserves c
 \end{code}
 
-An object of a locally small precategory is finitely presented if its induced
-hom functor finitary.
+An object of a precategory is finitely presented if its induced hom functor
+finitary.
 
 \begin{code}
 
