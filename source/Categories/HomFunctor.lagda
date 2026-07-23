@@ -23,20 +23,38 @@ open import Categories.Notation.Wild hiding (⌜_⌝)
 
 module Categories.HomFunctor where
 
-module _ (fe : Fun-Ext) (𝓧@(X , loc) : Locally-Small-Precategory 𝓤 𝓥) where
+module _ (fe : Fun-Ext) (X : Precategory 𝓤 𝓥) where
 
  open PrecategoryNotation X
 
- covariant-hom : (x : obj X) → Functor X (Cat-Set fe 𝓤)
+ covariant-hom : (x : obj X) → Functor X (Pre-Cat-Set fe 𝓥)
  covariant-hom x
-  = record{F₀ = λ x'
-              → (small-hom 𝓧 x x' ,
-                 equiv-to-set (≃-sym (small-hom-equiv 𝓧)) (hom-is-set X)) ;
-           F₁ = λ {a} {b} (f : hom a b) (g : small-hom 𝓧 x a)
-              → small-hom-comp 𝓧 g (small-hom-→ 𝓧 f) ;
-           id-preserved = λ a → dfunext fe (small-hom-id 𝓧) ;
-           distributivity = λ {a} {b} {c} (g : hom b c) (f : hom a b)
-                          → dfunext fe (λ - → small-hom-func 𝓧 - f g)}
+  = record
+    {F₀ = λ a → (hom x a , hom-is-set X) ;
+     F₁ = λ {a} {b} (g : hom a b) → (λ (f : hom x a) → g ◦ f) ;
+     id-preserved = λ a → dfunext fe 𝒊𝒅-is-left-neutral ;
+     distributivity = λ h g → dfunext fe (λ f → assoc f g h ⁻¹)}
+
+\end{code}
+
+Sadly this code can probably be deleted...
+
+\begin{code}
+
+module _ (fe : Fun-Ext) (𝓧@(X , loc) : Locally-Small-Precategory 𝓤 𝓥 𝓤) where
+
+ open PrecategoryNotation X
+ open Local-Smallness-Properties 𝓤 𝓧
+
+ covariant-hom' : (x : obj X) → Functor X (Pre-Cat-Set fe 𝓤)
+ covariant-hom' x
+  = record
+    {F₀ = λ a → (small-hom x a
+                 , equiv-to-set (≃-sym small-hom-equiv) (hom-is-set X)) ;
+     F₁ = λ {a} {b} (g : hom a b) (f : small-hom x a)
+        → (small-hom-→ g) ∘small f ;
+     id-preserved = λ a → dfunext fe small-hom-id ;
+     distributivity = λ {a} {b} {c} (g : hom b c) (f : hom a b)
+                    → dfunext fe (λ - → small-hom-distr-assoc - f g)}
+
  
-
-

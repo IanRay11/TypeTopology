@@ -94,7 +94,7 @@ it has colimits.
 
 \begin{code}
 
-module _ {𝓤 𝓥 : Universe} (P : Precategory 𝓤 𝓥) where
+module _ (P : Precategory 𝓤 𝓥) where
 
  has-colimits : (𝓣 𝓦 : Universe) → 𝓤 ⊔ 𝓥 ⊔ (𝓣 ⊔ 𝓦)⁺ ̇
  has-colimits 𝓣 𝓦 = {C : Precategory 𝓣 𝓦} (D : Functor C P)

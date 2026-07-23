@@ -11,8 +11,11 @@ We test this expiremental development by formalizing results from
 {-# OPTIONS --safe --without-K #-}
 
 open import MLTT.Spartan
+open import UF.FunExt
 open import Categories.Colimits
 open import Categories.Functor
+open import Categories.HomFunctor
+open import Categories.LocallySmall
 open import Categories.Pre
 open import Categories.Wild
 open import Categories.Notation.Pre
@@ -32,7 +35,7 @@ A precategory P is filtered if it is:
 
 \begin{code}
 
-module _ {𝓤 𝓥 : Universe} (P : Precategory 𝓤 𝓥) where
+module _ (P : Precategory 𝓤 𝓥) where
  open PrecategoryNotation P
 
  record is-filtered : 𝓤 ⊔ 𝓥 ̇ where
@@ -51,7 +54,7 @@ A functor F : X → Y is filtered if P is filtered.
 
 \begin{code}
 
-module _ {𝓤 𝓥 𝓦 𝓣 : Universe} {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓦 𝓣}
+module _ {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓦 𝓣}
        where
 
  is-filtered-functor : Functor X Y → 𝓤 ⊔ 𝓥 ̇
@@ -79,20 +82,32 @@ Filtered-Colimit D = Σ c ꞉ Colim D , is-filtered-colimit D c
 
 \end{code}
 
-A functor is finitary if it preserves filtered colimits.
+A functor is finitary if it preserves filtered colimits (indexed by some
+universe level(s)).
 
 \begin{code}
 
-module _ {C : Precategory 𝓦 𝓣} {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓤' 𝓥'}
+module _ (𝓦 𝓣 : Universe) {X : Precategory 𝓤 𝓥} {Y : Precategory 𝓤' 𝓥'}
        where
 
  is-finitary : (Functor X Y)
-             → 𝓦 ⊔ 𝓣 ⊔ 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
- is-finitary F = (D : Functor C X)
+             → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ⊔ (𝓦 ⊔ 𝓣)⁺ ̇
+ is-finitary F = {C : Precategory 𝓦 𝓣} (D : Functor C X)
                → ((c , fil) : Filtered-Colimit D)
                → F preserves c
 \end{code}
 
-An object is finitely presented if its induced hom functor finitary.
+An object of a locally small precategory is finitely presented if its induced
+hom functor finitary.
 
 \begin{code}
+
+module _ (𝓦 𝓣 : Universe)
+         (fe : Fun-Ext)
+         (C : Precategory 𝓤 𝓥)
+        where
+
+ is-finitely-presented : (x : obj C)
+                       → 𝓤 ⊔ (𝓥 ⊔ 𝓦 ⊔ 𝓣)⁺ ̇
+ is-finitely-presented x = is-finitary 𝓦 𝓣 (covariant-hom fe C x)
+
