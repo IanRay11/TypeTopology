@@ -79,6 +79,8 @@ We show that coLift P is a inf lattice.
 
 \end{code}
 
+TODO. Show that coLift 𝓥 𝟘 ≃ Ω 𝓥 and coLift 𝓥 𝟙 ≃ 𝟙 for intuition.
+
 We show that if coLift P has a least element then it is equivalent to P.
 
 TODO. Maybe it is worth proving the version with minimal rather than least
