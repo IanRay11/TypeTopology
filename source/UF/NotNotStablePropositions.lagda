@@ -281,3 +281,13 @@ Added 3rd April 2025 by Fredrik Bakke
  inl (¬¬-elim-X x)
 
 \end{code}
+
+Added 24th July 2026 by Ian Ray.
+
+\begin{code}
+
+¬¬-props-satisfy-contrapositive : (P : Ω 𝓤) (Q : Ω¬¬ 𝓥)
+                                → (¬ (Q holds¬¬) → ¬ (P holds))
+                                → P holds → Q holds¬¬
+¬¬-props-satisfy-contrapositive P (Q , Q¬¬stable) ¬Q→¬P Pholds
+ = Q¬¬stable (λ ¬Qholds → ¬Q→¬P ¬Qholds Pholds)
