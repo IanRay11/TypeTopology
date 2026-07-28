@@ -114,33 +114,34 @@ We now give define some important interactions between colimits and functors.
 module _ {C : Precategory 𝓦 𝓣}
          {X : Precategory 𝓤 𝓥}
          {Y : Precategory 𝓤' 𝓥'}
-         {D : Functor C X} 
+         {𝓓 : Functor C X}
        where
 
  open PrecategoryNotation C
  open PrecategoryNotation X
  open PrecategoryNotation Y
 
- cocone-on : (F : Functor X Y) (c : Colim D) → cocone (F F∘ D)
- cocone-on F c = record{appex = F₀ (colim D c) ;
+ cocone-on : (𝓕 : Functor X Y) (c : Colim 𝓓) → cocone (𝓕 F∘ 𝓓)
+ cocone-on 𝓕 c = record{appex = F (colim 𝓓 c) ;
                         compo = I ;
                         commu = II }
   where
-   open Functor F
-   I : (x : obj C) → hom (Functor.F₀ (F F∘ D) x) (F₀ (colim D c))
-   I x = F₁ (colim-component D c x) 
+   open FunctorNotation 𝓕 renaming (functor-map to F)
+   open FunctorNotation 𝓓 renaming (functor-map to D)
+
+   I : (x : obj C) → hom (Functor.F₀ (𝓕 F∘ 𝓓) x) (F (colim 𝓓 c))
+   I x = F (colim-component 𝓓 c x) 
    II : (x x' : obj C) (f : hom x x')
-      → F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f)
-      ＝ F₁ (colim-component D c x)
-   II x x' f = F₁ (colim-component D c x') ◦ F₁ (Functor.F₁ D f) ＝⟨ III ⟩
-               F₁ (colim-component D c x' ◦ Functor.F₁ D f)      ＝⟨ IV ⟩
-               F₁ (colim-component D c x)                        ∎
+      → F (colim-component 𝓓 c x') ◦ F (D f) ＝ F (colim-component 𝓓 c x)
+   II x x' f = F (colim-component 𝓓 c x') ◦ F (D f) ＝⟨ III ⟩
+               F (colim-component 𝓓 c x' ◦ D f)     ＝⟨ IV ⟩
+               F (colim-component 𝓓 c x)            ∎
     where
-     III = Functor.distributivity F (colim-component D c x') (Functor.F₁ D f) ⁻¹
-     IV = ap F₁ (colim-commutes D c x x' f)
+     III = Functor.distributivity 𝓕 (colim-component 𝓓 c x') (D f) ⁻¹
+     IV = ap F (colim-commutes 𝓓 c x x' f)
      
- _preserves_ : (F : Functor X Y) (c : Colim D) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
- F preserves c = is-colim (F F∘ D) (cocone-on F c)
+ _preserves_ : (𝓕 : Functor X Y) (c : Colim 𝓓) → 𝓦 ⊔ 𝓣 ⊔ 𝓤' ⊔ 𝓥' ̇
+ 𝓕 preserves c = is-colim (𝓕 F∘ 𝓓) (cocone-on 𝓕 c)
 
 \end{code}
 
