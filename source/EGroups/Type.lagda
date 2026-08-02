@@ -2,16 +2,16 @@ Martin Escardo, July 2026.
 
 The type of egroups.
 
-An egroup is a setoid (defined in EGroups.Setoid) equipped with a
-compatible group structure, that is, an operation that is a congruence
-for the equivalence relation, whose group laws hold up to the
-equivalence relation rather than up to the identity type _＝_.
+An egroup is a setoid, in the sense of the module Setoid, equipped
+with a compatible group structure, that is, an operation that is a
+congruence for the equivalence relation and whose group laws hold up
+to the equivalence relation rather than up to the identity type _＝_.
 
-This is the analogue, for setoids, of the module Groups.Type. Compared
+This is the analogue for setoids of the module Groups.Type. Compared
 with Groups.Type:
 
- * The requirement "is-set X" is removed, as all types are considered
-   to be sets in the setoid world.
+ * The requirement that X be a set is removed, as all types play the
+   role of sets in the setoid world.
 
  * The operation is required to be a congruence.
 
@@ -29,21 +29,22 @@ open import EGroups.Setoid
 
 \end{code}
 
-The axioms of a compatible group structure on a setoid S, and the
-structure and type of EGroups. As in Groups.Type, the inverse is given
-existentially, as part of the axioms, where Σ is used for existence in
-the setoid world.
+We give the axioms of a compatible group structure on a setoid S, and
+then the structure and type of egroups. As in Groups.Type, the inverse
+is given existentially, as part of the axioms, where Σ is used for
+existence in the setoid world.
 
 \begin{code}
 
 egroup-axioms : (S : Setoid 𝓤 𝓥) → (∣ S ∣ → ∣ S ∣ → ∣ S ∣) → 𝓤 ⊔ 𝓥 ̇
 egroup-axioms S _·_ =
-   is-congruence   (setoid-relation S) _·_
- × ≈-associative   (setoid-relation S) _·_
- × (Σ e ꞉ ∣ S ∣ , ≈-left-neutral  (setoid-relation S) e _·_
-                × ≈-right-neutral (setoid-relation S) e _·_
-                × ((x : ∣ S ∣) → Σ x' ꞉ ∣ S ∣ , ((x' · x) ≈⟦ S ⟧ e)
-                                              × ((x · x') ≈⟦ S ⟧ e)))
+   is-econgruence  (setoid-relation S) _·_
+ × is-eassociative (setoid-relation S) _·_
+ × (Σ e ꞉ ∣ S ∣
+        , is-eleft-neutral  (setoid-relation S) e _·_
+        × is-eright-neutral (setoid-relation S) e _·_
+        × ((x : ∣ S ∣)
+              → Σ x' ꞉ ∣ S ∣ , ((x' · x) ≈∣ S ∣ e) × ((x · x') ≈∣ S ∣ e)))
 
 egroup-structure : Setoid 𝓤 𝓥 → 𝓤 ⊔ 𝓥 ̇
 egroup-structure S = Σ _·_ ꞉ (∣ S ∣ → ∣ S ∣ → ∣ S ∣) , (egroup-axioms S _·_)
@@ -59,7 +60,7 @@ equivalence relation.
 \begin{code}
 
 underlying-setoid : EGroup 𝓤 𝓥 → Setoid 𝓤 𝓥
-underlying-setoid (S , _) = S
+underlying-setoid (S , str) = S
 
 ⟨_⟩ : EGroup 𝓤 𝓥 → 𝓤 ̇
 ⟨ G ⟩ = ∣ underlying-setoid G ∣
@@ -69,54 +70,59 @@ underlying-relation G = setoid-relation (underlying-setoid G)
 
 syntax underlying-relation G x y = x ≈⟨ G ⟩ y
 
-E-refl : (G : EGroup 𝓤 𝓥) → reflexive (underlying-relation G)
-E-refl G = setoid-refl (underlying-setoid G)
+erefl : (G : EGroup 𝓤 𝓥) → reflexive (underlying-relation G)
+erefl G = setoid-refl (underlying-setoid G)
 
-E-sym : (G : EGroup 𝓤 𝓥) → symmetric (underlying-relation G)
-E-sym G = setoid-sym (underlying-setoid G)
+esym : (G : EGroup 𝓤 𝓥) → symmetric (underlying-relation G)
+esym G = setoid-sym (underlying-setoid G)
 
-E-trans : (G : EGroup 𝓤 𝓥) → transitive (underlying-relation G)
-E-trans G = setoid-trans (underlying-setoid G)
+etrans : (G : EGroup 𝓤 𝓥) → transitive (underlying-relation G)
+etrans G = setoid-trans (underlying-setoid G)
 
-E-multiplication : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩ → ⟨ G ⟩ → ⟨ G ⟩
-E-multiplication (S , _·_ , _) = _·_
+emultiplication-of : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩ → ⟨ G ⟩ → ⟨ G ⟩
+emultiplication-of (S , _·_ , _) = _·_
 
-syntax E-multiplication G x y = x ·⟨ G ⟩ y
+syntax emultiplication-of G x y = x ·⟨ G ⟩ y
 
-E-is-congruence : (G : EGroup 𝓤 𝓥)
-                → is-congruence (underlying-relation G) (E-multiplication G)
-E-is-congruence (S , _·_ , cong , _) = cong
+econgruence-of : (G : EGroup 𝓤 𝓥)
+               → is-econgruence (underlying-relation G) (emultiplication-of G)
+econgruence-of (S , _·_ , cong , assoc , e , ln , rn , inverses) = cong
 
-E-assoc : (G : EGroup 𝓤 𝓥)
-        → ≈-associative (underlying-relation G) (E-multiplication G)
-E-assoc (S , _·_ , cong , assoc , _) = assoc
+eassoc : (G : EGroup 𝓤 𝓥)
+       → is-eassociative (underlying-relation G) (emultiplication-of G)
+eassoc (S , _·_ , cong , assoc , e , ln , rn , inverses) = assoc
 
-E-unit : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩
-E-unit (S , _·_ , cong , assoc , e , _) = e
+eunit-of : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩
+eunit-of (S , _·_ , cong , assoc , e , ln , rn , inverses) = e
 
-E-unit-left : (G : EGroup 𝓤 𝓥)
-            → ≈-left-neutral (underlying-relation G) (E-unit G) (E-multiplication G)
-E-unit-left (S , _·_ , cong , assoc , e , ln , _) = ln
+eunit-left
+ : (G : EGroup 𝓤 𝓥)
+ → is-eleft-neutral (underlying-relation G) (eunit-of G) (emultiplication-of G)
+eunit-left (S , _·_ , cong , assoc , e , ln , rn , inverses) = ln
 
-E-unit-right : (G : EGroup 𝓤 𝓥)
-             → ≈-right-neutral (underlying-relation G) (E-unit G) (E-multiplication G)
-E-unit-right (S , _·_ , cong , assoc , e , ln , rn , _) = rn
+eunit-right
+ : (G : EGroup 𝓤 𝓥)
+ → is-eright-neutral (underlying-relation G) (eunit-of G) (emultiplication-of G)
+eunit-right (S , _·_ , cong , assoc , e , ln , rn , inverses) = rn
 
-E-inv : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩ → ⟨ G ⟩
-E-inv (S , _·_ , cong , assoc , e , ln , rn , inverses) x = pr₁ (inverses x)
+einv : (G : EGroup 𝓤 𝓥) → ⟨ G ⟩ → ⟨ G ⟩
+einv (S , _·_ , cong , assoc , e , ln , rn , inverses) x = pr₁ (inverses x)
 
-E-inv-left : (G : EGroup 𝓤 𝓥) (x : ⟨ G ⟩) → (E-inv G x ·⟨ G ⟩ x) ≈⟨ G ⟩ E-unit G
-E-inv-left (S , _·_ , cong , assoc , e , ln , rn , inverses) x = pr₁ (pr₂ (inverses x))
+einv-left : (G : EGroup 𝓤 𝓥) (x : ⟨ G ⟩) → (einv G x ·⟨ G ⟩ x) ≈⟨ G ⟩ eunit-of G
+einv-left (S , _·_ , cong , assoc , e , ln , rn , inverses) x =
+ pr₁ (pr₂ (inverses x))
 
-E-inv-right : (G : EGroup 𝓤 𝓥) (x : ⟨ G ⟩) → (x ·⟨ G ⟩ E-inv G x) ≈⟨ G ⟩ E-unit G
-E-inv-right (S , _·_ , cong , assoc , e , ln , rn , inverses) x = pr₂ (pr₂ (inverses x))
+einv-right : (G : EGroup 𝓤 𝓥) (x : ⟨ G ⟩)
+           → (x ·⟨ G ⟩ einv G x) ≈⟨ G ⟩ eunit-of G
+einv-right (S , _·_ , cong , assoc , e , ln , rn , inverses) x
+ = pr₂ (pr₂ (inverses x))
 
 \end{code}
 
-Homomorphisms of egroups: maps of the underlying types that respect the
-equivalence relations and are multiplicative up to the equivalence
-relation of the codomain. As in Groups.Type, preservation of the unit
-and of inverses is not required but is derivable.
+A homomorphism of egroups is a map of the underlying types that
+respects the equivalence relations and is multiplicative up to the
+equivalence relation of the codomain. As in Groups.Type, preservation
+of the unit and of inverses is not required but is derivable.
 
 \begin{code}
 
@@ -128,50 +134,59 @@ is-hom G H f =
 
 \end{code}
 
-Some minimal group theory up to the equivalence relation, needed for
-the universal property of free EGroups. This is a transcription of the
-relevant parts of Groups.Type, with the identity type replaced by the
-equivalence relation and with the congruence of the operation used
-explicitly.
+We develop some minimal group theory up to the equivalence relation,
+needed for the universal property of free egroups. This is a
+transcription of the relevant parts of Groups.Type, with the identity
+type replaced by the equivalence relation and with the congruence of
+the operation used explicitly.
 
 \begin{code}
 
-module E-group-theory (G : EGroup 𝓤 𝓥) where
+module egroup-theory (G : EGroup 𝓤 𝓥) where
 
  private
   _≈_ = underlying-relation G
-  _*_ = E-multiplication G
-  e   = E-unit G
-  inv = E-inv G
+  _*_ = emultiplication-of G
+  e   = eunit-of G
+  inv = einv G
 
- open ≈-reasoning _≈_ (E-refl G) (E-trans G)
+ open ≈-reasoning _≈_ (erefl G) (etrans G)
 
  ≈-inv-lemma : (x y z : ⟨ G ⟩) → (y * x) ≈ e → (x * z) ≈ e → y ≈ z
  ≈-inv-lemma x y z q p =
-  y             ≈[ E-sym G _ _ (E-unit-right G y) ]
-  (y * e)       ≈[ E-is-congruence G (E-refl G y) (E-sym G _ _ p) ]
-  (y * (x * z)) ≈[ E-sym G _ _ (E-assoc G y x z) ]
-  ((y * x) * z) ≈[ E-is-congruence G q (E-refl G z) ]
-  (e * z)       ≈[ E-unit-left G z ]
+  y             ≈[ esym G _ _ (eunit-right G y) ]
+  (y * e)       ≈[ econgruence-of G (erefl G y) (esym G _ _ p) ]
+  (y * (x * z)) ≈[ esym G _ _ (eassoc G y x z) ]
+  ((y * x) * z) ≈[ econgruence-of G q (erefl G z) ]
+  (e * z)       ≈[ eunit-left G z ]
   z             ≈∎
 
  one-left-inv : (x y : ⟨ G ⟩) → (y * x) ≈ e → y ≈ inv x
- one-left-inv x y q = ≈-inv-lemma x y (inv x) q (E-inv-right G x)
+ one-left-inv x y q = ≈-inv-lemma x y (inv x) q (einv-right G x)
 
  ≈-idempotent-is-unit : (x : ⟨ G ⟩) → (x * x) ≈ x → x ≈ e
  ≈-idempotent-is-unit x p =
-  x                  ≈[ E-sym G _ _ (E-unit-left G x) ]
-  (e * x)            ≈[ E-is-congruence G (E-sym G _ _ (E-inv-left G x)) (E-refl G x) ]
-  ((inv x * x) * x)  ≈[ E-assoc G (inv x) x x ]
-  (inv x * (x * x))  ≈[ E-is-congruence G (E-refl G (inv x)) p ]
-  (inv x * x)        ≈[ E-inv-left G x ]
+  x                  ≈[ I ]
+  (e * x)            ≈[ II ]
+  ((inv x * x) * x)  ≈[ III ]
+  (inv x * (x * x))  ≈[ IV ]
+  (inv x * x)        ≈[ V ]
   e                  ≈∎
+   where
+    I   = esym G _ _ (eunit-left G x)
+    II  = econgruence-of G (esym G _ _ (einv-left G x)) (erefl G x)
+    III = eassoc G (inv x) x x
+    IV  = econgruence-of G (erefl G (inv x)) p
+    V   = einv-left G x
 
  ≈-inv-cong : (x y : ⟨ G ⟩) → x ≈ y → inv x ≈ inv y
  ≈-inv-cong x y p = one-left-inv y (inv x)
-                     (inv x * y ≈[ E-is-congruence G (E-refl G (inv x)) (E-sym G _ _ p) ]
-                      inv x * x ≈[ E-inv-left G x ]
+                     (inv x * y ≈[ I ]
+                      inv x * x ≈[ II ]
                       e         ≈∎)
+  where
+   I  = econgruence-of G (erefl G (inv x)) (esym G _ _ p)
+   II = einv-left G x
 
 \end{code}
 
@@ -183,30 +198,30 @@ are derived from the definition of homomorphism.
 homs-preserve-unit : (G : EGroup 𝓤 𝓥) (H : EGroup 𝓤' 𝓥')
                      (f : ⟨ G ⟩ → ⟨ H ⟩)
                    → is-hom G H f
-                   → f (E-unit G) ≈⟨ H ⟩ E-unit H
+                   → f (eunit-of G) ≈⟨ H ⟩ eunit-of H
 homs-preserve-unit G H f (f-resp , f-mult) =
  ≈-idempotent-is-unit (f eG)
-  (f eG ·⟨ H ⟩ f eG ≈[ E-sym H _ _ (f-mult {eG} {eG}) ]
-   f (eG ·⟨ G ⟩ eG) ≈[ f-resp (E-unit-left G eG) ]
+  (f eG ·⟨ H ⟩ f eG ≈[ esym H _ _ (f-mult {eG} {eG}) ]
+   f (eG ·⟨ G ⟩ eG) ≈[ f-resp (eunit-left G eG) ]
    f eG             ≈∎)
  where
-  open E-group-theory H
-  open ≈-reasoning (underlying-relation H) (E-refl H) (E-trans H)
-  eG = E-unit G
+  open egroup-theory H
+  open ≈-reasoning (underlying-relation H) (erefl H) (etrans H)
+  eG = eunit-of G
 
 homs-preserve-inv : (G : EGroup 𝓤 𝓥) (H : EGroup 𝓤' 𝓥')
                     (f : ⟨ G ⟩ → ⟨ H ⟩)
                   → is-hom G H f
-                  → (x : ⟨ G ⟩) → f (E-inv G x) ≈⟨ H ⟩ E-inv H (f x)
+                  → (x : ⟨ G ⟩) → f (einv G x) ≈⟨ H ⟩ einv H (f x)
 homs-preserve-inv G H f fh@(f-resp , f-mult) x =
- one-left-inv (f x) (f (E-inv G x))
-  (f (E-inv G x) ·⟨ H ⟩ f x ≈[ E-sym H _ _ (f-mult {E-inv G x} {x}) ]
-   f (E-inv G x ·⟨ G ⟩ x)   ≈[ f-resp (E-inv-left G x) ]
-   f (E-unit G)             ≈[ homs-preserve-unit G H f fh ]
-   E-unit H                 ≈∎)
+ one-left-inv (f x) (f (einv G x))
+  (f (einv G x) ·⟨ H ⟩ f x ≈[ esym H _ _ (f-mult {einv G x} {x}) ]
+   f (einv G x ·⟨ G ⟩ x)   ≈[ f-resp (einv-left G x) ]
+   f (eunit-of G)          ≈[ homs-preserve-unit G H f fh ]
+   eunit-of H              ≈∎)
  where
-  open E-group-theory H
-  open ≈-reasoning (underlying-relation H) (E-refl H) (E-trans H)
+  open egroup-theory H
+  open ≈-reasoning (underlying-relation H) (erefl H) (etrans H)
 
 \end{code}
 
@@ -215,14 +230,16 @@ The identity is a homomorphism, and homomorphisms compose.
 \begin{code}
 
 id-is-hom : (G : EGroup 𝓤 𝓥) → is-hom G G id
-id-is-hom G = (λ p → p) , (λ {x} {y} → E-refl G (x ·⟨ G ⟩ y))
+id-is-hom G = (λ p → p) , (λ {x} {y} → erefl G (x ·⟨ G ⟩ y))
 
 ∘-is-hom : (F : EGroup 𝓤 𝓥) (G : EGroup 𝓤' 𝓥') (H : EGroup 𝓦 𝓦')
            (f : ⟨ F ⟩ → ⟨ G ⟩) (g : ⟨ G ⟩ → ⟨ H ⟩)
-         → is-hom F G f → is-hom G H g → is-hom F H (g ∘ f)
+         → is-hom F G f
+         → is-hom G H g
+         → is-hom F H (g ∘ f)
 ∘-is-hom F G H f g (f-resp , f-mult) (g-resp , g-mult) =
    (λ p → g-resp (f-resp p))
- , (λ {x} {y} → E-trans H _ _ _ (g-resp (f-mult {x} {y})) (g-mult {f x} {f y}))
+ , (λ {x} {y} → etrans H _ _ _ (g-resp (f-mult {x} {y})) (g-mult {f x} {f y}))
 
 \end{code}
 
@@ -234,15 +251,16 @@ inverse, up to the equivalence relations.
 is-iso : (G : EGroup 𝓤 𝓥) (H : EGroup 𝓤' 𝓥')
        → (⟨ G ⟩ → ⟨ H ⟩) → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
 is-iso G H f = is-hom G H f
-             × (Σ g ꞉ (⟨ H ⟩ → ⟨ G ⟩) , is-hom H G g
-                 × ((y : ⟨ H ⟩) → f (g y) ≈⟨ H ⟩ y)
-                 × ((x : ⟨ G ⟩) → g (f x) ≈⟨ G ⟩ x))
+             × (Σ g ꞉ (⟨ H ⟩ → ⟨ G ⟩)
+                    , is-hom H G g
+                    × ((y : ⟨ H ⟩) → f (g y) ≈⟨ H ⟩ y)
+                    × ((x : ⟨ G ⟩) → g (f x) ≈⟨ G ⟩ x))
 
 _≅_ : EGroup 𝓤 𝓥 → EGroup 𝓤' 𝓥' → 𝓤 ⊔ 𝓥 ⊔ 𝓤' ⊔ 𝓥' ̇
 G ≅ H = Σ f ꞉ (⟨ G ⟩ → ⟨ H ⟩) , is-iso G H f
 
 ≅-refl : (G : EGroup 𝓤 𝓥) → G ≅ G
-≅-refl G = id , id-is-hom G , id , id-is-hom G , E-refl G , E-refl G
+≅-refl G = id , id-is-hom G , id , id-is-hom G , erefl G , erefl G
 
 ≅-sym : (G : EGroup 𝓤 𝓥) (H : EGroup 𝓤' 𝓥') → G ≅ H → H ≅ G
 ≅-sym G H (f , fhom , g , ghom , f-ε , f-θ) =
@@ -256,13 +274,13 @@ G ≅ H = Σ f ꞉ (⟨ G ⟩ → ⟨ H ⟩) , is-iso G H f
  , ∘-is-hom F G H f g fhom ghom
  , f⁻ ∘ g⁻
  , ∘-is-hom H G F g⁻ f⁻ g⁻hom f⁻hom
- , (λ w → E-trans H _ _ _ (g-resp (f-ε (g⁻ w))) (g-ε w))
- , (λ x → E-trans F _ _ _ (f⁻-resp (g-θ (f x))) (f-θ x))
+ , (λ w → etrans H _ _ _ (g-resp (f-ε (g⁻ w))) (g-ε w))
+ , (λ x → etrans F _ _ _ (f⁻-resp (g-θ (f x))) (f-θ x))
 
 \end{code}
 
-The setoid of homomorphisms between two egroups, with the pointwise
-equivalence relation.
+We form the setoid of homomorphisms between two egroups, with the
+pointwise equivalence relation.
 
 \begin{code}
 
@@ -271,8 +289,8 @@ hom-setoid : (G : EGroup 𝓤 𝓥) (H : EGroup 𝓤' 𝓥')
 hom-setoid G H =
    (Σ f ꞉ (⟨ G ⟩ → ⟨ H ⟩) , is-hom G H f)
  , (λ u v → (x : ⟨ G ⟩) → pr₁ u x ≈⟨ H ⟩ pr₁ v x)
- , (λ u x → E-refl H (pr₁ u x))
- , (λ u v p x → E-sym H (pr₁ u x) (pr₁ v x) (p x))
- , (λ u v w p q x → E-trans H (pr₁ u x) (pr₁ v x) (pr₁ w x) (p x) (q x))
+ , (λ u x → erefl H (pr₁ u x))
+ , (λ u v p x → esym H (pr₁ u x) (pr₁ v x) (p x))
+ , (λ u v w p q x → etrans H (pr₁ u x) (pr₁ v x) (pr₁ w x) (p x) (q x))
 
 \end{code}

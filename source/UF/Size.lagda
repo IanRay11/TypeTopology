@@ -522,7 +522,7 @@ Lift-is-section ua R 𝓤 𝓥 = (r , rs)
 We remark that for types that are not sets, sections are not
 automatically embeddings (Shulman 2015, Logical Methods in Computer
 Science, April 27, 2017, Volume 12, Issue 3,
-https://lmcs.episciences.org/2027 , Theorem 3.10).
+https://doi.org/10.2168/LMCS-12(3:9)2016 , Theorem 3.10).
 
 Hence it is worth stating this explicitly:
 
@@ -895,7 +895,7 @@ Shulman's results are formalized in the Coq-HoTT library
 (https://github.com/HoTT/Coq-HoTT, see theories/Idempotents.v).
 
 Here we formalize Theorem 2.13 of our paper, but take Shulman's construction as
-an hypothesis, rather than porting the whole proof from Coq to Agda.
+a hypothesis, rather than porting the whole proof from Coq to Agda.
 
 Note that Shulman's construction relies only on function extensionality (which
 can be checked in Rocq and is also claimed in Shulman's paper), so we include

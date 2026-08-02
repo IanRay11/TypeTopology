@@ -9,6 +9,7 @@
    https://www.cs.bham.ac.uk/~mhe/
    https://www.cs.bham.ac.uk/~mhe/TypeTopology/
    https://github.com/martinescardo/TypeTopology
+   https://www.cs.bham.ac.uk/~mhe/TypeTopologySearch.html
 
    Tested with Agda 2.8.0
    (it will probably work with Agda 2.7.0.1, and it may still work with Agda 2.6.4.3).
@@ -63,8 +64,8 @@
      control safety and, to the extent this is currently possible, to
      control which type theory is used.
 
-   * In our last count, on 2026-07-17, this development has 979 Agda
-     files with 284K lines of code, including comments and blank
+   * In our last count, on 2026-08-02, this development has 990 Agda
+     files with 287K lines of code, including comments and blank
      lines.
 
 Philosophy of the repository
