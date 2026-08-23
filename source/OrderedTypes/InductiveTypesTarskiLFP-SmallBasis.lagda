@@ -255,6 +255,62 @@ We now work towards an induction principle for ℕ-lfp.
             (λ (p , Sp-holds)
               → ∣ map-Infty-closed-constr-lfp x p , S-suc (x , p) Sp-holds ∣)
 
+  canonical-subset-Infty-pre-fixed
+   : (S : 𝓟 {𝓤} ℕ-lfp)
+   → zero-lfp ∈ S
+   → ((x : ℕ-lfp) → x ∈ S → (suc-lfp x) ∈ S)
+   → nat-constr (canonical-subset-Infty S) ⊆ canonical-subset-Infty S
+  canonical-subset-Infty-pre-fixed S S-z S-s x
+   = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x)) III
+   where
+    III : (x ＝ el-Infty)
+        + (∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a))
+        → x ∈ canonical-subset-Infty S
+    III (inl x＝el-Infty) = transport (_∈ canonical-subset-Infty S)
+                             (x＝el-Infty ⁻¹)
+                             (canonical-subset-zero S S-z)
+    III (inr ∃a∈canS) = IV ∃a∈canS
+     where
+      IV : ∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a)
+         → x ∈ canonical-subset-Infty S
+      IV = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x))
+            (λ (a , a∈ , x＝mapa) → transport (_∈ canonical-subset-Infty S)
+                                     (x＝mapa ⁻¹)
+                                     (canonical-subset-suc S S-s a a∈))
+
+  canonical-subset-Infty-post-fixed
+   : (S : 𝓟 {𝓤} ℕ-lfp)
+   → zero-lfp ∈ S
+   → ((x : ℕ-lfp) → x ∈ S → (suc-lfp x) ∈ S)
+   → canonical-subset-Infty S ⊆ nat-constr (canonical-subset-Infty S) 
+  canonical-subset-Infty-post-fixed S S-z S-s x
+   = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) III
+   where
+    III : Σ p ꞉ x ∈ nat-constr-lfp , S (x , p) holds
+        → x ∈ nat-constr (canonical-subset-Infty S)
+    III (p , Sxp) = IV (lfp→nat-constr-lfp x p)
+     where
+      IV : x ∈ nat-constr nat-constr-lfp
+         → x ∈ nat-constr (canonical-subset-Infty S)
+      IV = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) V
+       where
+        V : (x ＝ el-Infty)
+          + (∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a))
+          → x ∈ nat-constr (canonical-subset-Infty S)
+        V (inl x＝el-Infty) = ∣ (inl x＝el-Infty) ∣
+        V (inr ∃a∈lfp)
+         = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x))
+            VI ∃a∈lfp
+         where
+          VI : Σ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)
+             → x ∈ nat-constr (canonical-subset-Infty S)
+          VI (a , a∈ , x＝mapa)
+           = ∣ inr ∣ a , ∣ a∈ , {!VII!} ∣ , x＝mapa ∣ ∣
+           where
+            VII : (suc-lfp (a , a∈)) ∈ S
+            VII = transport (_∈ S) (to-subtype-＝
+                   (holds-is-prop ∘ nat-constr-lfp) x＝mapa) Sxp
+
   canonical-subset-Infty-contains-nat-constr-lfp
    : (S : 𝓟 {𝓤} ℕ-lfp)
    → zero-lfp ∈ S
@@ -262,52 +318,9 @@ We now work towards an induction principle for ℕ-lfp.
    → nat-constr-lfp ⊆ canonical-subset-Infty S
   canonical-subset-Infty-contains-nat-constr-lfp S S-z S-s
    = nat-constr-least (canonical-subset-Infty S)
-      (subset-extensionality pe fe I II)
-   where
-    I : nat-constr (canonical-subset-Infty S) ⊆ canonical-subset-Infty S
-    I x = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x)) III
-     where
-      III : (x ＝ el-Infty)
-          + (∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a))
-          → x ∈ canonical-subset-Infty S
-      III (inl x＝el-Infty) = transport (_∈ canonical-subset-Infty S)
-                               (x＝el-Infty ⁻¹)
-                               (canonical-subset-zero S S-z)
-      III (inr ∃a∈canS) = IV ∃a∈canS
-       where
-        IV : ∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a)
-           → x ∈ canonical-subset-Infty S
-        IV = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x))
-              (λ (a , a∈ , x＝mapa) → transport (_∈ canonical-subset-Infty S)
-                                       (x＝mapa ⁻¹)
-                                       (canonical-subset-suc S S-s a a∈))
-    II : canonical-subset-Infty S ⊆ nat-constr (canonical-subset-Infty S)
-    II x = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) III
-     where
-      III : Σ p ꞉ x ∈ nat-constr-lfp , S (x , p) holds
-          → x ∈ nat-constr (canonical-subset-Infty S)
-      III (p , Sxp) = IV (lfp→nat-constr-lfp x p)
-       where
-        IV : x ∈ nat-constr nat-constr-lfp
-           → x ∈ nat-constr (canonical-subset-Infty S)
-        IV = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) V
-         where
-          V : (x ＝ el-Infty)
-            + (∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a))
-            → x ∈ nat-constr (canonical-subset-Infty S)
-          V (inl x＝el-Infty) = ∣ (inl x＝el-Infty) ∣
-          V (inr ∃a∈lfp)
-           = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x))
-              VI ∃a∈lfp
-           where
-            VI : Σ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)
-               → x ∈ nat-constr (canonical-subset-Infty S)
-            VI (a , a∈ , x＝mapa)
-             = ∣ inr ∣ a , ∣ a∈ , {!VII!} ∣ , x＝mapa ∣ ∣
-             where
-              VII : (suc-lfp (a , a∈)) ∈ S
-              VII = transport (_∈ S) (to-subtype-＝
-                     (holds-is-prop ∘ nat-constr-lfp) x＝mapa) Sxp
+      (subset-extensionality pe fe
+       (canonical-subset-Infty-pre-fixed S S-z S-s)
+       (canonical-subset-Infty-post-fixed S S-z S-s))
 
   ℕ-prop-induction-lfp : (P : ℕ-lfp → Ω 𝓤)
                        → P (zero-lfp) holds
