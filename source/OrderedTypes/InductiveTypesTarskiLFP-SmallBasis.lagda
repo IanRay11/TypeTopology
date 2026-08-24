@@ -235,25 +235,26 @@ We can now define the type of natural numbers and some properties.
   zero-not-img-lfp : (x : ℕ-lfp) → ¬ (suc-lfp x ＝ zero-lfp)
   zero-not-img-lfp (x , _) sucx＝zero = el-not-img x (ap pr₁ sucx＝zero)
 
+  is-canonical : (n : ℕ-lfp) → 𝓤 ̇
+  is-canonical n
+   = (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+      ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+
   ℕ-canonical-forms-lfp
    : (n : ℕ-lfp)
-   → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-      ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+   → is-canonical n
   ℕ-canonical-forms-lfp n@(x , x∈) = I (lfp→nat-constr-lfp x x∈)
    where
     I : (((x ＝ el-Infty) , Infty-is-set) ∨
          ((∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)) , ∃-is-prop))
         holds
-      → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-         ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+      → is-canonical n
     I = ∥∥-rec (holds-is-prop (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-                               ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)))
-               II
+                 ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop))) II
      where
       II : ((x ＝ el-Infty) +
             (∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)))
-         → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-            ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+         → is-canonical n
       II (inl x＝el-Infty)
        = ∣ inl (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) x＝el-Infty) ∣
       II (inr ∃a∈nat-constr-lfp)
@@ -341,7 +342,7 @@ about it.
           IV : Σ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)
              → x ∈ nat-constr (canonical-subset-Infty S)
           IV (a , a∈ , x＝mapa)
-           = ∣ inr ∣ a , ∣ a∈ , {!V!} ∣ , x＝mapa ∣ ∣
+           = ∣ inr ∣ a , ∣ a∈ , {!!} ∣ , x＝mapa ∣ ∣
            where
             V : (suc-lfp (a , a∈)) ∈ S
             V = transport (_∈ S) (to-subtype-＝
