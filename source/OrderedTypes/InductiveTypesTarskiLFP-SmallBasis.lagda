@@ -29,7 +29,9 @@ open import UF.EquivalenceExamples
 open import UF.Logic
 open import UF.Powerset-MultiUniverse
 open import UF.Sets
+open import UF.Sets-Properties
 open import UF.Subsingletons-FunExt
+open import UF.Subsingletons-Properties
 open import UF.SubtypeClassifier
 open import OrderedTypes.InfLattice fe pt
  hiding (⟨_⟩ ; is-monotone-endomap ; order-of ; antisymmetry-of ;
@@ -213,6 +215,10 @@ We can now define the type of natural numbers and some properties.
   ℕ-lfp : 𝓤 ̇
   ℕ-lfp = 𝕋 nat-constr-lfp
 
+  ℕ-is-set-lfp : is-set ℕ-lfp
+  ℕ-is-set-lfp = Σ-is-set Infty-is-set
+                  (λ - → props-are-sets (holds-is-prop (nat-constr-lfp -)))
+
   zero-lfp : ℕ-lfp
   zero-lfp = (el-Infty , el-Infty∈nat-constr-lfp)
 
@@ -228,6 +234,35 @@ We can now define the type of natural numbers and some properties.
 
   zero-not-img-lfp : (x : ℕ-lfp) → ¬ (suc-lfp x ＝ zero-lfp)
   zero-not-img-lfp (x , _) sucx＝zero = el-not-img x (ap pr₁ sucx＝zero)
+
+  ℕ-canonical-forms-lfp
+   : (n : ℕ-lfp)
+   → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+      ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+  ℕ-canonical-forms-lfp n@(x , x∈) = I (lfp→nat-constr-lfp x x∈)
+   where
+    I : (((x ＝ el-Infty) , Infty-is-set) ∨
+         ((∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)) , ∃-is-prop))
+        holds
+      → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+         ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+    I = ∥∥-rec (holds-is-prop (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+                               ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)))
+               II
+     where
+      II : ((x ＝ el-Infty) +
+            (∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)))
+         → (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+            ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+      II (inl x＝el-Infty)
+       = ∣ inl (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) x＝el-Infty) ∣
+      II (inr ∃a∈nat-constr-lfp)
+       = ∥∥-rec (holds-is-prop (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+                                ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)))
+                (λ (a , a∈ , x＝mapa)
+                 → ∣ inr ∣ (a , a∈) , to-subtype-＝
+                     (holds-is-prop ∘ nat-constr-lfp) x＝mapa ∣ ∣)
+                ∃a∈nat-constr-lfp
 
 \end{code}
 
@@ -323,6 +358,14 @@ about it.
        (canonical-subset-Infty-pre-fixed S S-z S-s)
        (canonical-subset-Infty-post-fixed S S-z S-s))
 
+  canonical-subset-to-subset : (P : ℕ-lfp → Ω 𝓤)
+                             → ((x , p) : ℕ-lfp)
+                             → x ∈ canonical-subset-Infty P 
+                             → (x , p) ∈ P
+  canonical-subset-to-subset P (x , p)
+   = ∥∥-rec (holds-is-prop (P (x , p)))
+            (λ (p' , Pxp') → transport (_∈ P)
+            (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) refl) Pxp')
 \end{code}
 
 Now we use the previous results to define prop-valued induction for ℕ-lfp.
@@ -331,15 +374,8 @@ Now we use the previous results to define prop-valued induction for ℕ-lfp.
 
   ℕ-prop-induction-lfp : (P : ℕ-lfp → Ω 𝓤)
                        → (zero-lfp) ∈ P
-                       → ((x : ℕ-lfp) → x ∈ P → (suc-lfp x) ∈ P)
-                       → (x : ℕ-lfp) → x ∈ P
+                       → ((n : ℕ-lfp) → n ∈ P → (suc-lfp n) ∈ P)
+                       → (n : ℕ-lfp) → n ∈ P
   ℕ-prop-induction-lfp P P-zero P-suc (x , x∈)
-   = I (x , x∈)
-       (canonical-subset-Infty-contains-nat-constr-lfp P P-zero P-suc x x∈)
-   where
-    I : ((x , p) : ℕ-lfp)
-      → x ∈ canonical-subset-Infty P 
-      → (x , p) ∈ P 
-    I (x , p) = ∥∥-rec (holds-is-prop (P (x , p)))
-                 (λ (p' , Pxp') → transport (_∈ P)
-                  (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) refl) Pxp')
+   = canonical-subset-to-subset P (x , x∈)
+      (canonical-subset-Infty-contains-nat-constr-lfp P P-zero P-suc x x∈)
