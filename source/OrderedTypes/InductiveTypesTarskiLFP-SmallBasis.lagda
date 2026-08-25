@@ -359,14 +359,15 @@ about it.
        (canonical-subset-Infty-pre-fixed S S-z S-s)
        (canonical-subset-Infty-post-fixed S S-z S-s))
 
-  canonical-subset-to-subset : (P : ℕ-lfp → Ω 𝓤)
-                             → ((x , p) : ℕ-lfp)
-                             → x ∈ canonical-subset-Infty P 
-                             → (x , p) ∈ P
-  canonical-subset-to-subset P (x , p)
+  subset-contains-canonical-subset : (P : ℕ-lfp → Ω 𝓤)
+                                   → ((x , p) : ℕ-lfp)
+                                   → x ∈ canonical-subset-Infty P 
+                                   → (x , p) ∈ P
+  subset-contains-canonical-subset P (x , p)
    = ∥∥-rec (holds-is-prop (P (x , p)))
             (λ (p' , Pxp') → transport (_∈ P)
             (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) refl) Pxp')
+            
 \end{code}
 
 Now we use the previous results to define prop-valued induction for ℕ-lfp.
@@ -378,5 +379,5 @@ Now we use the previous results to define prop-valued induction for ℕ-lfp.
                        → ((n : ℕ-lfp) → n ∈ P → (suc-lfp n) ∈ P)
                        → (n : ℕ-lfp) → n ∈ P
   ℕ-prop-induction-lfp P P-zero P-suc (x , x∈)
-   = canonical-subset-to-subset P (x , x∈)
+   = subset-contains-canonical-subset P (x , x∈)
       (canonical-subset-Infty-contains-nat-constr-lfp P P-zero P-suc x x∈)
