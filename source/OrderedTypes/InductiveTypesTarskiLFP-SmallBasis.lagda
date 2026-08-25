@@ -81,8 +81,13 @@ module _ (L : Sup-Lattice 𝓤 𝓦 𝓥) {B : 𝓥 ̇}
          (f-mono : is-monotone-endomap L f)
        where
 
+ has-least-pre-fixed-point : (f : ⟨ L ⟩ → ⟨ L ⟩) → 𝓤 ⊔ 𝓦 ̇
+ has-least-pre-fixed-point f =
+  Σ p ꞉ ⟨ L ⟩ , ((f p ≤⟨ L ⟩ p) holds)
+              × ((a : ⟨ L ⟩) → (f a ≤⟨ L ⟩ a) holds → (p ≤⟨ L ⟩ a) holds)
+
  TarskiLFP-SmallBasis : 𝓤 ⊔ 𝓦 ̇
- TarskiLFP-SmallBasis = has-least-fixed-point L f
+ TarskiLFP-SmallBasis = has-least-pre-fixed-point f
 
 \end{code}
 
@@ -183,26 +188,24 @@ Now we consider the least fixed point of nat-constr.
   nat-constr-lfp : 𝓟 {𝓤} Infty
   nat-constr-lfp = pr₁ lfp
 
-  nat-constr-fixed : nat-constr nat-constr-lfp ＝ nat-constr-lfp
-  nat-constr-fixed = pr₁ (pr₂ lfp)
-
-  nat-constr-lfp→lfp : nat-constr nat-constr-lfp ⊆ nat-constr-lfp
-  nat-constr-lfp→lfp x x∈ = transport (λ - → x ∈ -) nat-constr-fixed x∈
-
+  nat-constr-pre-fixed : nat-constr nat-constr-lfp ⊆ nat-constr-lfp
+  nat-constr-pre-fixed = pr₁ (pr₂ lfp)
+  
+{- artifact of fix-point assumption 
   lfp→nat-constr-lfp : nat-constr-lfp ⊆ nat-constr nat-constr-lfp
-  lfp→nat-constr-lfp x x∈ = transport⁻¹ (λ - → x ∈ -) nat-constr-fixed x∈
+  lfp→nat-constr-lfp x x∈ = transport⁻¹ (λ - → x ∈ -) nat-constr-fixed x∈ -}
 
   el-Infty∈nat-constr-lfp : el-Infty ∈ nat-constr-lfp
-  el-Infty∈nat-constr-lfp = nat-constr-lfp→lfp el-Infty ∣ inl refl ∣
+  el-Infty∈nat-constr-lfp = nat-constr-pre-fixed el-Infty ∣ inl refl ∣
 
   map-Infty-closed-constr-lfp : (x : Infty)
                               → x ∈ nat-constr-lfp
                               → map-Infty x ∈ nat-constr-lfp
   map-Infty-closed-constr-lfp x x∈
-   = nat-constr-lfp→lfp (map-Infty x) ∣ inr ∣ x , x∈ , refl ∣ ∣
+   = nat-constr-pre-fixed (map-Infty x) ∣ inr ∣ x , x∈ , refl ∣ ∣
 
   nat-constr-least : (S : 𝓟 {𝓤} Infty)
-                   → nat-constr S ＝ S
+                   → nat-constr S ⊆ S
                    → nat-constr-lfp ⊆ S
   nat-constr-least = pr₂ (pr₂ lfp)
 
@@ -235,36 +238,6 @@ We can now define the type of natural numbers and some properties.
   zero-not-img-lfp : (x : ℕ-lfp) → ¬ (suc-lfp x ＝ zero-lfp)
   zero-not-img-lfp (x , _) sucx＝zero = el-not-img x (ap pr₁ sucx＝zero)
 
-  is-canonical : (n : ℕ-lfp) → 𝓤 ̇
-  is-canonical n
-   = (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-      ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
-
-  ℕ-canonical-forms-lfp
-   : (n : ℕ-lfp)
-   → is-canonical n
-  ℕ-canonical-forms-lfp n@(x , x∈) = I (lfp→nat-constr-lfp x x∈)
-   where
-    I : (((x ＝ el-Infty) , Infty-is-set) ∨
-         ((∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)) , ∃-is-prop))
-        holds
-      → is-canonical n
-    I = ∥∥-rec (holds-is-prop (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-                 ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop))) II
-     where
-      II : ((x ＝ el-Infty) +
-            (∃ a ꞉ Infty , a ∈ nat-constr-lfp × (x ＝ map-Infty a)))
-         → is-canonical n
-      II (inl x＝el-Infty)
-       = ∣ inl (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) x＝el-Infty) ∣
-      II (inr ∃a∈nat-constr-lfp)
-       = ∥∥-rec (holds-is-prop (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-                                ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)))
-                (λ (a , a∈ , x＝mapa)
-                 → ∣ inr ∣ (a , a∈) , to-subtype-＝
-                     (holds-is-prop ∘ nat-constr-lfp) x＝mapa ∣ ∣)
-                ∃a∈nat-constr-lfp
-
 \end{code}
 
 We now work towards an induction principle for ℕ-lfp. First we define a
@@ -276,6 +249,21 @@ about it.
   canonical-subset-Infty : 𝓟 {𝓤} ℕ-lfp → 𝓟 {𝓤} Infty
   canonical-subset-Infty S i
    = ((∃ p ꞉ i ∈ nat-constr-lfp , (S (i , p) holds)) , ∃-is-prop)
+
+  canonical-subset-contains-subset : (P : ℕ-lfp → Ω 𝓤)
+                                   → ((x , p) : ℕ-lfp)
+                                   → (x , p) ∈ P
+                                   → x ∈ canonical-subset-Infty P
+  canonical-subset-contains-subset P (x , p) n∈ = ∣ p , n∈ ∣
+
+  subset-contains-canonical-subset : (P : ℕ-lfp → Ω 𝓤)
+                                   → ((x , p) : ℕ-lfp)
+                                   → x ∈ canonical-subset-Infty P 
+                                   → (x , p) ∈ P
+  subset-contains-canonical-subset P (x , p)
+   = ∥∥-rec (holds-is-prop (P (x , p)))
+            (λ (p' , Pxp') → transport (_∈ P)
+            (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) refl) Pxp')
 
   canonical-subset-zero : (S : 𝓟 {𝓤} ℕ-lfp)
                         → zero-lfp ∈ S
@@ -315,6 +303,7 @@ about it.
                                      (x＝mapa ⁻¹)
                                      (canonical-subset-suc S S-s a a∈))
 
+{- artifact of fix-point assumption
   canonical-subset-inversion
    : (S : 𝓟 {𝓤} ℕ-lfp) (x : Infty) 
    → map-Infty x ∈ nat-constr (canonical-subset-Infty S)
@@ -329,7 +318,7 @@ about it.
     I (inl mapx＝el-Infty) = 𝟘-elim (el-not-img x mapx＝el-Infty)
     I (inr ∃a∈)
      = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x))
-              (λ (a , a∈ , mapx＝mapa) → ∣ inr ∣ {!!} , {!!} , {!!} ∣ ∣) ∃a∈
+              (λ (a , a∈ , mapx＝mapa) → {!!}) ∃a∈
 
   canonical-subset-Infty-post-fixed
    : (S : 𝓟 {𝓤} ℕ-lfp)
@@ -343,7 +332,7 @@ about it.
       → x ∈ nat-constr (canonical-subset-Infty S)
     I (p , Sxp)
      = canonical-subset-inversion S x ∣ inr ∣ (x , ∣ (p , Sxp) ∣ , refl) ∣ ∣
-{-  I = II (lfp→nat-constr-lfp x p) 
+    I' = II (lfp→nat-constr-lfp x p) 
      where
       II : x ∈ nat-constr nat-constr-lfp
          → x ∈ nat-constr (canonical-subset-Infty S)
@@ -373,22 +362,12 @@ about it.
    → nat-constr-lfp ⊆ canonical-subset-Infty S
   canonical-subset-Infty-contains-nat-constr-lfp S S-z S-s
    = nat-constr-least (canonical-subset-Infty S)
-      (subset-extensionality pe fe
-       (canonical-subset-Infty-pre-fixed S S-z S-s)
-       (canonical-subset-Infty-post-fixed S S-z S-s))
-
-  subset-contains-canonical-subset : (P : ℕ-lfp → Ω 𝓤)
-                                   → ((x , p) : ℕ-lfp)
-                                   → x ∈ canonical-subset-Infty P 
-                                   → (x , p) ∈ P
-  subset-contains-canonical-subset P (x , p)
-   = ∥∥-rec (holds-is-prop (P (x , p)))
-            (λ (p' , Pxp') → transport (_∈ P)
-            (to-subtype-＝ (holds-is-prop ∘ nat-constr-lfp) refl) Pxp')
+      (canonical-subset-Infty-pre-fixed S S-z S-s)
             
 \end{code}
 
 Now we use the previous results to define prop-valued induction for ℕ-lfp.
+We then prove canonical froms for ℕ-lfp.
 
 \begin{code}
 
@@ -399,3 +378,29 @@ Now we use the previous results to define prop-valued induction for ℕ-lfp.
   ℕ-prop-induction-lfp P P-zero P-suc (x , x∈)
    = subset-contains-canonical-subset P (x , x∈)
       (canonical-subset-Infty-contains-nat-constr-lfp P P-zero P-suc x x∈)
+
+  is-canonical : (n : ℕ-lfp) → 𝓤 ̇
+  is-canonical n
+   = (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
+      ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+
+  is-canonical-prop : (n : ℕ-lfp) → is-prop (is-canonical n)
+  is-canonical-prop n = ∥∥-is-prop
+
+  ℕ-canonical-forms-lfp
+   : (n : ℕ-lfp)
+   → is-canonical n
+  ℕ-canonical-forms-lfp n@(x , x∈)
+   = ℕ-prop-induction-lfp (λ - → is-canonical - , is-canonical-prop -)
+      ∣ inl refl ∣ (λ x x∈can → ∣ inr ∣ x , refl ∣ ∣) n
+
+\end{code}
+
+We now give a recursion principle for ℕ-lfp.
+(Is this possible???)
+
+\begin{code}
+
+
+
+\end{code}
