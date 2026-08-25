@@ -315,17 +315,35 @@ about it.
                                      (x＝mapa ⁻¹)
                                      (canonical-subset-suc S S-s a a∈))
 
+  canonical-subset-inversion
+   : (S : 𝓟 {𝓤} ℕ-lfp) (x : Infty) 
+   → map-Infty x ∈ nat-constr (canonical-subset-Infty S)
+   → x ∈ nat-constr (canonical-subset-Infty S)
+  canonical-subset-inversion S x
+   = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) I
+   where
+    I : (map-Infty x ＝ el-Infty) +
+        (∃ a ꞉ Infty , a ∈ canonical-subset-Infty S
+                     × (map-Infty x ＝ map-Infty a))
+      → x ∈ nat-constr (canonical-subset-Infty S)
+    I (inl mapx＝el-Infty) = 𝟘-elim (el-not-img x mapx＝el-Infty)
+    I (inr ∃a∈)
+     = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x))
+              (λ (a , a∈ , mapx＝mapa) → ∣ inr ∣ ? , ? , {!!} ∣ ∣) ∃a∈
+
   canonical-subset-Infty-post-fixed
    : (S : 𝓟 {𝓤} ℕ-lfp)
    → zero-lfp ∈ S
    → ((x : ℕ-lfp) → x ∈ S → (suc-lfp x) ∈ S)
    → canonical-subset-Infty S ⊆ nat-constr (canonical-subset-Infty S) 
   canonical-subset-Infty-post-fixed S S-z S-s x
-   = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) I
+   = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x)) I 
    where
     I : Σ p ꞉ x ∈ nat-constr-lfp , S (x , p) holds
       → x ∈ nat-constr (canonical-subset-Infty S)
-    I (p , Sxp) = II (lfp→nat-constr-lfp x p)
+    I (p , Sxp)
+     = canonical-subset-inversion S x ∣ inr ∣ (x , ∣ (p , Sxp) ∣ , refl) ∣ ∣
+     {- II (lfp→nat-constr-lfp x p) -}
      where
       II : x ∈ nat-constr nat-constr-lfp
          → x ∈ nat-constr (canonical-subset-Infty S)
