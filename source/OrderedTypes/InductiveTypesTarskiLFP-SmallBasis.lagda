@@ -329,7 +329,7 @@ about it.
     I (inl mapx＝el-Infty) = 𝟘-elim (el-not-img x mapx＝el-Infty)
     I (inr ∃a∈)
      = ∥∥-rec (holds-is-prop (nat-constr (canonical-subset-Infty S) x))
-              (λ (a , a∈ , mapx＝mapa) → ∣ inr ∣ ? , ? , {!!} ∣ ∣) ∃a∈
+              (λ (a , a∈ , mapx＝mapa) → ∣ inr ∣ {!!} , {!!} , {!!} ∣ ∣) ∃a∈
 
   canonical-subset-Infty-post-fixed
    : (S : 𝓟 {𝓤} ℕ-lfp)
@@ -343,7 +343,7 @@ about it.
       → x ∈ nat-constr (canonical-subset-Infty S)
     I (p , Sxp)
      = canonical-subset-inversion S x ∣ inr ∣ (x , ∣ (p , Sxp) ∣ , refl) ∣ ∣
-     {- II (lfp→nat-constr-lfp x p) -}
+{-  I = II (lfp→nat-constr-lfp x p) 
      where
       II : x ∈ nat-constr nat-constr-lfp
          → x ∈ nat-constr (canonical-subset-Infty S)
@@ -364,7 +364,7 @@ about it.
            where
             V : (suc-lfp (a , a∈)) ∈ S
             V = transport (_∈ S) (to-subtype-＝
-                 (holds-is-prop ∘ nat-constr-lfp) x＝mapa) Sxp
+                 (holds-is-prop ∘ nat-constr-lfp) x＝mapa) Sxp -}
 
   canonical-subset-Infty-contains-nat-constr-lfp
    : (S : 𝓟 {𝓤} ℕ-lfp)
