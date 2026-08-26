@@ -351,7 +351,7 @@ We then prove canonical froms for ℕ-lfp.
 \end{code}
 
 We now give a recursion principle for ℕ-lfp. The idea is to define the graph of
-the TBD recursivly defined function on ℕ-lfp as the least pre-fixed point.
+the TBD recursivly defined function on ℕ-lfp as a least pre-fixed point.
 
 \begin{code}
 
@@ -412,21 +412,35 @@ the TBD recursivly defined function on ℕ-lfp as the least pre-fixed point.
               → graph-lfp ⊆ S
   graph-least = pr₂ (pr₂ graph-has-lfp)
 
+  graph-lfpx₀ : 𝓟 {𝓤} (ℕ-lfp)
+  graph-lfpx₀ n = graph-lfp (n , x₀)
+
+  zero-lfp＝- : 𝓟 {𝓤} (ℕ-lfp)
+  zero-lfp＝- n = ((zero-lfp ＝ n) , ℕ-is-set-lfp)
+
+  zero-lfp-unique : (n : ℕ-lfp)
+                  → (n , x₀) ∈ graph-lfp
+                  → zero-lfp ＝ n
+  zero-lfp-unique n nx₀∈
+   = ℕ-prop-induction-lfp zero-lfp＝- refl
+      (λ n' zero＝n' → {!!}) n
+
   x₀-unique : (x : X)
             → (zero-lfp , x) ∈ graph-lfp
             → x₀ ＝ x
   x₀-unique x
    = graph-least (λ (n , -) → ((x₀ ＝ -) , X-set))
       (λ (n , -) → ∥∥-rec X-set
-        (cases (λ (n＝z , -＝x₀) → -＝x₀ ⁻¹)
+        (cases (λ (_ , -＝x₀) → -＝x₀ ⁻¹)
           (∥∥-rec X-set (λ (m , x' , x₀＝x' , n＝sucm , -＝sx')
-                          → {!!}))))
-          (zero-lfp , x)
+            → {!!}))))
+      (zero-lfp , x)
 
 
 \end{code}
 
-We now define a subset on ℕ-lfp...
+We now define a subset on ℕ-lfp that says the above relation is functional
+and prove it by prop induction on ℕ-lfp.
 
 \begin{code}
 
@@ -443,3 +457,6 @@ We now define a subset on ℕ-lfp...
            (x₀-unique x' zx'∈)))
       (λ n ((x , nx∈) , nx-sing) → ((s x , suc∈graph-lfp n x nx∈) ,
         (λ (y , sucny∈) → {!!})))
+
+  recursive-function : ℕ-lfp → X
+  recursive-function n = pr₁ (pr₁ (rec-functional-rel n))
