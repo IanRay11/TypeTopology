@@ -635,7 +635,7 @@ We now state the recursion principle outside of the previous module.
 
 TODO. Usual construction of induction from recursion.
 
-\begin{code}
+begin{code}
 
  module _ (X : ℕ-lfp → 𝓤 ̇) (X-set : (n : ℕ-lfp) → is-set (X n))
           (X-zero : X zero-lfp) (X-suc : (n : ℕ-lfp) → X n → X (suc-lfp n))
