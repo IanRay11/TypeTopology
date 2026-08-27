@@ -376,7 +376,7 @@ the to be defined recursive function as a least pre-fixed point.
   graph-constr S (n , x)
    = (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∧ ((x ＝ x₀) , X-set)) ∨
      ((∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ S
-      × (n ＝ suc-lfp m) × (x ＝ s (x'))) , ∃-is-prop)
+      × (n ＝ suc-lfp m) × (x ＝ s x')) , ∃-is-prop)
 
   graph-constr-monotone : (S R : 𝓟 {𝓤} (ℕ-lfp × X))
                         → S ⊆ R
@@ -492,6 +492,66 @@ We now start proving some lemmas about graph-lfp which will prove useful.
            → 𝟘-elim (zero-not-img-lfp m (zero＝sucm ⁻¹)))
           ∃mx'
 
+  s-unique : (n : ℕ-lfp) (x y : X)
+           → (suc-lfp n , x) ∈ graph-lfp
+           → (suc-lfp n , y) ∈ graph-lfp
+           → x ＝ y
+  s-unique n x y x∈graph y∈graph
+   = I (graph-canonical-forms (suc-lfp n , x) x∈graph)
+       (graph-canonical-forms (suc-lfp n , y) y∈graph)
+   where
+    I : (suc-lfp n , x) ∈ canonical-graph-subset
+      → (suc-lfp n , y) ∈ canonical-graph-subset
+      → x ＝ y
+    I = ∥∥-rec (Π-is-prop fe (λ _ → X-set)) II
+     where
+      II : ((suc-lfp n ＝ zero-lfp) × (x ＝ x₀)) +
+           (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x'))
+         → (suc-lfp n , y) ∈ canonical-graph-subset
+         → x ＝ y
+      II (inl (sucn＝zero , _)) = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
+      II (inr ∃mx') = ∥∥-rec (Π-is-prop fe (λ _ → X-set)) III ∃mx'
+       where
+        III : Σ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x')
+            → (suc-lfp n , y) ∈ canonical-graph-subset
+            → x ＝ y
+        III (m , x' , mx'∈ , sucn＝sucm , x＝sx')
+         = ∥∥-rec X-set IV
+         where
+          IV : ((suc-lfp n ＝ zero-lfp) × (y ＝ x₀)) +
+               (∃ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m') × (y ＝ s x''))
+             → x ＝ y
+          IV (inl (sucn＝zero , _)) = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
+          IV (inr ∃m'x'')
+           = ∥∥-rec X-set V ∃m'x''
+            where
+             V : Σ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m') × (y ＝ s x'')
+               → x ＝ y
+             V (m' , x'' , m'x''∈ , sucn＝sucm' , y＝sx'')
+              = x                   ＝⟨ x＝sx' ⟩
+                s x'                ＝⟨ ap s {!!} ⟩
+                 {- I'm stuck here because I don't have induction :( -}
+                s x''               ＝⟨ y＝sx'' ⁻¹ ⟩
+                y                   ∎
+              where
+               VI : m ＝ m'
+               VI = suc-inj-lfp m m' (sucn＝sucm ⁻¹ ∙ sucn＝sucm')
+               mx''∈ : (m , x'') ∈ graph-lfp
+               mx''∈ = transport (λ - → (- , x'') ∈ graph-lfp) (VI ⁻¹) m'x''∈
+                {- With induction this implies x' ＝ x''... -}
+
+  {- Trying something else... -}
+
+  s-unique' : (n : ℕ-lfp) (x y : X)
+           → (n , x) ∈ graph-lfp
+           → (suc-lfp n , y) ∈ graph-lfp
+           → s x ＝ y
+  s-unique' = {!!}
+
 \end{code}
 
 We now define a subset on ℕ-lfp that says the above relation is functional
@@ -511,7 +571,9 @@ and prove it by prop induction on ℕ-lfp.
         → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (zero-lfp , -)))
            (x₀-unique x' zx'∈)))
       (λ n ((x , nx∈) , nx-sing) → ((s x , suc∈graph-lfp n x nx∈) ,
-        (λ (y , sucny∈) → {!!})))
+        (λ (y , sucny∈)
+         → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
+            (s-unique' n x y nx∈ sucny∈))))
 
   recursive-function : ℕ-lfp → X
   recursive-function n = pr₁ (pr₁ (rec-functional-rel n))
