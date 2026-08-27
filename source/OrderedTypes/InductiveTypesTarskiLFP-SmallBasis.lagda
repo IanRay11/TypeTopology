@@ -492,66 +492,67 @@ We now start proving some lemmas about graph-lfp which will prove useful.
            → 𝟘-elim (zero-not-img-lfp m (zero＝sucm ⁻¹)))
           ∃mx'
 
-  s-unique : (n : ℕ-lfp) (x y : X)
-           → (suc-lfp n , x) ∈ graph-lfp
-           → (suc-lfp n , y) ∈ graph-lfp
+  X-unique : (n : ℕ-lfp) (x y : X)
+           → (n , x) ∈ graph-lfp
+           → (n , y) ∈ graph-lfp
            → x ＝ y
-  s-unique n x y x∈graph y∈graph
-   = I (graph-canonical-forms (suc-lfp n , x) x∈graph)
-       (graph-canonical-forms (suc-lfp n , y) y∈graph)
+  X-unique 
+   = ℕ-prop-induction-lfp (λ - → ((x y : X)
+                               → (- , x) ∈ graph-lfp
+                               → (- , y) ∈ graph-lfp
+                               → x ＝ y) , Π₄-is-prop fe (λ _ _ _ _ → X-set))
+                          (λ x y x∈ y∈ → x₀-unique x x∈ ⁻¹ ∙ x₀-unique y y∈)
+                          I
    where
-    I : (suc-lfp n , x) ∈ canonical-graph-subset
-      → (suc-lfp n , y) ∈ canonical-graph-subset
+    I : (n : ℕ-lfp) 
+      → ((x y : X)
+       → (n , x) ∈ graph-lfp → (n , y) ∈ graph-lfp → x ＝ y)
+      → (x y : X)
+      → (suc-lfp n , x) ∈ graph-lfp
+      → (suc-lfp n , y) ∈ graph-lfp
       → x ＝ y
-    I = ∥∥-rec (Π-is-prop fe (λ _ → X-set)) II
+    I n IH x y sucnx∈ sucny∈
+     = II (graph-canonical-forms (suc-lfp n , x) sucnx∈)
+          (graph-canonical-forms (suc-lfp n , y) sucny∈)
      where
-      II : ((suc-lfp n ＝ zero-lfp) × (x ＝ x₀)) +
-           (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
-                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x'))
+      II : (suc-lfp n , x) ∈ canonical-graph-subset
          → (suc-lfp n , y) ∈ canonical-graph-subset
          → x ＝ y
-      II (inl (sucn＝zero , _)) = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
-      II (inr ∃mx') = ∥∥-rec (Π-is-prop fe (λ _ → X-set)) III ∃mx'
+      II = ∥∥-rec₂ X-set III
        where
-        III : Σ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
-                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x')
-            → (suc-lfp n , y) ∈ canonical-graph-subset
-            → x ＝ y
-        III (m , x' , mx'∈ , sucn＝sucm , x＝sx')
-         = ∥∥-rec X-set IV
-         where
-          IV : ((suc-lfp n ＝ zero-lfp) × (y ＝ x₀)) +
-               (∃ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
+        III : ((suc-lfp n ＝ zero-lfp) × (x ＝ x₀)) +
+              (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x'))
+            → ((suc-lfp n ＝ zero-lfp) × (y ＝ x₀)) +
+              (∃ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
                            × (suc-lfp n ＝ suc-lfp m') × (y ＝ s x''))
-             → x ＝ y
-          IV (inl (sucn＝zero , _)) = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
-          IV (inr ∃m'x'')
-           = ∥∥-rec X-set V ∃m'x''
-            where
-             V : Σ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
+            → x ＝ y
+        III (inl (sucn＝zero , _)) _ = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
+        III (inr _) (inl (sucn＝zero , _))
+         = 𝟘-elim (zero-not-img-lfp n sucn＝zero)
+        III (inr ∃mx'∈) (inr ∃m'x''∈) = ∥∥-rec₂ X-set IV ∃mx'∈ ∃m'x''∈
+         where
+          IV : Σ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
+                           × (suc-lfp n ＝ suc-lfp m) × (x ＝ s x')
+             → Σ m' ꞉ ℕ-lfp , Σ x'' ꞉ X , (m' , x'') ∈ graph-lfp
                            × (suc-lfp n ＝ suc-lfp m') × (y ＝ s x'')
-               → x ＝ y
-             V (m' , x'' , m'x''∈ , sucn＝sucm' , y＝sx'')
-              = x                   ＝⟨ x＝sx' ⟩
-                s x'                ＝⟨ ap s {!!} ⟩
-                 {- I'm stuck here because I don't have induction :( -}
-                s x''               ＝⟨ y＝sx'' ⁻¹ ⟩
-                y                   ∎
-              where
-               VI : m ＝ m'
-               VI = suc-inj-lfp m m' (sucn＝sucm ⁻¹ ∙ sucn＝sucm')
-               mx''∈ : (m , x'') ∈ graph-lfp
-               mx''∈ = transport (λ - → (- , x'') ∈ graph-lfp) (VI ⁻¹) m'x''∈
-                {- With induction this implies x' ＝ x''... -}
-
-  {- Trying something else... -}
-
-  s-unique' : (n : ℕ-lfp) (x y : X)
-           → (n , x) ∈ graph-lfp
-           → (suc-lfp n , y) ∈ graph-lfp
-           → s x ＝ y
-  s-unique' = {!!}
-
+             → x ＝ y
+          IV (m , x' , mx'∈ , sucn＝sucm , x＝sx')
+             (m' , x'' , m'x''∈ , sucn＝sucm' , y＝sx'')
+           = x       ＝⟨ x＝sx' ⟩
+             s x'    ＝⟨ ap s (IH x' x'' nx'∈ nx''∈) ⟩
+             s x''   ＝⟨ y＝sx'' ⁻¹ ⟩
+             y       ∎
+           where
+            m＝n : m ＝ n
+            m＝n = suc-inj-lfp m n (sucn＝sucm ⁻¹)
+            m'＝n : m' ＝ n
+            m'＝n = suc-inj-lfp m' n (sucn＝sucm' ⁻¹)
+            nx'∈ : (n , x') ∈ graph-lfp
+            nx'∈ = transport (λ - → (- , x') ∈ graph-lfp) m＝n mx'∈
+            nx''∈ : (n , x'') ∈ graph-lfp
+            nx''∈ = transport (λ - → (- , x'') ∈ graph-lfp) m'＝n m'x''∈
+                                     
 \end{code}
 
 We now define a subset on ℕ-lfp that says the above relation is functional
@@ -573,7 +574,7 @@ and prove it by prop induction on ℕ-lfp.
       (λ n ((x , nx∈) , nx-sing) → ((s x , suc∈graph-lfp n x nx∈) ,
         (λ (y , sucny∈)
          → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
-            (s-unique' n x y nx∈ sucny∈))))
+            (X-unique (suc-lfp n) (s x) y (suc∈graph-lfp n x nx∈) sucny∈))))
 
   recursive-function : ℕ-lfp → X
   recursive-function n = pr₁ (pr₁ (rec-functional-rel n))
