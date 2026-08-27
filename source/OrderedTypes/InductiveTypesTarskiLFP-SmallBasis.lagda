@@ -605,3 +605,34 @@ and prove it by prop induction on ℕ-lfp.
        (recursive-function∈graph-lfp (suc-lfp n))
        (suc∈graph-lfp n (recursive-function n)
          (recursive-function∈graph-lfp n))
+
+\end{code}
+
+We now state the recursion principle outside of the previous module.
+
+\begin{code}
+
+ ℕ-recursion-lfp : (X : 𝓤 ̇) 
+                 → is-set X
+                 → X
+                 → (X → X)
+                 → ℕ-lfp → X
+ ℕ-recursion-lfp = recursive-function
+
+ ℕ-recursion-comp-zero-lfp
+  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
+  → ℕ-recursion-lfp X X-set x₀ s zero-lfp ＝ x₀
+ ℕ-recursion-comp-zero-lfp = rec-comp-zero
+
+ ℕ-recursion-comp-suc-lfp
+  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
+  → (n : ℕ-lfp)
+  → ℕ-recursion-lfp X X-set x₀ s (suc-lfp n)
+  ＝ s (ℕ-recursion-lfp X X-set x₀ s n)
+ ℕ-recursion-comp-suc-lfp = rec-comp-suc
+
+\end{code}
+
+TODO. Usual construction of induction from recursion.
+
+\begin{code}
