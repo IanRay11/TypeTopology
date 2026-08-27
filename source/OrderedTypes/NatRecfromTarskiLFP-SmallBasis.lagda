@@ -9,13 +9,11 @@ TODO. Remove unused imports.
 open import UF.FunExt
 open import UF.PropTrunc
 open import UF.Subsingletons
-open import UF.Size
 
 module OrderedTypes.NatRecfromTarskiLFP-SmallBasis
         (pt : propositional-truncations-exist)
         (fe : Fun-Ext)
         (pe : Prop-Ext)
-        (pr : Propositional-resizing)
        where
 
 private
@@ -23,31 +21,18 @@ private
  fe' 𝓤 𝓥 = fe {𝓤} {𝓥}
 
 open import MLTT.Spartan
-open import UF.Base
 open import UF.Equiv
-open import UF.EquivalenceExamples
 open import UF.Logic
 open import UF.Powerset-MultiUniverse
 open import UF.Sets
-open import UF.Sets-Properties
 open import UF.Subsingletons-FunExt
-open import UF.Subsingletons-Properties
 open import UF.SubtypeClassifier
-open import OrderedTypes.InfLattice fe pt
- hiding (⟨_⟩ ; is-monotone-endomap ; order-of ; antisymmetry-of ;
-         transitivity-of)
 open import OrderedTypes.SupLattice pt fe
 open import OrderedTypes.SupLattice-SmallBasis pt fe
-open import OrderedTypes.InfLattice fe pt
- hiding (⟨_⟩ ; order-of ; is-monotone-endomap)
-open import OrderedTypes.NatfromTarskiLFP-SmallBasis pt fe pe pr
+open import OrderedTypes.NatfromTarskiLFP-SmallBasis pt fe pe 
 
 open AllCombinators pt fe
 open PropositionalTruncation pt hiding (_∨_)
-open import Locales.Frame pt fe hiding (⟨_⟩ ; join-of)
-
-open import Slice.Family
-open import OrderedTypes.PredicativeLFP pt fe pe
 
 \end{code}
 

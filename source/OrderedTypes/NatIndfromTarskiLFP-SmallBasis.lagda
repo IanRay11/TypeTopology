@@ -73,7 +73,8 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
   recursion-total-space-zero
    : recursion-total-space zero-lfp ＝ (zero-lfp , X-zero)
   recursion-total-space-zero
-   = ℕ-recursion-comp-zero-lfp wi lfp (Σ n ꞉ ℕ-lfp , X n) (Σ-is-set ℕ-is-set-lfp X-set)
+   = ℕ-recursion-comp-zero-lfp wi lfp (Σ n ꞉ ℕ-lfp , X n)
+      (Σ-is-set ℕ-is-set-lfp X-set)
       (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn))
 
  ℕ-induction-lfp : (X : ℕ-lfp → 𝓤 ̇)
