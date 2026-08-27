@@ -1,6 +1,6 @@
 Ian Ray. August 27 2026.
 
-TODO. Remove unused imports.
+TODO. Description.
 
 \begin{code}
 
@@ -245,17 +245,18 @@ and prove it by prop induction on ℕ-lfp.
  functional-rel n
   = ((∃! x ꞉ X , (n , x) ∈ graph-lfp) , being-singleton-is-prop fe)
 
- rec-functional-rel : (n : ℕ-lfp)
-                    → n ∈ functional-rel
- rec-functional-rel
-  = ℕ-prop-induction-lfp functional-rel
-     ((x₀ , x₀∈graph-lfp) , (λ (x' , zx'∈)
-       → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (zero-lfp , -)))
-          (x₀-unique x' zx'∈)))
-     (λ n ((x , nx∈) , nx-sing) → ((s x , suc∈graph-lfp n x nx∈) ,
-       (λ (y , sucny∈)
-        → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
-           (X-unique (suc-lfp n) (s x) y (suc∈graph-lfp n x nx∈) sucny∈))))
+ opaque
+  rec-functional-rel : (n : ℕ-lfp)
+                     → n ∈ functional-rel
+  rec-functional-rel
+   = ℕ-prop-induction-lfp functional-rel
+      ((x₀ , x₀∈graph-lfp) , (λ (x' , zx'∈)
+        → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (zero-lfp , -)))
+           (x₀-unique x' zx'∈)))
+      (λ n ((x , nx∈) , nx-sing) → ((s x , suc∈graph-lfp n x nx∈) ,
+        (λ (y , sucny∈)
+         → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
+            (X-unique (suc-lfp n) (s x) y (suc∈graph-lfp n x nx∈) sucny∈))))
 
  recursive-graph : (n : ℕ-lfp)
                  → Σ x ꞉ X , (n , x) ∈ graph-lfp
