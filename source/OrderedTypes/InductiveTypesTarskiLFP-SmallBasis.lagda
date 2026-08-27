@@ -637,6 +637,21 @@ TODO. Usual construction of induction from recursion.
 
 \begin{code}
 
+ module _ (X : ℕ-lfp → 𝓤 ̇) (X-set : (n : ℕ-lfp) → is-set (X n))
+          (X-zero : X zero-lfp) (X-suc : (n : ℕ-lfp) → X n → X (suc-lfp n))
+        where
+
+  recursion-total-space : ℕ-lfp → Σ n ꞉ ℕ-lfp , X n
+  recursion-total-space 
+   = ℕ-recursion-lfp (Σ n ꞉ ℕ-lfp , X n) (Σ-is-set ℕ-is-set-lfp X-set)
+      (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn))
+
+  recursion-total-space-zero
+   : recursion-total-space zero-lfp ＝ (zero-lfp , X-zero)
+  recursion-total-space-zero
+   = ℕ-recursion-comp-zero-lfp (Σ n ꞉ ℕ-lfp , X n) (Σ-is-set ℕ-is-set-lfp X-set)
+      (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn))
+
  ℕ-induction-lfp : (X : ℕ-lfp → 𝓤 ̇)
                  → ((n : ℕ-lfp) → is-set (X n))
                  → X zero-lfp
@@ -644,8 +659,4 @@ TODO. Usual construction of induction from recursion.
                  → (n : ℕ-lfp) → X n
  ℕ-induction-lfp X X-set X-zero X-suc
   = {!!}
-  where
-   I : ℕ-lfp → Σ n ꞉ ℕ-lfp , X n
-   I = ℕ-recursion-lfp (Σ n ꞉ ℕ-lfp , X n) (Σ-is-set ℕ-is-set-lfp X-set)
-        (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn))
 
