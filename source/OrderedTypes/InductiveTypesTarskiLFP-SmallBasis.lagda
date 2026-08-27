@@ -576,5 +576,32 @@ and prove it by prop induction on ℕ-lfp.
          → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
             (X-unique (suc-lfp n) (s x) y (suc∈graph-lfp n x nx∈) sucny∈))))
 
+  recursive-graph : (n : ℕ-lfp)
+                  → Σ x ꞉ X , (n , x) ∈ graph-lfp
+  recursive-graph n = pr₁ (rec-functional-rel n)
+
   recursive-function : ℕ-lfp → X
-  recursive-function n = pr₁ (pr₁ (rec-functional-rel n))
+  recursive-function n = pr₁ (recursive-graph n)
+
+  recursive-function∈graph-lfp : (n : ℕ-lfp)
+                               → (n , recursive-function n) ∈ graph-lfp
+  recursive-function∈graph-lfp n = pr₂ (recursive-graph n)
+
+  recursive-function-functional : (n : ℕ-lfp)
+                                → (p : (Σ x ꞉ X , (n , x) ∈ graph-lfp))
+                                → recursive-graph n ＝ p
+  recursive-function-functional n = pr₂ (rec-functional-rel n)
+
+  rec-comp-zero : recursive-function zero-lfp ＝ x₀
+  rec-comp-zero
+   = x₀-unique (recursive-function zero-lfp)
+      (recursive-function∈graph-lfp zero-lfp) ⁻¹
+
+  rec-comp-suc : (n : ℕ-lfp)
+               → recursive-function (suc-lfp n) ＝ s (recursive-function n)
+  rec-comp-suc n
+   = X-unique (suc-lfp n) (recursive-function (suc-lfp n))
+       (s (recursive-function n))
+       (recursive-function∈graph-lfp (suc-lfp n))
+       (suc∈graph-lfp n (recursive-function n)
+         (recursive-function∈graph-lfp n))
