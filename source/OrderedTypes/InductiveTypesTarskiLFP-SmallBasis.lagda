@@ -50,11 +50,7 @@ open import OrderedTypes.PredicativeLFP pt fe pe
 
 \end{code}
 
-We start by postulating the following infinite set...
-
-this record is subject to change...
-
-We may need some injectivity stuff...
+We postulate the following infinite set.
 
 \begin{code}
 
@@ -93,8 +89,6 @@ TarskiLFP-SmallBasis 𝓤 𝓦 𝓥
    (f : ⟨ L ⟩ → ⟨ L ⟩)
    (f-mono : is-monotone-endomap L f)
  → has-least-pre-fixed-point L β h f f-mono
-
-
 
 \end{code}
 
@@ -175,9 +169,7 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
     where 
      II : ∃ a ꞉ Infty , a ∈ S × (x ＝ map-Infty a)
         → ∃ a ꞉ Infty , a ∈ T × (x ＝ map-Infty a)
-     II = ∥∥-rec
-           (holds-is-prop
-            ((∃ a ꞉ Infty , a ∈ T × (x ＝ map-Infty a)) , ∃-is-prop))
+     II = ∥∥-rec ∥∥-is-prop
            (λ (a , a∈S , x＝mapa) → ∣ (a , S⊆T a a∈S , x＝mapa) ∣)
 
 \end{code}
@@ -215,7 +207,24 @@ Now we consider the least fixed point of nat-constr.
                   → nat-constr-lfp ⊆ S
  nat-constr-least = pr₂ (pr₂ nat-has-lfp)
 
+ nat-constr-nat-lfp-pre-fixed
+  : nat-constr (nat-constr nat-constr-lfp) ⊆ nat-constr nat-constr-lfp
+ nat-constr-nat-lfp-pre-fixed
+  = nat-constr-monotone (nat-constr nat-constr-lfp) nat-constr-lfp
+     nat-constr-pre-fixed
+
+ nat-constr-post-fixed : nat-constr-lfp ⊆ nat-constr nat-constr-lfp
+ nat-constr-post-fixed = nat-constr-least (nat-constr nat-constr-lfp)
+                              nat-constr-nat-lfp-pre-fixed
+
+ nat-constr-lfp-fixed : nat-constr nat-constr-lfp ＝ nat-constr-lfp
+ nat-constr-lfp-fixed
+  = subset-extensionality pe fe nat-constr-pre-fixed nat-constr-post-fixed
+
 \end{code}
+
+TODO: See if anything below can be refactored using the post-fixed and fixed
+from above.
 
 We can now define the type of natural numbers and some properties.
 
@@ -282,9 +291,9 @@ about it.
                       → x ∈ canonical-subset-Infty S
                       → (map-Infty x) ∈ canonical-subset-Infty S
  canonical-subset-suc S S-suc x 
-  = ∥∥-rec (holds-is-prop (canonical-subset-Infty S (map-Infty x)))
-           (λ (p , Sp-holds)
-             → ∣ map-Infty-closed-constr-lfp x p , S-suc (x , p) Sp-holds ∣)
+  = ∥∥-rec ∥∥-is-prop
+     (λ (p , Sp-holds)
+       → ∣ map-Infty-closed-constr-lfp x p , S-suc (x , p) Sp-holds ∣)
 
  canonical-subset-Infty-pre-fixed
   : (S : 𝓟 {𝓤} ℕ-lfp)
@@ -292,7 +301,7 @@ about it.
   → ((x : ℕ-lfp) → x ∈ S → (suc-lfp x) ∈ S)
   → nat-constr (canonical-subset-Infty S) ⊆ canonical-subset-Infty S
  canonical-subset-Infty-pre-fixed S S-z S-s x
-  = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x)) I
+  = ∥∥-rec ∥∥-is-prop I
   where
    I : (x ＝ el-Infty)
      + (∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a))
@@ -304,7 +313,7 @@ about it.
     where
      II : ∃ a ꞉ Infty , a ∈ canonical-subset-Infty S × (x ＝ map-Infty a)
         → x ∈ canonical-subset-Infty S
-     II = ∥∥-rec (holds-is-prop (canonical-subset-Infty S x))
+     II = ∥∥-rec ∥∥-is-prop
            (λ (a , a∈ , x＝mapa) → transport (_∈ canonical-subset-Infty S)
                                     (x＝mapa ⁻¹)
                                     (canonical-subset-suc S S-s a a∈))
@@ -350,8 +359,11 @@ We then prove canonical froms for ℕ-lfp.
 
 \end{code}
 
+TODO: Canonical forms should also follow from the fact that nat-constr-lfp is
+post-fixed.
+
 We now give a recursion principle for ℕ-lfp. The idea is to define the graph of
-the TBD recursivly defined function on ℕ-lfp as a least pre-fixed point.
+the to be defined recursive function as a least pre-fixed point.
 
 \begin{code}
 
@@ -370,7 +382,7 @@ the TBD recursivly defined function on ℕ-lfp as a least pre-fixed point.
                         → S ⊆ R
                         → graph-constr S ⊆ graph-constr R
   graph-constr-monotone S R S⊆R (n , x)
-   = ∥∥-rec (holds-is-prop (graph-constr R (n , x))) I
+   = ∥∥-rec ∥∥-is-prop I
    where
     I : ((n ＝ zero-lfp) × (x ＝ x₀)) +
         (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ S
@@ -378,9 +390,10 @@ the TBD recursivly defined function on ℕ-lfp as a least pre-fixed point.
       → graph-constr R (n , x) holds
     I (inl nx＝zerox₀) = ∣ inl nx＝zerox₀ ∣
     I (inr ∃mx'∈S)
-     = ∥∥-rec (holds-is-prop (graph-constr R (n , x)))
+     = ∥∥-rec ∥∥-is-prop
         (λ (m , x' , ∈S , n＝sucm , x＝sx')
-           → ∣ inr ∣ m , x' , S⊆R (m , x') ∈S , n＝sucm , x＝sx' ∣ ∣) ∃mx'∈S
+           → ∣ inr ∣ m , x' , S⊆R (m , x') ∈S , n＝sucm , x＝sx' ∣ ∣)
+        ∃mx'∈S
 
   graph-has-lfp : has-least-pre-fixed-point
                    (𝓟-sup-lattice (ℕ-lfp × X) ℕ-lfp×A-is-set)
@@ -412,30 +425,72 @@ the TBD recursivly defined function on ℕ-lfp as a least pre-fixed point.
               → graph-lfp ⊆ S
   graph-least = pr₂ (pr₂ graph-has-lfp)
 
-  graph-lfpx₀ : 𝓟 {𝓤} (ℕ-lfp)
-  graph-lfpx₀ n = graph-lfp (n , x₀)
+\end{code}
 
-  zero-lfp＝- : 𝓟 {𝓤} (ℕ-lfp)
-  zero-lfp＝- n = ((zero-lfp ＝ n) , ℕ-is-set-lfp)
+We now start proving some lemmas about graph-lfp which will prove useful.
 
-  zero-lfp-unique : (n : ℕ-lfp)
-                  → (n , x₀) ∈ graph-lfp
-                  → zero-lfp ＝ n
-  zero-lfp-unique n nx₀∈
-   = ℕ-prop-induction-lfp zero-lfp＝- refl
-      (λ n' zero＝n' → {!!}) n
+\begin{code}
+
+  canonical-graph-subset : 𝓟 {𝓤} (ℕ-lfp × X)
+  canonical-graph-subset = graph-constr graph-lfp
+
+  x₀∈canonical-graph-subset : (zero-lfp , x₀) ∈ canonical-graph-subset
+  x₀∈canonical-graph-subset = ∣ inl (refl , refl) ∣
+
+  suc∈canonical-graph-subset : ((n , x) : ℕ-lfp × X)
+                             → (n , x) ∈ canonical-graph-subset
+                             → (suc-lfp n , s x) ∈ canonical-graph-subset
+  suc∈canonical-graph-subset (n , x)
+   = ∥∥-rec ∥∥-is-prop I
+   where
+    I : ((n ＝ zero-lfp) × (x ＝ x₀)) +
+        ((∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp
+                     × (n ＝ suc-lfp m) × (x ＝ s (x'))))
+      → (suc-lfp n , s x) ∈ canonical-graph-subset
+    I (inl (n＝z , x＝x₀))
+     = ∣ inr ∣ (zero-lfp , x₀ , x₀∈graph-lfp , ap suc-lfp n＝z , ap s x＝x₀) ∣ ∣
+    I (inr ∃mx')
+     = ∥∥-rec ∥∥-is-prop
+        (λ (m , x' , mx'∈graphlfp , n＝sucm , x＝sx')
+         → ∣ inr ∣ (suc-lfp m , s x' , suc∈graph-lfp m x' mx'∈graphlfp
+                    , ap suc-lfp n＝sucm , ap s x＝sx') ∣ ∣)
+        ∃mx'
+        
+  graph-constr-can⊆canonical-graph-subset
+   : graph-constr canonical-graph-subset ⊆ canonical-graph-subset
+  graph-constr-can⊆canonical-graph-subset 
+   = graph-constr-monotone canonical-graph-subset graph-lfp graph-pre-fixed 
+
+  graph-canonical-forms
+   : graph-lfp ⊆ canonical-graph-subset
+  graph-canonical-forms 
+   = graph-least canonical-graph-subset graph-constr-can⊆canonical-graph-subset 
+
+  graph-lfp＝canonical-graph-subset : graph-lfp ＝ canonical-graph-subset
+  graph-lfp＝canonical-graph-subset
+   = subset-extensionality pe fe graph-canonical-forms
+      graph-pre-fixed
 
   x₀-unique : (x : X)
             → (zero-lfp , x) ∈ graph-lfp
             → x₀ ＝ x
-  x₀-unique x
-   = graph-least (λ (n , -) → ((x₀ ＝ -) , X-set))
-      (λ (n , -) → ∥∥-rec X-set
-        (cases (λ (_ , -＝x₀) → -＝x₀ ⁻¹)
-          (∥∥-rec X-set (λ (m , x' , x₀＝x' , n＝sucm , -＝sx')
-            → {!!}))))
-      (zero-lfp , x)
-
+  x₀-unique x zx∈graph-lfp
+   = I (graph-canonical-forms (zero-lfp , x) zx∈graph-lfp)
+   where
+    I : (zero-lfp , x) ∈ canonical-graph-subset
+      → x₀ ＝ x
+    I = ∥∥-rec X-set II
+     where
+      II : ((zero-lfp ＝ zero-lfp) × (x ＝ x₀)) +
+           (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp 
+                          × (zero-lfp ＝ suc-lfp m) × (x ＝ s (x')))
+         → x₀ ＝ x
+      II (inl (_ , x＝x₀)) = x＝x₀ ⁻¹
+      II (inr ∃mx')
+       = ∥∥-rec X-set
+          (λ (m , _ , _ , zero＝sucm , _)
+           → 𝟘-elim (zero-not-img-lfp m (zero＝sucm ⁻¹)))
+          ∃mx'
 
 \end{code}
 
