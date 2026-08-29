@@ -9,13 +9,11 @@ TODO. Remove unused imports.
 open import UF.FunExt
 open import UF.PropTrunc
 open import UF.Subsingletons
-open import UF.Size
 
 module OrderedTypes.NatIndfromTarskiLFP-SmallBasis
         (pt : propositional-truncations-exist)
         (fe : Fun-Ext)
         (pe : Prop-Ext)
-        (pr : Propositional-resizing)
        where
 
 private
@@ -70,21 +68,42 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
       (Σ-is-set ℕ-is-set-lfp X-set)
       (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn))
 
-  opaque
-   unfolding rec-functional-rel
-   recusion-total-space-suc
-    : (n : ℕ-lfp)
-    → (X-n : X n)
-    → recursion-total-space (suc-lfp n) ＝ (suc-lfp n , X-suc n X-n)
-   recusion-total-space-suc n X-n
-    = ℕ-recursion-comp-suc-lfp wi {!lfp!} {!!} {!!} {!!} {!!} {!!}
+  pr₁-rec-tot＝id : (n : ℕ-lfp)
+                  → pr₁ (recursion-total-space n) ＝ n
+  pr₁-rec-tot＝id
+   = ℕ-prop-induction-lfp
+      (λ - → (pr₁ (recursion-total-space -) ＝ -) , ℕ-is-set-lfp)
+      (ap pr₁ recursion-total-space-zero) I
+   where
+    I : (n : ℕ-lfp)
+      → pr₁ (recursion-total-space n) ＝ n
+      → pr₁ (recursion-total-space (suc-lfp n)) ＝ suc-lfp n 
+    I n pr₁recn＝n = III
+     where
+      II = ℕ-recursion-comp-suc-lfp wi lfp (Σ n ꞉ ℕ-lfp , X n)
+            (Σ-is-set ℕ-is-set-lfp X-set)
+            (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn)) n
+      III = pr₁ (recursion-total-space (suc-lfp n))   ＝⟨ ap pr₁ II ⟩
+            suc-lfp (pr₁ (recursion-total-space n))   ＝⟨ ap suc-lfp pr₁recn＝n ⟩
+            suc-lfp n                                 ∎
+
+  X-tot : (n : ℕ-lfp)
+        → X (pr₁ (recursion-total-space n))
+  X-tot n = pr₂ (recursion-total-space n)
+
+\end{code}
+
+We can now state the induction principle for ℕ-lfp
+
+\begin{code}
 
  ℕ-induction-lfp : (X : ℕ-lfp → 𝓤 ̇)
                  → ((n : ℕ-lfp) → is-set (X n))
                  → X zero-lfp
                  → ((n : ℕ-lfp) → X n → X (suc-lfp n))
                  → (n : ℕ-lfp) → X n
- ℕ-induction-lfp X X-set X-zero X-suc
-  = {!!}
+ ℕ-induction-lfp X X-set X-zero X-suc n
+  = transport X (pr₁-rec-tot＝id X X-set X-zero X-suc n)
+     (X-tot X X-set X-zero X-suc n)
 
 \end{code}
