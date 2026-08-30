@@ -1,6 +1,10 @@
 Ian Ray. August 27 2026.
 
-TODO. Description.
+Using the least pre-fixed point principle from NatfromTarskiLFP-SmallBasis we
+construct a relation which encodes the graph of a recursively defined function
+from ℕ-lfp to some pointed set with endomap. Using prop-induction we can show
+this graph is functional and from there we can produce a geniune recursion
+principle for ℕ-lfp.
 
 \begin{code}
 
@@ -33,13 +37,6 @@ open import OrderedTypes.NatfromTarskiLFP-SmallBasis pt fe pe
 
 open AllCombinators pt fe
 open PropositionalTruncation pt hiding (_∨_)
-
-\end{code}
-
-We now give a recursion principle for ℕ-lfp. The idea is to define the graph of
-the to be defined recursive function as a least pre-fixed point.
-
-\begin{code}
 
 module nat-rec-weak-inf-tarsk
          (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 𝓤)

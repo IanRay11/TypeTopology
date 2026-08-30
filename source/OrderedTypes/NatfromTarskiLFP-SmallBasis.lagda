@@ -1,6 +1,12 @@
 Ian Ray. August 20 2026.
 
-TODO. Description.
+We construct the natural numbers from the assumption of a weak infinite set and
+a least pre-fixed point principle for large sup-lattices with small basis. By a
+weak infinite set we mean a pointed set with an injective endomap for which the
+point is not in the image, but we assume not recursion/induction. The least
+pre-fixed point principle we use is true in the presence of resizing but
+presumably independent in its absence. In fact, one aspect of this exploration
+is to show that this principle exceeds what is available in MLTT* + W-sets. 
 
 \begin{code}
 

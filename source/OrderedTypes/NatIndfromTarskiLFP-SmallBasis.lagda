@@ -1,6 +1,6 @@
 Ian Ray. August 27 2026.
 
-TODO. Remove unused imports.
+We derive induction for ℕ-lfp from recursion in the standard way.
 
 \begin{code}
 
@@ -21,24 +21,10 @@ private
  fe' 𝓤 𝓥 = fe {𝓤} {𝓥}
 
 open import MLTT.Spartan
-open import UF.Base
-open import UF.Equiv
-open import UF.EquivalenceExamples
-open import UF.Logic
-open import UF.Powerset-MultiUniverse
 open import UF.Sets
 open import UF.Sets-Properties
-open import UF.Subsingletons-FunExt
-open import UF.Subsingletons-Properties
-open import UF.SubtypeClassifier
-open import OrderedTypes.SupLattice pt fe
-open import OrderedTypes.SupLattice-SmallBasis pt fe
 open import OrderedTypes.NatfromTarskiLFP-SmallBasis pt fe pe 
 open import OrderedTypes.NatRecfromTarskiLFP-SmallBasis pt fe pe 
-
-open AllCombinators pt fe
-open PropositionalTruncation pt hiding (_∨_)
-open import Locales.Frame pt fe hiding (⟨_⟩ ; join-of)
 
 \end{code}
 
@@ -93,7 +79,7 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
 
 \end{code}
 
-We can now state the induction principle for ℕ-lfp
+We can now give the induction principle for ℕ-lfp.
 
 \begin{code}
 
@@ -105,5 +91,23 @@ We can now state the induction principle for ℕ-lfp
  ℕ-induction-lfp X X-set X-zero X-suc n
   = transport X (pr₁-rec-tot＝id X X-set X-zero X-suc n)
      (X-tot X X-set X-zero X-suc n)
+
+ ℕ-induction-comp-zero-lfp
+  : (X : ℕ-lfp → 𝓤 ̇)
+  → (X-set : (n : ℕ-lfp) → is-set (X n))
+  → (X-zero : X zero-lfp)
+  → (X-suc : (n : ℕ-lfp) → X n → X (suc-lfp n))
+  → ℕ-induction-lfp X X-set X-zero X-suc zero-lfp ＝ X-zero
+ ℕ-induction-comp-zero-lfp X X-set X-zero X-suc = {!!}
+
+ ℕ-induction-comp-suc-lfp
+  : (X : ℕ-lfp → 𝓤 ̇)
+  → (X-set : (n : ℕ-lfp) → is-set (X n))
+  → (X-zero : X zero-lfp)
+  → (X-suc : (n : ℕ-lfp) → X n → X (suc-lfp n))
+  → (n : ℕ-lfp)
+  → (x : X n)
+  → ℕ-induction-lfp X X-set X-zero X-suc (suc-lfp n) ＝ X-suc n x
+ ℕ-induction-comp-suc-lfp = {!!}
 
 \end{code}
