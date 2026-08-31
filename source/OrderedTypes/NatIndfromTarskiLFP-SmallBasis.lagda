@@ -73,11 +73,15 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
       (Σ-is-set ℕ-is-set-lfp X-set)
       (zero-lfp , X-zero) (λ (n , Xn) → (suc-lfp n , X-suc n Xn)) n
 
-  transport-suc-lfp : (n : ℕ-lfp)
-                    → transport X (pr₁ (from-Σ-＝ (recursion-total-space-suc n)))
-                       (X-tot (suc-lfp n))
-                    ＝ X-suc (ℕ-tot n) (X-tot n)
-  transport-suc-lfp n = pr₂ (from-Σ-＝ (recursion-total-space-suc n))
+  ℕ-tot-suc-lfp : (n : ℕ-lfp)
+                → ℕ-tot (suc-lfp n) ＝ suc-lfp (ℕ-tot n)
+  ℕ-tot-suc-lfp n = pr₁ (from-Σ-＝ (recursion-total-space-suc n))
+
+  transport-X-suc-lfp
+   : (n : ℕ-lfp)
+   → transport X (ℕ-tot-suc-lfp n) (X-tot (suc-lfp n))
+   ＝ X-suc (ℕ-tot n) (X-tot n)
+  transport-X-suc-lfp n = pr₂ (from-Σ-＝ (recursion-total-space-suc n))
 
   inductive-step-pr₁＝id
    : (n : ℕ-lfp)
@@ -115,13 +119,13 @@ We can now give the induction principle and computations rules for ℕ-lfp.
   → (X-suc : (n : ℕ-lfp) → X n → X (suc-lfp n))
   → ℕ-induction-lfp X X-set X-zero X-suc zero-lfp ＝ X-zero
  ℕ-induction-comp-zero-lfp X X-set X-zero X-suc
-  = ℕ-induction-lfp X X-set X-zero X-suc zero-lfp              ＝⟨refl⟩
+  = ℕ-induction-lfp X X-set X-zero X-suc zero-lfp                       ＝⟨refl⟩
     transport X (pr₁-rec-tot＝id X X-set X-zero X-suc zero-lfp)
-     (X-tot X X-set X-zero X-suc zero-lfp)                     ＝⟨ II ⟩
+     (X-tot X X-set X-zero X-suc zero-lfp)                              ＝⟨ II ⟩
     transport X
      (pr₁ (from-Σ-＝ (recursion-total-space-zero X X-set X-zero X-suc)))
-     (X-tot X X-set X-zero X-suc zero-lfp)                     ＝⟨ III ⟩
-    X-zero                                                     ∎
+     (X-tot X X-set X-zero X-suc zero-lfp)                              ＝⟨ III ⟩
+    X-zero                                                              ∎
   where
    I : pr₁-rec-tot＝id X X-set X-zero X-suc zero-lfp
      ＝ (pr₁ (from-Σ-＝ (recursion-total-space-zero X X-set X-zero X-suc)))
@@ -138,32 +142,25 @@ We can now give the induction principle and computations rules for ℕ-lfp.
   → ℕ-induction-lfp X X-set X-zero X-suc (suc-lfp n)
   ＝ X-suc n (ℕ-induction-lfp X X-set X-zero X-suc n)
  ℕ-induction-comp-suc-lfp X X-set X-zero X-suc n
-  = ℕ-induction-lfp X X-set X-zero X-suc (suc-lfp n)               ＝⟨refl⟩
-    transport X (pr₁-rec-tot＝id X X-set X-zero X-suc (suc-lfp n))
-     (X-tot X X-set X-zero X-suc (suc-lfp n))                      ＝⟨ III ⟩
-    transport X (I ∙ II) (X-tot X X-set X-zero X-suc (suc-lfp n))  ＝⟨ IV ⟩
-    transport X II (transport X I (X-tot X X-set X-zero X-suc (suc-lfp n)))
-                                                                   ＝⟨ V ⟩
-    transport X II
-     (X-suc (ℕ-tot X X-set X-zero X-suc n) (X-tot X X-set X-zero X-suc n))
-                                                                   ＝⟨ VI ⟩
-    transport (X ∘ suc-lfp) (pr₁-rec-tot＝id X X-set X-zero X-suc n)
-              (X-suc (ℕ-tot X X-set X-zero X-suc n)
-               (X-tot X X-set X-zero X-suc n))                     ＝⟨ VII ⟩
-    X-suc n (transport X (pr₁-rec-tot＝id X X-set X-zero X-suc n)
-              (X-tot X X-set X-zero X-suc n))                      ∎
+  = ℕ-induction-lfp X X-set X-zero X-suc (suc-lfp n)                 ＝⟨refl⟩
+    transport X (I (suc-lfp n)) (IV (suc-lfp n))                     ＝⟨ V ⟩
+    transport X (II ∙ ap suc-lfp (I n)) (IV (suc-lfp n))             ＝⟨ VI ⟩
+    transport X (ap suc-lfp (I n)) (transport X II (IV (suc-lfp n))) ＝⟨ VII ⟩
+    transport X (ap suc-lfp (I n)) (X-suc (III n) (IV n))            ＝⟨ VIII ⟩
+    transport (X ∘ suc-lfp) (I n) (X-suc (III n) (IV n))             ＝⟨ IX ⟩
+    X-suc n (transport X (I n) (IV n))                               ∎
   where
-   I : ℕ-tot X X-set X-zero X-suc (suc-lfp n) ＝
-          suc-lfp (ℕ-tot X X-set X-zero X-suc n)
-   I = pr₁ (from-Σ-＝ (recursion-total-space-suc X X-set X-zero X-suc n))
-   II : suc-lfp (ℕ-tot X X-set X-zero X-suc n) ＝ suc-lfp n
-   II = ap suc-lfp (pr₁-rec-tot＝id X X-set X-zero X-suc n)
-   III = ap (λ - → transport X - (X-tot X X-set X-zero X-suc (suc-lfp n)))
-          (ℕ-is-set-lfp (pr₁-rec-tot＝id X X-set X-zero X-suc (suc-lfp n))
-          (I ∙ II))
-   IV = transport-∙ X I II
-   V = ap (transport X II) (transport-suc-lfp X X-set X-zero X-suc n)
-   VI = transport-ap X suc-lfp (pr₁-rec-tot＝id X X-set X-zero X-suc n) ⁻¹
-   VII = nat-transport X-suc (pr₁-rec-tot＝id X X-set X-zero X-suc n) ⁻¹ 
+   I = pr₁-rec-tot＝id X X-set X-zero X-suc
+   II = ℕ-tot-suc-lfp X X-set X-zero X-suc n
+   III = ℕ-tot X X-set X-zero X-suc
+   IV = X-tot X X-set X-zero X-suc
+   V = ap (λ - → transport X - (IV (suc-lfp n)))
+          (ℕ-is-set-lfp (I (suc-lfp n))
+          (II ∙ ap suc-lfp (I n)))
+   VI = transport-∙ X II (ap suc-lfp (I n))
+   VII = ap (transport X (ap suc-lfp (I n)))
+          (transport-X-suc-lfp X X-set X-zero X-suc n)
+   VIII = transport-ap X suc-lfp (I n) ⁻¹
+   IX = nat-transport X-suc (I n) ⁻¹ 
 
 \end{code}

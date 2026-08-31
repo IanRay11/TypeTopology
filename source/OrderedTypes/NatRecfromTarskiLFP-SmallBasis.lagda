@@ -148,27 +148,26 @@ We now start proving some lemmas about graph-lfp which will prove useful.
   = subset-extensionality pe fe graph-canonical-forms
      graph-pre-fixed
 
- opaque
-  x₀-unique : (x : X)
-            → (zero-lfp , x) ∈ graph-lfp
-            → x₀ ＝ x
-  x₀-unique x zx∈graph-lfp
-   = I (graph-canonical-forms (zero-lfp , x) zx∈graph-lfp)
-   where
-    I : (zero-lfp , x) ∈ canonical-graph-subset
-      → x₀ ＝ x
-    I = ∥∥-rec X-set II
-     where
-      II : ((zero-lfp ＝ zero-lfp) × (x ＝ x₀)) +
-           (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp 
-                          × (zero-lfp ＝ suc-lfp m) × (x ＝ s (x')))
-         → x₀ ＝ x
-      II (inl (z＝z , x＝x₀)) = x＝x₀ ⁻¹
-      II (inr ∃mx')
-       = ∥∥-rec X-set
-          (λ (m , x' , mx'∈ , zero＝sucm , x＝sx')
-           → 𝟘-elim (zero-not-img-lfp m (zero＝sucm ⁻¹)))
-          ∃mx'
+ x₀-unique : (x : X)
+           → (zero-lfp , x) ∈ graph-lfp
+           → x₀ ＝ x
+ x₀-unique x zx∈graph-lfp
+  = I (graph-canonical-forms (zero-lfp , x) zx∈graph-lfp)
+  where
+   I : (zero-lfp , x) ∈ canonical-graph-subset
+     → x₀ ＝ x
+   I = ∥∥-rec X-set II
+    where
+     II : ((zero-lfp ＝ zero-lfp) × (x ＝ x₀)) +
+          (∃ m ꞉ ℕ-lfp , Σ x' ꞉ X , (m , x') ∈ graph-lfp 
+                         × (zero-lfp ＝ suc-lfp m) × (x ＝ s (x')))
+        → x₀ ＝ x
+     II (inl (z＝z , x＝x₀)) = x＝x₀ ⁻¹
+     II (inr ∃mx')
+      = ∥∥-rec X-set
+         (λ (m , x' , mx'∈ , zero＝sucm , x＝sx')
+          → 𝟘-elim (zero-not-img-lfp m (zero＝sucm ⁻¹)))
+         ∃mx'
 
  X-unique : (n : ℕ-lfp) (x y : X)
           → (n , x) ∈ graph-lfp
