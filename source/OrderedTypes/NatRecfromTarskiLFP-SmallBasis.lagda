@@ -254,6 +254,13 @@ and prove it by prop induction on ℕ-lfp.
          → to-subtype-＝ (λ - → holds-is-prop (graph-lfp (suc-lfp n , -)))
             (X-unique (suc-lfp n) (s x) y (suc∈graph-lfp n x nx∈) sucny∈))))
 
+\end{code}
+
+Is there any benefit to applying unique choice here to get the recursive
+function?
+
+\begin{code}
+
  recursive-graph : (n : ℕ-lfp)
                  → Σ x ꞉ X , (n , x) ∈ graph-lfp
  recursive-graph n = pr₁ (rec-functional-rel n)
