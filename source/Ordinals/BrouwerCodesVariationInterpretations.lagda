@@ -389,7 +389,7 @@ much easier (given the mathematics we have already developed).
   (Κ-has-infs-of-complemented-subsets pe ν)
   (λ _ → Κ-has-infs-of-complemented-subsets pe μ)
 Κ-has-infs-of-complemented-subsets pe (L ν) =
- ∑₁-has-infs-of-complemented-subsets
+ ∑¹-has-infs-of-complemented-subsets
   pe
   (Κ ∘ ν)
   (λ i → Κ-has-infs-of-complemented-subsets pe (ν i))
@@ -441,8 +441,7 @@ compact∙-ε₀-ub = Κ-compact∙ (brouwer-to-oe B-ε₀)
 
 \end{code}
 
-We can go much higher using the work of and Setzer, Hancock and
-others.
+We can go much higher using the work of Setzer, Hancock and others.
 
 Added 4th April 2022. A third interpretation of ordinal expressions.
 

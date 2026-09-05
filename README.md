@@ -286,7 +286,7 @@ only your name as author.
    https://doi.org/10.1016/j.jpaa.2025.108072
 
 1. Tom de Jong and Martín H. Escardó. *Examples and counterexamples of injective
-   types*. January 2026.
+   types*. January 2026. Accepted for publication in APAL 30th August 2026.
 
    https://doi.org/10.48550/arxiv.2601.12536
 
@@ -327,6 +327,7 @@ Please add yourself the first time you contribute. Use your adopted name, and no
 * Fredrik Nordvall Forsberg
 * Ian Ray
 * Igor Arrieta (ii)
+* Ingo Blechschmidt
 * J. A. Carr
 * Jakub Opršal
 * Jon Sterling
