@@ -65,14 +65,11 @@ module ℕ-Rec (ℕ-set-elim : ℕ-set-elimination 𝓤) where
 
 \end{code}
 
-We need to define a type of (non-well-founded) trees with nodes taken from a
-set A, which we denote Tree A, so that we can consider monotone maps on
-𝓟 (Tree A) which encode the the constructor of a W-set W (A : 𝓤) (B a).
+We define a type of (non-well-founded) trees with nodes taken from a set A.
 
 We start by defining what a branch through a tree is. Each particular branch
-is finite and we represent them as pairs of (n , p) where n : ℕ and p : ℕ → A
-is a sequence of nodes (where f(m) for m ≥ n is junk. I guess we could use maps
-from Fin n ?...)
+is rooted and finite and we represent them as pairs of (n , p) where n : ℕ and
+p : ℕ → A is a sequence of nodes (maybe use Fin(n)?).
 
 \begin{code}
 
@@ -83,16 +80,21 @@ module _ (ℕ-set-elim : ℕ-set-elimination 𝓤)
 
  open ℕ-Rec ℕ-set-elim
 
- Branch : 𝓤 ̇
- Branch = ℕ × (ℕ → A)
+ Path : 𝓤 ̇
+ Path = ℕ × (ℕ → A)
 
- Branch-is-set : is-set Branch
- Branch-is-set = ×-is-set ℕ-is-set (Π-is-set fe (λ _ → A-set))
+ path-seq : Path → ℕ → A
+ path-seq (n , p) = p
 
- branch-extension : A
-                  → Branch
-                  → Branch
- branch-extension a (k , b) = (succ k , ℕ-set-rec A A-set a (λ n _ → b n))
+ Path-is-set : is-set Path
+ Path-is-set = ×-is-set ℕ-is-set (Π-is-set fe (λ _ → A-set))
+
+{- Do this for rooted paths -}
+
+ path-extension : A
+                → Path
+                → Path
+ path-extension a (k , p) = (succ k , ℕ-set-rec A A-set a (λ n _ → p n))
 
 {- We probably need computation rules -}
 
@@ -102,28 +104,36 @@ We need sub-branches to agree up to their index.
 
 \begin{code}
 
- _⊑_ : Branch → Branch → 𝓤 ̇
- (n , b) ⊑ (m , b') = (n ≤ℕ m) × ((i : ℕ) → i <ℕ n → b i ＝ b' i)
+ _⊑_ : Path → Path → 𝓤 ̇
+ (n , p) ⊑ (m , p') = (n ≤ℕ m) × ((i : ℕ) → i <ℕ n → p i ＝ p' i)
+
+ is-rooted : 𝓟 {𝓤} Path → 𝓤 ̇
+ is-rooted T = (p p' : Path) → p ∈ T → p' ∈ T → path-seq p 0 ＝ path-seq p' 0
+
+ pre-fixed-closed : 𝓟 {𝓤} Path → 𝓤 ̇
+ pre-fixed-closed T
+  = (p p' : Path) → (p' ∈ T) → (p ⊑ p') → p ∈ T
 
 \end{code}
 
-A tree is then a collection of branches that are pre-fix closed.
+A tree is then a collection of rooted-paths that are pre-fix closed.
 
 \begin{code}
 
  Tree : 𝓤 ⁺ ̇
- Tree = Σ T ꞉ 𝓟 {𝓤} Branch , ((b b' : Branch) → (b' ∈ T) × (b ⊑ b') → b ∈ T)
+ Tree = Σ T ꞉ 𝓟 {𝓤} Path , is-rooted T × pre-fixed-closed T
 
  Tree-is-set : is-set Tree
  Tree-is-set
   = Σ-is-set (𝓟-is-set' fe pe)
-     (λ - → props-are-sets (Π₃-is-prop fe (λ b _ _ → holds-is-prop (- b))))
+     (λ - → ×-is-set (props-are-sets (Π₄-is-prop fe (λ _ _ _ _ → A-set)))
+             (props-are-sets (Π₄-is-prop fe (λ p _ _ _ → holds-is-prop (- p))))) 
 
- branch-set-extension : A
-                      → 𝓟 {𝓤} Branch
-                      → 𝓟 {𝓤} Branch
- branch-set-extension a T b
-  = ((∃ b' ꞉ Branch , b' ∈ T × (b ＝ branch-extension a b')) , ∃-is-prop)
+ path-set-extension : A
+                      → 𝓟 {𝓤} Path
+                      → 𝓟 {𝓤} Path
+ path-set-extension a T b
+  = ((∃ b' ꞉ Path , b' ∈ T × (b ＝ path-extension a b')) , ∃-is-prop)
 
 \end{code}
 
@@ -133,7 +143,7 @@ Can we attatch a node to a set of trees?
 
  attatch : (a : A) (f : B a → Tree)
          → Tree
- attatch a f = (branch-set-extension a {!???!} , {!!})
+ attatch a f = ({!!} , {!!})
 
 \end{code}
 
