@@ -12,16 +12,19 @@ module UF.UniqueChoice where
 open import MLTT.Spartan
 open import UF.Equiv
 open import UF.FunExt
+open import UF.Hedberg
+open import UF.ImageAndSurjection
 open import UF.PropTrunc
+open import UF.Sets
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
 open import UF.SubtypeClassifier
 
 \end{code}
 
-TypeTopology has a clever formulation of unique existence but we show it
-is equivalent to a more niave notion when the family is propositional and
-function extensionality is assumed.
+TypeTopology has a clever formulation of unique existence but we show it is
+equivalent to a more niave notion using propositional truncation when the
+family is propositional and function extensionality is assumed.
 
 \begin{code}
 
@@ -36,29 +39,88 @@ module _ (pt : propositional-truncations-exist) where
  ∃'! : {X : 𝓤 ̇ }
      → (A : X → 𝓥 ̇)
      → 𝓤 ⊔ 𝓥 ̇
- ∃'! {_} {_} {X} A = ∃ A × ∥ ((x x' : X) → A x → A x' → x ＝ x') ∥
+ ∃'! {_} {_} {X} A = ∥ Σ x ꞉ X , (A x × ((x' : X) → A x' → x ＝ x')) ∥
+
+ existsUnique' : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) → 𝓤 ⊔ 𝓥 ̇
+ existsUnique' X A = ∃'! A
+
+ syntax existsUnique' X (λ x → b) = ∃'! x ꞉ X , b
 
  ∃'!-is-prop : {X : 𝓤 ̇ } {A : X → 𝓥 ̇} 
              → is-prop (∃'! A)
- ∃'!-is-prop {_} {_} {_} {_} 
-  = ×-is-prop ∃-is-prop ∥∥-is-prop
+ ∃'!-is-prop {_} {_} {_} {_} = ∥∥-is-prop
+
+\end{code}
+
+We now record for completeness that unique choice stated in terms of ∃'! is
+directly provable only when Y is a set.
+
+\begin{code}
+
+ ∥∥-set-rec : {X : 𝓤 ̇}
+              (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
+            → wconstant f
+            → ∥ X ∥ → Y
+ ∥∥-set-rec Y Y-set f wcons
+  = pr₁ (wconstant-map-to-set-factors-through-truncation-of-domain
+          pt Y-set f wcons)
+
+ ∥∥-set-rec-comp : {X : 𝓤 ̇}
+                   (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
+                 → (wcons : wconstant f)
+                 → (x : X)
+                 → f x ＝ ∥∥-set-rec Y Y-set f wcons ∣ x ∣
+ ∥∥-set-rec-comp Y Y-set f wcons
+  = pr₂ (wconstant-map-to-set-factors-through-truncation-of-domain
+          pt Y-set f wcons)
+
+ PUC' : (X : 𝓤 ̇) (Y : 𝓥 ̇) (Y-set : is-set Y) (R : X → Y → 𝓣 ̇)
+        (p : (x : X) (y : Y) → is-prop (R x y))
+      → 𝓤 ⊔ 𝓥 ⊔ 𝓣 ̇
+ PUC' X Y Y-set R p
+  = ((x : X) → ∃'! y ꞉ Y , R x y) → ∃'! f ꞉ (X → Y) , ((x : X) → R x (f x))
+
+ puc' : {X : 𝓤 ̇} {Y : 𝓥 ̇} {Y-set : is-set Y} {R : X → Y → 𝓣 ̇}
+        {p : (x : X) (y : Y) → is-prop (R x y)}
+      → Fun-Ext
+      → PUC' X Y Y-set R p
+ puc' {_} {𝓥} {𝓣} {X} {Y} {Y-set} {R} {p} fe m = ∣ f , Rxfx , uniq-f ∣
+  where
+   un-trunc : (x : X) → 𝓥 ⊔ 𝓣 ̇
+   un-trunc x = (Σ y ꞉ Y , R x y × ((y' : Y) → R x y' → y ＝ y'))
+   f : X → Y
+   f x = ∥∥-set-rec Y Y-set pr₁ wcons (m x)
+    where
+     wcons : wconstant pr₁
+     wcons (y , r , u) (y' , r' , u') = u y' r'
+   Rxfx : (x : X) → R x (f x)
+   Rxfx x = {!!}
+   uniq-f : (g : X → Y) → ((x : X) → R x (g x)) → f ＝ g
+   uniq-f = {!!}
+
+\end{code}
+
+We now show that the two notions of unique existence are equivalent.
+
+\begin{code}
 
  ∃!-to-∃'! : {X : 𝓤 ̇ } {A : X → 𝓥 ̇}
            → ∃! A → ∃'! A 
- ∃!-to-∃'! {_} {_} {_} {A} x
-  = ∃!-implies-∃ x , ∣ witness-uniqueness A x ∣
+ ∃!-to-∃'! {_} {_} {_} {A} s
+  = ∣ ∃!-witness s , ∃!-is-witness s ,
+       (λ x' Ax' → ap pr₁ (∃!-uniqueness s x' Ax')) ∣
 
  ∃'!-to-∃! : {X : 𝓤 ̇ } {A : X → 𝓥 ̇} (p : (x : X) → is-prop (A x))
            → Fun-Ext
            → ∃'! A → ∃! A
  ∃'!-to-∃! {_} {_} {X} {A} p fe
-  = uncurry (∥∥-rec₂ (being-singleton-is-prop fe) I)
+  = ∥∥-rec (being-singleton-is-prop fe) I 
   where
-   I : Σ A → ((x x' : X) → A x → A x' → x ＝ x') → ∃! A
-   I (x , a) u = ((x , a) , II)
+   I : Σ x ꞉ X , (A x × ((x' : X) → A x' → x ＝ x')) → ∃! A
+   I (x , a , u) = ((x , a) , II)
     where
      II : is-central (Σ A) (x , a)
-     II (x' , a') = to-subtype-＝ p (u x x' a a')
+     II (x' , a') = to-subtype-＝ p (u x' a')
 
  ∃!-≃-∃'! : {X : 𝓤 ̇ } {A : X → 𝓥 ̇} (p : (x : X) → is-prop (A x))
           → Fun-Ext
@@ -70,7 +132,7 @@ module _ (pt : propositional-truncations-exist) where
 \end{code}
 
 We establish an analog of the "set-theoretic principle of unique choice" from
-function extensionality.
+ONLY function extensionality (notably with no use of propositional truncation).
 
 \begin{code}
 
@@ -100,3 +162,10 @@ puc {_} {_} {_} {X} {Y} {R} {p} fe m = ((f , r) , G)
     II = λ h → Π-is-prop (fe _ _) (λ x → p x (h x))
     
 \end{code}
+
+Evidently a version of unique choice is true in MLTT + FunExt. But as we saw in
+the previous section this version is stable under the addition of propositional
+truncation since any sensible version of unique existence will be equivalent to
+∃!. Thus, in a very precise sense we can simply say MLTT + FunExt satsifies
+unique choice, with no qualificaiton.
+
