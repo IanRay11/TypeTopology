@@ -131,6 +131,9 @@ existence and unique choice.
 We now record for completeness that unique choice stated in terms of ∃'! is
 directly provable only(?) when Y is a set.
 
+For this we first record the set recursion principle for propositional
+truncation due to Kraus et al.
+
 \begin{code}
 
 module _ (pt : propositional-truncations-exist) where
@@ -170,50 +173,43 @@ module _ (pt : propositional-truncations-exist) where
   where
    un-trunc-source : (x : X) → 𝓥 ⊔ 𝓣 ̇
    un-trunc-source x = (Σ y ꞉ Y , R x y × ((y' : Y) → R x y' → y ＝ y'))
-   pr₁-d : (x : X)
+   proj₁ : (x : X)
          → un-trunc-source x
          → Y
-   pr₁-d x (y , r , u) = y
-   pr₁-wconst : (x : X) → wconstant (pr₁-d x)
-   pr₁-wconst x (y , r , u) (y' , r' , u') = u y' r'
+   proj₁ x (y , r , u) = y
+   proj₁-wconst : (x : X) → wconstant (proj₁ x)
+   proj₁-wconst x (y , r , u) (y' , r' , u') = u y' r'
    f : X → Y
-   f x = ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) (m x)
+   f x = ∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x) (m x)
+   source-prop : (x : X) (w : un-trunc-source x)
+               → ∣ w ∣ ＝ m x
+   source-prop x w = ∥∥-is-prop ∣ w ∣ (m x)
+   char-∥∥-set-rec : (x : X) ((y , r , u) : un-trunc-source x)
+                   → y ＝ f x
+   char-∥∥-set-rec x (y , r , u)
+    = y                                                           ＝⟨ I ⟩
+      ∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x) ∣ y , r , u ∣ ＝⟨ II ⟩
+      f x                                                         ∎
+    where
+     I = ∥∥-set-rec-comp Y Y-set (proj₁ x) (proj₁-wconst x) (y , r , u)
+     II = ap (∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x))
+             (source-prop x (y , r , u))
    Rxfx : (x : X) → R x (f x)
    Rxfx x = ∥∥-rec (p x (f x)) I (m x)
     where
      I : un-trunc-source x
        → R x (f x)
-     I (y , r , u) = transport (R x) III r
-      where
-       II : ∣ y , r , u ∣ ＝ m x
-       II = ∥∥-is-prop ∣ y , r , u ∣ (m x)
-       III : y ＝ f x
-       III = y                                                         ＝⟨ IV ⟩
-             ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) ∣ y , r , u ∣ ＝⟨ V ⟩
-             f x                                                       ∎
-        where
-         IV = ∥∥-set-rec-comp Y Y-set (pr₁-d x) (pr₁-wconst x) (y , r , u)
-         V = ap (∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x)) II
+     I (y , r , u) = transport (R x) (char-∥∥-set-rec x (y , r , u)) r
    f-unique : (g : X → Y) → ((x : X) → R x (g x)) → f ＝ g
-   f-unique g Rxgx = dfunext fe I
+   f-unique g Rxgx = dfunext fe (λ x → ∥∥-rec Y-set (I x) (m x))
     where
-     I : f ∼ g
-     I x = ∥∥-rec Y-set II (m x)
-      where
-       II : un-trunc-source x
-          → f x ＝ g x
-       II (y , r , u) = f x ＝⟨ IV ⁻¹ ⟩
-                        y   ＝⟨ u (g x) (Rxgx x) ⟩
-                        g x ∎
-        where
-         III : ∣ y , r , u ∣ ＝ m x
-         III = ∥∥-is-prop ∣ y , r , u ∣ (m x)
-         IV : y ＝ f x
-         IV = y                                                         ＝⟨ V ⟩
-              ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) ∣ y , r , u ∣ ＝⟨ VI ⟩
-              f x                                                       ∎
-          where
-           V = ∥∥-set-rec-comp Y Y-set (pr₁-d x) (pr₁-wconst x) (y , r , u)
-           VI = ap (∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x)) III
+     I : (x : X)
+       → un-trunc-source x
+       → f x ＝ g x
+     I x (y , r , u) = f x  ＝⟨ char-∥∥-set-rec x (y , r , u) ⁻¹ ⟩
+                       y    ＝⟨ u (g x) (Rxgx x) ⟩
+                       g x  ∎
    
 \end{code}
+
+TODO. Clean this proof up! 
