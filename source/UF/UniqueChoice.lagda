@@ -16,8 +16,10 @@ open import UF.Hedberg
 open import UF.ImageAndSurjection
 open import UF.PropTrunc
 open import UF.Sets
+open import UF.Sets-Properties
 open import UF.Subsingletons
 open import UF.Subsingletons-FunExt
+open import UF.Subsingletons-Properties
 open import UF.SubtypeClassifier
 
 \end{code}
@@ -28,7 +30,7 @@ family is propositional and function extensionality is assumed.
 
 \begin{code}
 
-module _ (pt : propositional-truncations-exist) where
+module unique-existence (pt : propositional-truncations-exist) where
 
  open PropositionalTruncation pt
 
@@ -49,54 +51,6 @@ module _ (pt : propositional-truncations-exist) where
  ∃'!-is-prop : {X : 𝓤 ̇ } {A : X → 𝓥 ̇} 
              → is-prop (∃'! A)
  ∃'!-is-prop {_} {_} {_} {_} = ∥∥-is-prop
-
-\end{code}
-
-We now record for completeness that unique choice stated in terms of ∃'! is
-directly provable only when Y is a set.
-
-\begin{code}
-
- ∥∥-set-rec : {X : 𝓤 ̇}
-              (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
-            → wconstant f
-            → ∥ X ∥ → Y
- ∥∥-set-rec Y Y-set f wcons
-  = pr₁ (wconstant-map-to-set-factors-through-truncation-of-domain
-          pt Y-set f wcons)
-
- ∥∥-set-rec-comp : {X : 𝓤 ̇}
-                   (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
-                 → (wcons : wconstant f)
-                 → (x : X)
-                 → f x ＝ ∥∥-set-rec Y Y-set f wcons ∣ x ∣
- ∥∥-set-rec-comp Y Y-set f wcons
-  = pr₂ (wconstant-map-to-set-factors-through-truncation-of-domain
-          pt Y-set f wcons)
-
- PUC' : (X : 𝓤 ̇) (Y : 𝓥 ̇) (Y-set : is-set Y) (R : X → Y → 𝓣 ̇)
-        (p : (x : X) (y : Y) → is-prop (R x y))
-      → 𝓤 ⊔ 𝓥 ⊔ 𝓣 ̇
- PUC' X Y Y-set R p
-  = ((x : X) → ∃'! y ꞉ Y , R x y) → ∃'! f ꞉ (X → Y) , ((x : X) → R x (f x))
-
- puc' : {X : 𝓤 ̇} {Y : 𝓥 ̇} {Y-set : is-set Y} {R : X → Y → 𝓣 ̇}
-        {p : (x : X) (y : Y) → is-prop (R x y)}
-      → Fun-Ext
-      → PUC' X Y Y-set R p
- puc' {_} {𝓥} {𝓣} {X} {Y} {Y-set} {R} {p} fe m = ∣ f , Rxfx , uniq-f ∣
-  where
-   un-trunc : (x : X) → 𝓥 ⊔ 𝓣 ̇
-   un-trunc x = (Σ y ꞉ Y , R x y × ((y' : Y) → R x y' → y ＝ y'))
-   f : X → Y
-   f x = ∥∥-set-rec Y Y-set pr₁ wcons (m x)
-    where
-     wcons : wconstant pr₁
-     wcons (y , r , u) (y' , r' , u') = u y' r'
-   Rxfx : (x : X) → R x (f x)
-   Rxfx x = {!!}
-   uniq-f : (g : X → Y) → ((x : X) → R x (g x)) → f ＝ g
-   uniq-f = {!!}
 
 \end{code}
 
@@ -169,3 +123,97 @@ truncation since any sensible version of unique existence will be equivalent to
 ∃!. Thus, in a very precise sense we can simply say MLTT + FunExt satsifies
 unique choice, with no qualificaiton.
 
+---------------------------------------------------------------------------
+
+This is a work in progress related to a note on the subtlety of unique
+existence and unique choice.
+
+We now record for completeness that unique choice stated in terms of ∃'! is
+directly provable only(?) when Y is a set.
+
+\begin{code}
+
+module _ (pt : propositional-truncations-exist) where
+
+ open PropositionalTruncation pt
+ open unique-existence pt
+
+ ∥∥-set-rec : {X : 𝓤 ̇}
+              (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
+            → wconstant f
+            → ∥ X ∥ → Y
+ ∥∥-set-rec Y Y-set f wcons
+  = pr₁ (wconstant-map-to-set-factors-through-truncation-of-domain
+          pt Y-set f wcons)
+
+ ∥∥-set-rec-comp : {X : 𝓤 ̇}
+                   (Y : 𝓥 ̇) (Y-set : is-set Y) (f : X → Y)
+                 → (wcons : wconstant f)
+                 → (x : X)
+                 → f x ＝ ∥∥-set-rec Y Y-set f wcons ∣ x ∣
+ ∥∥-set-rec-comp Y Y-set f wcons
+  = pr₂ (wconstant-map-to-set-factors-through-truncation-of-domain
+          pt Y-set f wcons)
+
+ PUC' : (X : 𝓤 ̇) (Y : 𝓥 ̇) (Y-set : is-set Y) (R : X → Y → 𝓣 ̇)
+        (p : (x : X) (y : Y) → is-prop (R x y))
+      → 𝓤 ⊔ 𝓥 ⊔ 𝓣 ̇
+ PUC' X Y Y-set R p
+  = ((x : X) → ∃'! y ꞉ Y , R x y) → ∃'! f ꞉ (X → Y) , ((x : X) → R x (f x))
+
+ puc' : {X : 𝓤 ̇} {Y : 𝓥 ̇} {Y-set : is-set Y} {R : X → Y → 𝓣 ̇}
+        {p : (x : X) (y : Y) → is-prop (R x y)}
+      → Fun-Ext
+      → PUC' X Y Y-set R p
+ puc' {𝓤} {𝓥} {𝓣} {X} {Y} {Y-set} {R} {p} fe m
+  = ∣ f , Rxfx , f-unique ∣
+  where
+   un-trunc-source : (x : X) → 𝓥 ⊔ 𝓣 ̇
+   un-trunc-source x = (Σ y ꞉ Y , R x y × ((y' : Y) → R x y' → y ＝ y'))
+   pr₁-d : (x : X)
+         → un-trunc-source x
+         → Y
+   pr₁-d x (y , r , u) = y
+   pr₁-wconst : (x : X) → wconstant (pr₁-d x)
+   pr₁-wconst x (y , r , u) (y' , r' , u') = u y' r'
+   f : X → Y
+   f x = ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) (m x)
+   Rxfx : (x : X) → R x (f x)
+   Rxfx x = ∥∥-rec (p x (f x)) I (m x)
+    where
+     I : un-trunc-source x
+       → R x (f x)
+     I (y , r , u) = transport (R x) III r
+      where
+       II : ∣ y , r , u ∣ ＝ m x
+       II = ∥∥-is-prop ∣ y , r , u ∣ (m x)
+       III : y ＝ f x
+       III = y                                                         ＝⟨ IV ⟩
+             ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) ∣ y , r , u ∣ ＝⟨ V ⟩
+             f x                                                       ∎
+        where
+         IV = ∥∥-set-rec-comp Y Y-set (pr₁-d x) (pr₁-wconst x) (y , r , u)
+         V = ap (∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x)) II
+   f-unique : (g : X → Y) → ((x : X) → R x (g x)) → f ＝ g
+   f-unique g Rxgx = dfunext fe I
+    where
+     I : f ∼ g
+     I x = ∥∥-rec Y-set II (m x)
+      where
+       II : un-trunc-source x
+          → f x ＝ g x
+       II (y , r , u) = f x ＝⟨ IV ⁻¹ ⟩
+                        y   ＝⟨ u (g x) (Rxgx x) ⟩
+                        g x ∎
+        where
+         III : ∣ y , r , u ∣ ＝ m x
+         III = ∥∥-is-prop ∣ y , r , u ∣ (m x)
+         IV : y ＝ f x
+         IV = y                                                         ＝⟨ V ⟩
+              ∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x) ∣ y , r , u ∣ ＝⟨ VI ⟩
+              f x                                                       ∎
+          where
+           V = ∥∥-set-rec-comp Y Y-set (pr₁-d x) (pr₁-wconst x) (y , r , u)
+           VI = ap (∥∥-set-rec Y Y-set (pr₁-d x) (pr₁-wconst x)) III
+   
+\end{code}
