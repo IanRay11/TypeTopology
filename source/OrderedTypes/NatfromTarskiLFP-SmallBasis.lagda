@@ -326,7 +326,7 @@ about it.
 \end{code}
 
 Now we use the previous results to define prop-valued induction for ℕ-lfp.
-We then prove canonical froms for ℕ-lfp.
+We then prove canonical forms for ℕ-lfp.
 
 \begin{code}
 
@@ -339,19 +339,24 @@ We then prove canonical froms for ℕ-lfp.
      (canonical-subset-Infty-contains-nat-constr-lfp P P-zero P-suc x x∈)
 
  is-canonical : (n : ℕ-lfp) → 𝓤 ̇
- is-canonical n
-  = (((n ＝ zero-lfp) , ℕ-is-set-lfp) ∨
-     ((∃ m ꞉ ℕ-lfp , n ＝ suc-lfp m) , ∃-is-prop)) holds
+ is-canonical n = (n ＝ zero-lfp) + (Σ m ꞉ ℕ-lfp , n ＝ suc-lfp m)
 
  is-canonical-prop : (n : ℕ-lfp) → is-prop (is-canonical n)
- is-canonical-prop n = ∥∥-is-prop
+ is-canonical-prop n = +-is-prop I II disjoint
+   where
+   I : is-prop (n ＝ zero-lfp)
+   I = ℕ-is-set-lfp
+   II : is-prop (Σ m ꞉ ℕ-lfp , n ＝ suc-lfp m)
+   II (m , e) (m' , e') = to-subtype-＝ (λ _ → ℕ-is-set-lfp) (suc-inj-lfp m m' (e ⁻¹ ∙ e'))
+   disjoint : n ＝ zero-lfp → ¬ (Σ m ꞉ ℕ-lfp , n ＝ suc-lfp m)
+   disjoint e (m , e') = zero-not-img-lfp m (e' ⁻¹ ∙ e)
 
  ℕ-canonical-forms-lfp
   : (n : ℕ-lfp)
   → is-canonical n
  ℕ-canonical-forms-lfp n@(x , x∈)
   = ℕ-prop-induction-lfp (λ - → is-canonical - , is-canonical-prop -)
-     ∣ inl refl ∣ (λ x x∈can → ∣ inr ∣ x , refl ∣ ∣) n
+     (inl refl) (λ x x∈can → inr (x , refl)) n
 
 \end{code}
 
