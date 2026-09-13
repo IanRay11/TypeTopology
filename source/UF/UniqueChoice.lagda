@@ -96,7 +96,7 @@ PUC X Y R p
  = ((x : X) → ∃! y ꞉ Y , R x y) → ∃! f ꞉ (X → Y) , ((x : X) → R x (f x))
 
 puc : {X : 𝓤 ̇} {Y : 𝓥 ̇} {R : X → Y → 𝓣 ̇} {p : (x : X) (y : Y) → is-prop (R x y)}
-    → FunExt
+    → Fun-Ext
     → PUC X Y R p
 puc {_} {_} {_} {X} {Y} {R} {p} fe m = ((f , r) , G)
  where
@@ -108,12 +108,12 @@ puc {_} {_} {_} {X} {Y} {R} {p} fe m = ((f , r) , G)
   C x = ∃!-uniqueness (m x)
   G : ((g , s) : (Σ g ꞉ (X → Y) , ((x : X) → R x (g x))))
     → (f , r) ＝ (g , s)
-  G (g , s) = to-subtype-＝ II (dfunext (fe _ _) I)
+  G (g , s) = to-subtype-＝ II (dfunext fe I)
    where
     I : f ∼ g
     I x = ap pr₁ (C x (g x) (s x))
     II : (h : X → Y) → is-prop ((x : X) → R x (h x))
-    II = λ h → Π-is-prop (fe _ _) (λ x → p x (h x))
+    II = λ h → Π-is-prop fe (λ x → p x (h x))
     
 \end{code}
 
