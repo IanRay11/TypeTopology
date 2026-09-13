@@ -158,6 +158,17 @@ module _ (pt : propositional-truncations-exist) where
   = pr₂ (wconstant-map-to-set-factors-through-truncation-of-domain
           pt Y-set f wcons)
 
+ ∥∥-set-rec-char : {X : 𝓤 ̇}
+                   {Y : 𝓥 ̇} {Y-set : is-set Y} {f : X → Y}
+                 → (wcons : wconstant f)
+                 → (x : X) (w : ∥ X ∥)
+                 → f x ＝ ∥∥-set-rec Y Y-set f wcons w
+ ∥∥-set-rec-char {_} {_} {_} {Y} {Y-set} {f} wcons x w
+  = f x                              ＝⟨ ∥∥-set-rec-comp Y Y-set f wcons x ⟩
+    ∥∥-set-rec Y Y-set f wcons ∣ x ∣ ＝⟨ ap (∥∥-set-rec Y Y-set f wcons)
+                                            (∥∥-is-prop ∣ x ∣ w) ⟩
+    ∥∥-set-rec Y Y-set f wcons w     ∎ 
+
  PUC' : (X : 𝓤 ̇) (Y : 𝓥 ̇) (Y-set : is-set Y) (R : X → Y → 𝓣 ̇)
         (p : (x : X) (y : Y) → is-prop (R x y))
       → 𝓤 ⊔ 𝓥 ⊔ 𝓣 ̇
@@ -181,35 +192,22 @@ module _ (pt : propositional-truncations-exist) where
    proj₁-wconst x (y , r , u) (y' , r' , u') = u y' r'
    f : X → Y
    f x = ∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x) (m x)
-   source-prop : (x : X) (w : un-trunc-source x)
-               → ∣ w ∣ ＝ m x
-   source-prop x w = ∥∥-is-prop ∣ w ∣ (m x)
-   char-∥∥-set-rec : (x : X) ((y , r , u) : un-trunc-source x)
-                   → y ＝ f x
-   char-∥∥-set-rec x (y , r , u)
-    = y                                                           ＝⟨ I ⟩
-      ∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x) ∣ y , r , u ∣ ＝⟨ II ⟩
-      f x                                                         ∎
-    where
-     I = ∥∥-set-rec-comp Y Y-set (proj₁ x) (proj₁-wconst x) (y , r , u)
-     II = ap (∥∥-set-rec Y Y-set (proj₁ x) (proj₁-wconst x))
-             (source-prop x (y , r , u))
    Rxfx : (x : X) → R x (f x)
    Rxfx x = ∥∥-rec (p x (f x)) I (m x)
     where
      I : un-trunc-source x
        → R x (f x)
-     I (y , r , u) = transport (R x) (char-∥∥-set-rec x (y , r , u)) r
+     I (y , r , u)
+      = transport (R x) (∥∥-set-rec-char (proj₁-wconst x) (y , r , u) (m x)) r
    f-unique : (g : X → Y) → ((x : X) → R x (g x)) → f ＝ g
    f-unique g Rxgx = dfunext fe (λ x → ∥∥-rec Y-set (I x) (m x))
     where
      I : (x : X)
        → un-trunc-source x
        → f x ＝ g x
-     I x (y , r , u) = f x  ＝⟨ char-∥∥-set-rec x (y , r , u) ⁻¹ ⟩
-                       y    ＝⟨ u (g x) (Rxgx x) ⟩
-                       g x  ∎
+     I x (y , r , u)
+      = f x  ＝⟨ ∥∥-set-rec-char (proj₁-wconst x) (y , r , u) (m x) ⁻¹ ⟩
+        y    ＝⟨ u (g x) (Rxgx x) ⟩
+        g x  ∎
    
 \end{code}
-
-TODO. Clean this proof up! 
