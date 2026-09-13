@@ -2,6 +2,9 @@ Ian Ray. August 27 2026.
 
 We derive induction for ℕ-lfp from recursion in the standard way.
 
+TODO: Carlo suggests first proving that the recursor is unique, and using this
+to derive induction more straightforwardly (?)
+
 \begin{code}
 
 {-# OPTIONS --safe --without-K #-}

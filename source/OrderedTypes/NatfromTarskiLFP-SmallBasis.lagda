@@ -358,5 +358,49 @@ We then prove canonical froms for ℕ-lfp.
 TODO: Canonical forms should also follow from the fact that nat-constr-lfp is
 post-fixed.
 
+--
 
+Carlo Angiuli. September 12, 2026.
 
+If we additionally assume univalence, then Ordinal 𝓤 gives us an weakly infinite
+set in 𝓤 ⁺, discharging the assumption of the above construction.
+
+TODO: Some of the files on ordinals import the natural numbers. One should
+double-check that none of the below lemmas transitively depend on the natural
+numbers, which is why I have been so careful about the imports.
+
+\begin{code}
+
+open import UF.Univalence
+
+module _ (ua : Univalence) where
+
+  open import Ordinals.Type using (Ordinal)
+  open import Ordinals.Equivalence using (the-type-of-ordinals-is-a-set)
+  open import Ordinals.Arithmetic fe' using (𝟘ₒ; 𝟙ₒ; _+ₒ_)
+  open import Ordinals.AdditionProperties ua using (succₒ-reflects-⊴)
+  open import Ordinals.OrdinalOfOrdinals ua using (_⊴_; ＝-to-⊴; ⊴-antisym)
+
+  succₒ-is-injective : (α β : Ordinal 𝓤) → α +ₒ 𝟙ₒ ＝ β +ₒ 𝟙ₒ → α ＝ β
+  succₒ-is-injective α β e = ⊴-antisym α β α⊴β β⊴α
+    where
+    α⊴β : α ⊴ β
+    α⊴β = succₒ-reflects-⊴ α β (＝-to-⊴ (α +ₒ 𝟙ₒ) (β +ₒ 𝟙ₒ) e)
+    β⊴α : β ⊴ α
+    β⊴α = succₒ-reflects-⊴ β α (＝-to-⊴ (β +ₒ 𝟙ₒ) (α +ₒ 𝟙ₒ) (e ⁻¹))
+
+  succₒ-is-not-𝟘ₒ : (α : Ordinal 𝓤) → α +ₒ 𝟙ₒ ≠ 𝟘ₒ
+  succₒ-is-not-𝟘ₒ α e = 𝟘-elim (transport pr₁ e (inr ⋆))
+
+  ordinal-weak-infinity : (𝓤 : Universe) → weak-infinity (𝓤 ⁺)
+  ordinal-weak-infinity 𝓤 =
+    record {
+      Infty = Ordinal 𝓤 ;
+      Infty-is-set = the-type-of-ordinals-is-a-set (ua 𝓤) fe ;
+      el-Infty = 𝟘ₒ ;
+      map-Infty = λ α → α +ₒ 𝟙ₒ ;
+      map-inj = succₒ-is-injective ;
+      el-not-img = succₒ-is-not-𝟘ₒ
+    }
+
+\end{code}
