@@ -321,6 +321,28 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
   ＝ s (ℕ-recursion-lfp X X-set x₀ s n)
  ℕ-recursion-comp-suc-lfp X X-set x₀ s = rec-comp-suc X X-set x₀ s
 
+ ℕ-recursion-uniqueness-lfp
+  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
+  → (f : ℕ-lfp → X)
+  → f zero-lfp ＝ x₀
+  → ((n : ℕ-lfp) → f (suc-lfp n) ＝ s (f n))
+  → (n : ℕ-lfp)
+  → ℕ-recursion-lfp X X-set x₀ s n ＝ f n
+ ℕ-recursion-uniqueness-lfp X X-set x₀ s f f-zero f-suc 
+  = ℕ-prop-induction-lfp
+     (λ n → ((ℕ-recursion-lfp X X-set x₀ s n ＝ f n) , X-set))
+     (ℕ-recursion-comp-zero-lfp X X-set x₀ s ∙ f-zero ⁻¹) I
+  where
+   I : (n : ℕ-lfp)
+     → ℕ-recursion-lfp X X-set x₀ s n ＝ f n
+     → ℕ-recursion-lfp X X-set x₀ s (suc-lfp n) ＝ f (suc-lfp n)
+   I n IH = ℕ-recursion-lfp X X-set x₀ s (suc-lfp n) ＝⟨ II ⟩
+            s (ℕ-recursion-lfp X X-set x₀ s n)       ＝⟨ ap s IH ⟩
+            s (f n)                                  ＝⟨ f-suc n ⁻¹ ⟩
+            f (suc-lfp n)                            ∎
+    where
+     II = ℕ-recursion-comp-suc-lfp X X-set x₀ s n
+  
 \end{code}
 
 
