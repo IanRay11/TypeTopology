@@ -257,7 +257,7 @@ and prove it by prop induction on ℕ-lfp.
 \end{code}
 
 Is there any benefit to applying unique choice here to get the recursive
-function?
+function and uniqueness for free?
 
 \begin{code}
 
