@@ -297,7 +297,9 @@ We now state the recursion principle outside of the previous module.
 
 \begin{code}
 
-module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 𝓤) where
+module nat-rec-lfp (wi : weak-infinity 𝓤)
+                   (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 𝓤)
+       where
 
  open nat-weak-inf-tarski wi lfp
  open nat-rec-weak-inf-tarsk wi lfp
@@ -342,6 +344,19 @@ module _ (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 �
             f (suc-lfp n)                            ∎
     where
      II = ℕ-recursion-comp-suc-lfp X X-set x₀ s n
+
+ ℕ-recursion-uniqueness'-lfp
+  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
+  → (f g : ℕ-lfp → X)
+  → f zero-lfp ＝ x₀
+  → g zero-lfp ＝ x₀
+  → ((n : ℕ-lfp) → f (suc-lfp n) ＝ s (f n))
+  → ((n : ℕ-lfp) → g (suc-lfp n) ＝ s (g n))
+  → (n : ℕ-lfp)
+  → f n ＝ g n
+ ℕ-recursion-uniqueness'-lfp X X-set x₀ s f g f-zero g-zero f-suc g-suc n
+  = ℕ-recursion-uniqueness-lfp X X-set x₀ s f f-zero f-suc n ⁻¹ ∙
+    ℕ-recursion-uniqueness-lfp X X-set x₀ s g g-zero g-suc n
   
 \end{code}
 
