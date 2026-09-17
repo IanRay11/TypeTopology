@@ -38,7 +38,7 @@ open import OrderedTypes.NatfromTarskiLFP-SmallBasis pt fe pe
 open AllCombinators pt fe
 open PropositionalTruncation pt hiding (_∨_)
 
-module nat-rec-weak-inf-tarsk
+module nat-rec-weak-inf-tarski
          (wi : weak-infinity 𝓤) (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 𝓤)
          (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
        where
@@ -293,70 +293,56 @@ function and uniqueness for free?
 
 \end{code}
 
-We now state the recursion principle outside of the previous module.
+We now state the restate the above recursion principles and computation rules
+for easy reference with more conventional names.
 
 \begin{code}
 
-module nat-rec-lfp (wi : weak-infinity 𝓤)
-                   (lfp : TarskiLFP-SmallBasis (𝓤 ⁺) 𝓤 𝓤)
-       where
-
- open nat-weak-inf-tarski wi lfp
- open nat-rec-weak-inf-tarsk wi lfp
-
- ℕ-recursion-lfp : (X : 𝓤 ̇) 
-                 → is-set X
-                 → X
-                 → (X → X)
-                 → ℕ-lfp → X
- ℕ-recursion-lfp X X-set x₀ s = recursive-function X X-set x₀ s
+ ℕ-recursion-lfp : ℕ-lfp → X
+ ℕ-recursion-lfp = recursive-function 
 
  ℕ-recursion-comp-zero-lfp
-  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
-  → ℕ-recursion-lfp X X-set x₀ s zero-lfp ＝ x₀
- ℕ-recursion-comp-zero-lfp X X-set x₀ s = rec-comp-zero X X-set x₀ s
+  : ℕ-recursion-lfp zero-lfp ＝ x₀
+ ℕ-recursion-comp-zero-lfp = rec-comp-zero 
 
  ℕ-recursion-comp-suc-lfp
-  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
-  → (n : ℕ-lfp)
-  → ℕ-recursion-lfp X X-set x₀ s (suc-lfp n)
-  ＝ s (ℕ-recursion-lfp X X-set x₀ s n)
- ℕ-recursion-comp-suc-lfp X X-set x₀ s = rec-comp-suc X X-set x₀ s
+  : (n : ℕ-lfp)
+  → ℕ-recursion-lfp (suc-lfp n)
+  ＝ s (ℕ-recursion-lfp n)
+ ℕ-recursion-comp-suc-lfp = rec-comp-suc 
 
  ℕ-recursion-uniqueness-lfp
-  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
-  → (f : ℕ-lfp → X)
+  : (f : ℕ-lfp → X)
   → f zero-lfp ＝ x₀
   → ((n : ℕ-lfp) → f (suc-lfp n) ＝ s (f n))
   → (n : ℕ-lfp)
-  → ℕ-recursion-lfp X X-set x₀ s n ＝ f n
- ℕ-recursion-uniqueness-lfp X X-set x₀ s f f-zero f-suc 
+  → ℕ-recursion-lfp n ＝ f n
+ ℕ-recursion-uniqueness-lfp f f-zero f-suc 
   = ℕ-prop-induction-lfp
-     (λ n → ((ℕ-recursion-lfp X X-set x₀ s n ＝ f n) , X-set))
-     (ℕ-recursion-comp-zero-lfp X X-set x₀ s ∙ f-zero ⁻¹) I
+     (λ n → ((ℕ-recursion-lfp n ＝ f n) , X-set))
+     (ℕ-recursion-comp-zero-lfp ∙ f-zero ⁻¹) I
   where
    I : (n : ℕ-lfp)
-     → ℕ-recursion-lfp X X-set x₀ s n ＝ f n
-     → ℕ-recursion-lfp X X-set x₀ s (suc-lfp n) ＝ f (suc-lfp n)
-   I n IH = ℕ-recursion-lfp X X-set x₀ s (suc-lfp n) ＝⟨ II ⟩
-            s (ℕ-recursion-lfp X X-set x₀ s n)       ＝⟨ ap s IH ⟩
-            s (f n)                                  ＝⟨ f-suc n ⁻¹ ⟩
-            f (suc-lfp n)                            ∎
+     → ℕ-recursion-lfp n ＝ f n
+     → ℕ-recursion-lfp (suc-lfp n) ＝ f (suc-lfp n)
+   I n IH = ℕ-recursion-lfp (suc-lfp n) ＝⟨ II ⟩
+            s (ℕ-recursion-lfp n)       ＝⟨ ap s IH ⟩
+            s (f n)                     ＝⟨ f-suc n ⁻¹ ⟩
+            f (suc-lfp n)               ∎
     where
-     II = ℕ-recursion-comp-suc-lfp X X-set x₀ s n
+     II = ℕ-recursion-comp-suc-lfp n
 
  ℕ-recursion-uniqueness'-lfp
-  : (X : 𝓤 ̇) (X-set : is-set X) (x₀ : X) (s : X → X)
-  → (f g : ℕ-lfp → X)
+  : (f g : ℕ-lfp → X)
   → f zero-lfp ＝ x₀
   → g zero-lfp ＝ x₀
   → ((n : ℕ-lfp) → f (suc-lfp n) ＝ s (f n))
   → ((n : ℕ-lfp) → g (suc-lfp n) ＝ s (g n))
   → (n : ℕ-lfp)
   → f n ＝ g n
- ℕ-recursion-uniqueness'-lfp X X-set x₀ s f g f-zero g-zero f-suc g-suc n
-  = ℕ-recursion-uniqueness-lfp X X-set x₀ s f f-zero f-suc n ⁻¹ ∙
-    ℕ-recursion-uniqueness-lfp X X-set x₀ s g g-zero g-suc n
+ ℕ-recursion-uniqueness'-lfp f g f-zero g-zero f-suc g-suc n
+  = ℕ-recursion-uniqueness-lfp f f-zero f-suc n ⁻¹ ∙
+    ℕ-recursion-uniqueness-lfp g g-zero g-suc n
   
 \end{code}
 
