@@ -565,9 +565,7 @@ module _ (𝓤 : Universe) (ua : is-univalent 𝓤) (fe : Fun-Ext) where
         ; ext-refl = λ u x x' → refl
         ; rext-refl = λ u x x' → refl })
   where
-   I : {x y : ⟨ universe-refl-graph 𝓤 ⟩}
-     → x ≈⟨ universe-refl-graph 𝓤 ⟩ y
-     → Refl-Graph 𝓤 𝓤
+   I : {X Y : 𝓤 ̇} → X ≃ Y → Refl-Graph 𝓤 𝓤
    I {X} {Y} e = X ➙ (X ➙ (Δ Y))
 
  ∞-Magma-unbiased-lens-is-univalent
