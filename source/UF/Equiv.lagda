@@ -9,6 +9,7 @@ Notion of equivalence and its basic properties.
 module UF.Equiv where
 
 open import MLTT.Spartan
+open import MLTT.Plus-Properties
 open import MLTT.Unit-Properties
 open import UF.Base
 open import UF.Retracts
@@ -653,6 +654,23 @@ singletons-are-equiv-to-𝟙 (x₀ , φ) =
 types-equiv-to-𝟙-are-singletons : {X : 𝓤 ̇ } → X ≃ 𝟙 {𝓥} → is-singleton X
 types-equiv-to-𝟙-are-singletons (f , (s , fs) , (r , rf)) =
  retract-of-singleton (r , f , rf) 𝟙-is-singleton
+
+\end{code}
+
+Added Ian Ray October 29th.
+
+\begin{code}
+
+adjoined-point-contractible-implies-empty : (X : 𝓤 ̇)
+                                          → X + 𝟙{𝓤} ≃ 𝟙{𝓤}
+                                          → X ≃ 𝟘
+adjoined-point-contractible-implies-empty X e
+ = lr-implication negations-are-equiv-to-𝟘 X-empty
+ where
+  X+𝟙-prop : is-prop (X + 𝟙)
+  X+𝟙-prop = singletons-are-props (types-equiv-to-𝟙-are-singletons e)
+  X-empty : is-empty X
+  X-empty x = +disjoint (X+𝟙-prop (inl x) (inr ⋆))
 
 \end{code}
 
