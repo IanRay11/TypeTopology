@@ -211,7 +211,11 @@ We now give a characterization of the identity type of N+1 morphisms.
  →N+1-unbiased-lens
   : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
   → Unbiased-Lens 𝓤 𝓤 (X ➙ Δ Y)
- →N+1-unbiased-lens = {!!}
+ →N+1-unbiased-lens 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s')
+  = (I , {!!})
+  where
+   I : {f g : X → Y} → f ∼ g → Refl-Graph 𝓤 𝓤
+   I {f} {g} H = Δ (g x₀ ＝ y₀) ⊗ Δ (f ∘ s ∼ s' ∘ g)
 
  →N+1-＝-characterization
   : {𝓧@(X , x₀ , s) : N+1-Algebra 𝓤} {𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤}
