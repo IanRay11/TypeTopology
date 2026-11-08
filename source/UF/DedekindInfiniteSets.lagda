@@ -30,6 +30,7 @@ open import UF.Embeddings
 open import UF.Equiv
 open import UF.EquivalenceExamples
 open import UF.Equiv-FunExt
+open import UF.Subsingletons-FunExt
 open import UF.Sets
 open import ReflexiveGraphs.Constructions using
              (refl-graph-×; cotensor-refl-graph; Δ; total-refl-graph)
@@ -172,7 +173,7 @@ module _ (𝓤 : Universe) where
 
 \end{code}
 
-We now give the characterization.
+We now give the characterization of identity.
 
 \begin{code}
 
@@ -191,39 +192,59 @@ We now give a characterization of the identity type of N+1 morphisms.
 
 \begin{code}
 
- →N+1-lens
-  : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
-  → Oplax-Covariant-Lens 𝓤 𝓤 (X ➙ Δ Y)
- →N+1-lens 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s')
-  = (I , record{push = λ {f g : X → Y} (H : f ∼ g)
-                         ((f-point , f-comm) : (f x₀ ＝ y₀) × (f ∘ s ∼ s' ∘ f))
-                       → ((H x₀ ⁻¹ ∙ f-point)
-                          , λ (x : X) → H (s x) ⁻¹ ∙ f-comm x ∙ ap s' (H x));
-                push-refl
-                 = λ {f : X → Y}
-                      ((f-point , f-comm) : (f x₀ ＝ y₀) × (f ∘ s ∼ s' ∘ f))
-                    → (refl-left-neutral
-                       , dfunext fe (λ (x : X) → refl-left-neutral))})
-  where
-   I : (X → Y) → Refl-Graph 𝓤 𝓤
-   I f = Δ (f x₀ ＝ y₀) ⊗ Δ (f ∘ s ∼ s' ∘ f)
-
  →N+1-unbiased-lens
   : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
   → Unbiased-Lens 𝓤 𝓤 (X ➙ Δ Y)
  →N+1-unbiased-lens 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s')
-  = (I , {!!})
+  = (I , record{lext = λ {f g : X → Y} (H : f ∼ g)
+                         ((f-point , f-comm) : (f x₀ ＝ y₀) × f ∘ s ∼ s' ∘ f)
+                       → (f-point , (λ (x : X) → f-comm x ∙ ap s' (H x)));
+                rext = λ {f g : X → Y} (H : f ∼ g)
+                         ((g-point , g-comm) : (g x₀ ＝ y₀) × g ∘ s ∼ s' ∘ g)
+                       → ((H x₀ ∙ g-point) , (λ (x : X) → H (s x) ∙ g-comm x));
+                ext-refl = λ {f : X → Y}
+                             ((f-point , f-comm) : (f x₀ ＝ y₀) × f ∘ s ∼ s' ∘ f)
+                           → ((refl-left-neutral ⁻¹) ,
+                              dfunext fe (λ (_ : X) → refl-left-neutral ⁻¹));
+                rext-refl = λ {f : X → Y}
+                              ((f-point , f-comm) : (f x₀ ＝ y₀) × f ∘ s ∼ s' ∘ f)
+                            → ((refl-left-neutral ⁻¹) ,
+                               dfunext fe (λ (_ : X) → refl-left-neutral ⁻¹))})
   where
    I : {f g : X → Y} → f ∼ g → Refl-Graph 𝓤 𝓤
-   I {f} {g} H = Δ (g x₀ ＝ y₀) ⊗ Δ (f ∘ s ∼ s' ∘ g)
+   I {f} {g} H = Δ (f x₀ ＝ y₀) ⊗ Δ (f ∘ s ∼ s' ∘ g)
+
+ →N+1-unbiased-lens-is-univalent
+  : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
+  → unbiased-lens-is-univalent (X ➙ Δ Y) (→N+1-unbiased-lens 𝓧 𝓨)
+ →N+1-unbiased-lens-is-univalent 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s') {f} {g} H
+  = univalence-closed-under-× (Δ (f x₀ ＝ y₀)) (Δ (f ∘ s ∼ s' ∘ g))
+     (discrete-refl-graph-is-univalent (f x₀ ＝ y₀))
+     (discrete-refl-graph-is-univalent (f ∘ s ∼ s' ∘ g))
+
+ →N+1-unbiased-lens-total-univalent
+  : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
+  → is-univalent-refl-graph
+     (total-refl-graph (X ➙ Δ Y) (disp± (X ➙ Δ Y) (→N+1-unbiased-lens 𝓧 𝓨)))
+ →N+1-unbiased-lens-total-univalent 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s')
+  = univalence-closed-under-total (X ➙ Δ Y)
+     (disp± (X ➙ Δ Y) (→N+1-unbiased-lens 𝓧 𝓨))
+     (univalence-closed-under-cotensor fe X (Δ Y)
+      (discrete-refl-graph-is-univalent Y))
+     (disp-unbiased-lens-univalent (X ➙ Δ Y) (→N+1-unbiased-lens 𝓧 𝓨)
+      (λ - → →N+1-unbiased-lens-is-univalent 𝓧 𝓨 ∼-refl))
 
  →N+1-＝-characterization
-  : {𝓧@(X , x₀ , s) : N+1-Algebra 𝓤} {𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤}
+  : (𝓧@(X , x₀ , s) : N+1-Algebra 𝓤) (𝓨@(Y , y₀ , s') : N+1-Algebra 𝓤)
   → (𝓯@(f , f-point , f-comm) 𝓰@(g , g-point , g-comm) : 𝓧 →N+1 𝓨)
   → (𝓯 ＝ 𝓰)
-  ≃ (Σ H ꞉ (f ∼ g) , (H x₀ ∙ g-point ＝ f-point)
+  ≃ (Σ H ꞉ (f ∼ g) , (f-point ＝ H x₀ ∙ g-point)
                    × (∼-trans f-comm (∼-ap-∘ s' H) ＝ ∼-trans (H ∘ s) g-comm))
- →N+1-＝-characterization = {!!}
+ →N+1-＝-characterization 𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s')
+  𝓯@(f , f-point , f-comm) 𝓰@(g , g-point , g-comm)
+   = id-equiv-edge
+      (total-refl-graph (X ➙ Δ Y) (disp± (X ➙ Δ Y) (→N+1-unbiased-lens 𝓧 𝓨)) ,
+        →N+1-unbiased-lens-total-univalent 𝓧 𝓨) 𝓯 𝓰
 
 \end{code}
 
@@ -309,14 +330,14 @@ is injective by not surjective with respect to ≅N+1.
                     → 𝓧 ≅N+1 𝓨
  succ-injective-N+1
   𝓧@(X , x₀ , s) 𝓨@(Y , y₀ , s') (𝓯@(f , f-point , f-comm) , f-equiv)
-  = (succ-lc-→N+1 𝓧 𝓨 𝓯 (equivs-are-lc f f-equiv) , f'-is-equiv)
+  = (succ-lc-→N+1 𝓧 𝓨 𝓯 (equivs-are-lc f f-equiv) , succ-lc-map-is-equiv)
   module succ-inj where
    f' = succ-lc-map 𝓯 (equivs-are-lc f f-equiv)
    f∼f' = succ-lc-map∼ 𝓯 (equivs-are-lc f f-equiv)
-   f'-is-equiv : is-equiv f'
-   f'-is-equiv = vv-equivs-are-equivs f'
-                  (λ (y : Y) → equiv-to-singleton (I y)
-                                (equivs-are-vv-equivs f f-equiv (inl y)))
+   succ-lc-map-is-equiv : is-equiv f'
+   succ-lc-map-is-equiv = vv-equivs-are-equivs f'
+                           (λ (y : Y) → equiv-to-singleton (I y)
+                                         (equivs-are-vv-equivs f f-equiv (inl y)))
     where
      I : (y : Y) → fiber f' y ≃ fiber f (inl y)
      I y = (Σ x ꞉ X , f' x ＝ y)                     ≃⟨ III ⟩
@@ -350,7 +371,11 @@ Rigid-N+1-Algebra 𝓤 = Σ 𝓧 ꞉ N+1-Algebra 𝓤 , is-contr (𝓧 ≅N+1 �
 Rigid-N+1-Algebra-＝-characterization
  : ((𝓧 , contr₁) : Rigid-N+1-Algebra 𝓤) ((𝓨 , contr₂) : Rigid-N+1-Algebra 𝓤)
  → ((𝓧 , contr₁) ＝ (𝓨 , contr₂)) ≃ (𝓧 ≅N+1 𝓨)
-Rigid-N+1-Algebra-＝-characterization = {!!}
+Rigid-N+1-Algebra-＝-characterization {𝓤} (𝓧 , contr₁) (𝓨 , contr₂)
+ = ≃-comp I (N+1-Algebra-＝-characterization 𝓤 𝓧 𝓨)
+ where
+  I : ((𝓧 , contr₁) ＝ (𝓨 , contr₂)) ≃ (𝓧 ＝ 𝓨)
+  I = ≃-sym (to-subtype-＝-≃ (λ - → being-singleton-is-prop fe))
 
 \end{code}
 
@@ -374,9 +399,10 @@ module _ {𝓤 : Universe} where
    I : is-central (point-N+1 𝓤 ≅N+1 point-N+1 𝓤) point-N+1-automorphism
    I ((f , f-point , f-comm) , f-equiv)
     = to-subtype-＝ (λ (- , _) → being-equiv-is-prop fe' -)
-       (⌜ (→N+1-＝-characterization 𝓤 point-N+1-map ((f , f-point , f-comm))) ⌝⁻¹
+       (⌜ (→N+1-＝-characterization 𝓤 (point-N+1 𝓤) (point-N+1 𝓤) point-N+1-map
+            ((f , f-point , f-comm))) ⌝⁻¹
         ((λ _ → 𝟙-is-prop ⋆ ⋆)
-         , 𝟙-is-set (𝟙-is-prop ⋆ ⋆ ∙ f-point) (𝟙-is-prop ⋆ ⋆)
+         , 𝟙-is-set (𝟙-is-prop ⋆ ⋆) (𝟙-is-prop ⋆ ⋆ ∙ f-point)
          , dfunext fe (λ - → 𝟙-is-set (𝟙-is-prop ⋆ ⋆)
                       (𝟙-is-prop ⋆ ⋆ ∙ f-comm -))))
 
@@ -401,26 +427,28 @@ module _ {𝓤 : Universe} where
                  ((g+ , refl , g+-comm) , ⌜⌝-is-equiv (Ap+ 𝟙 (g , g-equiv)))
    𝓰+-central (𝓯@(f , f-point , f-comm) , f-equiv)
     = to-subtype-＝ (λ (- , _) → being-equiv-is-prop fe' -)
-       (⌜ →N+1-＝-characterization 𝓤 (g+ , refl , g+-comm) 𝓯 ⌝⁻¹
-         (III , trans-sym f-point , V))
+       (⌜ →N+1-＝-characterization 𝓤 (succ-N+1 𝓤 𝓧) (succ-N+1 𝓤 𝓧)
+                                   (g+ , refl , g+-comm) 𝓯 ⌝⁻¹
+         (III , sym-is-inverse f-point , V))
     where
+     open succ-inj 𝓤 X x₀ s X x₀ s f f-point f-comm f-equiv
+     g-cent = 𝓰-central
+               ((f' , succ-lc-map-point 𝓤 𝓯 (equivs-are-lc f f-equiv)
+                , succ-lc-map-comm 𝓤 𝓯 (equivs-are-lc f f-equiv))
+                , succ-lc-map-is-equiv)
      III : g+ ∼ f
      III (inl x) = inl (g x)    ＝⟨ ap inl (happly IV x) ⟩
                    inl (f' x)   ＝⟨ f∼f' x ⁻¹ ⟩
                    f (inl x)    ∎
       where
-       open succ-inj 𝓤 X x₀ s X x₀ s f f-point f-comm f-equiv
-       g-cent
-        = 𝓰-central
-           ((f' , succ-lc-map-point 𝓤 𝓯 (equivs-are-lc f f-equiv)
-             , succ-lc-map-comm 𝓤 𝓯 (equivs-are-lc f f-equiv)) , f'-is-equiv)
        IV : g ＝ f'
-       IV = ap pr₁ (ap pr₁ g-cent)
+       IV = ap (pr₁ ∘ pr₁) g-cent
      III (inr ⋆) = f-point ⁻¹
      V : ∼-trans g+-comm (∼-ap-∘ (s+ 𝓤 X x₀ s) III)
        ＝ ∼-trans (III ∘ s+ 𝓤 X x₀ s) f-comm
      V = dfunext fe VI
       where
+       open succ-inj 𝓤 X x₀ s X x₀ s f f-point f-comm f-equiv
        VI : ∼-trans g+-comm (∼-ap-∘ (s+ 𝓤 X x₀ s) III)
           ∼ ∼-trans (III ∘ s+ 𝓤 X x₀ s) f-comm
        VI (inl x) = g+-comm (inl x) ∙ ap (s+ 𝓤 X x₀ s) (III (inl x)) ＝⟨ {!!} ⟩
@@ -428,6 +456,30 @@ module _ {𝓤 : Universe} where
                     {!!}                                             ＝⟨ {!!} ⟩
                     (III ∘ s+ 𝓤 X x₀ s) (inl x) ∙ f-comm (inl x)     ∎
        VI (inr ⋆) = {!!}
+       succ-tuple = (succ-inj.f' 𝓤 X x₀ s X x₀ s f f-point f-comm f-equiv ,
+            succ-lc-map-point 𝓤 (f , f-point , f-comm) (equivs-are-lc f f-equiv) ,
+            succ-lc-map-comm 𝓤 (f , f-point , f-comm) (equivs-are-lc f f-equiv))
+       VII : (g , g-point , g-comm) ＝ succ-tuple
+       VII = ap pr₁ g-cent
+       VIII : g-point
+            ＝ pr₁ (⌜ →N+1-＝-characterization 𝓤 𝓧 𝓧 (g , g-point , g-comm)
+                       succ-tuple ⌝ VII) x₀
+            ∙ succ-lc-map-point 𝓤 (f , f-point , f-comm) (equivs-are-lc f f-equiv)
+       VIII = pr₁ (pr₂ (⌜ →N+1-＝-characterization 𝓤 𝓧 𝓧
+                          (g , g-point , g-comm) succ-tuple ⌝ VII))
+       IX : ∼-trans g-comm
+              (∼-ap-∘ (λ v → _)
+               (pr₁
+                (⌜ →N+1-＝-characterization 𝓤 𝓧 𝓧 (g , g-point , g-comm) succ-tuple ⌝
+                 {!!})))
+              ＝
+              ∼-trans
+              (pr₁
+               (⌜ →N+1-＝-characterization 𝓤 𝓧 𝓧 (g , g-point , g-comm) succ-tuple ⌝ _)
+               ∘ (λ z → s z))
+              (pr₂ (pr₂ succ-tuple))
+       IX = pr₂ (pr₂ (⌜ →N+1-＝-characterization 𝓤 𝓧 𝓧
+                          (g , g-point , g-comm) succ-tuple ⌝ VII))
 
  rigid-succ-N+1 : Rigid-N+1-Algebra 𝓤 → Rigid-N+1-Algebra 𝓤
  rigid-succ-N+1 (𝓧 , 𝓧-rigid) = (succ-N+1 𝓤 𝓧 , succ-N+1-is-rigid 𝓧 𝓧-rigid)
